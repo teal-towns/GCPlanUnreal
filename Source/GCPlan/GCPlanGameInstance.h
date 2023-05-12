@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "IWebSocket.h"
+#include "SettingsActor.h"
 #include "GCPlanGameInstance.generated.h"
 
 /**
@@ -20,4 +21,10 @@ class GCPLAN_API UGCPlanGameInstance : public UGameInstance
 		virtual void Shutdown() override;
 
 		TSharedPtr<IWebSocket> WebSocket;
+		ASettingsActor* SettingsActor;
+		TMap<FString, bool> Initeds;
+
+		// ASettingsActor* GetSettings();
+		void InitSettings();
+		bool IsIniteds(TArray<FString>);
 };
