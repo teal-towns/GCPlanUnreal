@@ -1,0 +1,11 @@
+.DS_Store
+
+/Binaries
+/DerivedDataCache
+/gc_plan_unreal1.xcworkspace
+/Intermediate
+/Saved
+
+/.ignore
+/.vscode
+/.vs
