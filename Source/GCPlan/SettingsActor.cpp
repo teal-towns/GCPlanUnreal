@@ -25,9 +25,9 @@ void ASettingsActor::Tick(float DeltaTime)
 
 void ASettingsActor::Init() {
 	UGCPlanGameInstance* GameInstance = Cast<UGCPlanGameInstance>(GetGameInstance());
-	if (GameInstance && GameInstance->WebSocket->IsConnected()) {
+	if (GameInstance) {
 		Inited = true;
-		GameInstance->InitSettings();
+		GameInstance->InitActor("settings");
 	}
 }
 
