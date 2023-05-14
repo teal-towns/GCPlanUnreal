@@ -1,7 +1,8 @@
 #include "GCPlanGameInstance.h"
+#include "Kismet/GameplayStatics.h"
+#include "InstancedStaticMeshActor.h"
 #include "SettingsActor.h"
 #include "SocketActor.h"
-#include "Kismet/GameplayStatics.h"
 
 void UGCPlanGameInstance::Init() {
     Super::Init();
@@ -31,6 +32,16 @@ void UGCPlanGameInstance::InitActor(FString name) {
         }
         Initeds.Add("socket", true);
     }
+    // Init others too that should not need specific async timing.
+    if (!Initeds.Contains("other")) {
+        UGameplayStatics::GetAllActorsOfClass(GetWorld(), AInstancedStaticMeshActor::StaticClass(), OutActors);
+        for (AActor* a : OutActors) {
+            AInstancedStaticMeshActor* Actor = Cast<AInstancedStaticMeshActor>(a);
+            FString Name = Actor->GetName();
+            InstancedStaticMeshActors.Add(Name, Actor);
+        }
+        Initeds.Add("other", true);
+    }
 }
 
 bool UGCPlanGameInstance::IsIniteds(TArray<FString> Keys) {
@@ -40,4 +51,11 @@ bool UGCPlanGameInstance::IsIniteds(TArray<FString> Keys) {
         }
     }
     return true;
+}
+
+AInstancedStaticMeshActor* UGCPlanGameInstance::GetInstancedStaticMeshActor(FString Name) {
+    if (InstancedStaticMeshActors.Contains(Name)) {
+        return InstancedStaticMeshActors[Name];
+    }
+    return nullptr;
 }
