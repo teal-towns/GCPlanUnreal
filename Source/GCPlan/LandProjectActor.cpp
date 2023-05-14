@@ -1,6 +1,6 @@
 #include "LandProjectActor.h"
 #include "JsonObjectConverter.h"
-// #include "SettingsActor.h"
+#include "InstancedStaticMeshActor.h"
 #include "GCPlanGameInstance.h"
 
 ALandProjectActor::ALandProjectActor()
@@ -81,9 +81,23 @@ void ALandProjectActor::GetProject(FString UName) {
 }
 
 void ALandProjectActor::GenerateLands(TArray<FLand> lands) {
+	UGCPlanGameInstance* GameInstance = Cast<UGCPlanGameInstance>(GetGameInstance());
+	AInstancedStaticMeshActor* Actor = GameInstance->GetInstancedStaticMeshActor("HexModule");
+	// TODO - Unity hex prefab was rotated; reset to 0 rotation as default then remove this.
+	float rotationYOffset = 30.0;
+	// Move up to be above land.
+	float zOffset = 25000.0;
 	for (int ii = 0; ii < lands.Num(); ii++) {
 		UE_LOG(LogTemp, Display, TEXT("land_id %s"), *lands[ii].land_id);
-		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, "land_id " + lands[ii].land_id);
-		// TODO
+		for (auto& Elem : lands[ii].game_objects) {
+			FLandGameObject GO = Elem.Value;
+			// Stored in Unity style so swap z and y and convert from meters to centimeters.
+			FVector Translation = FVector(GO.position["x"] * 100.0, GO.position["z"] * 100.0, GO.position["y"] * 100.0 + zOffset);
+			// FVector Translation = FVector(GO.position["x"] * 10.0, GO.position["z"] * 10.0, GO.position["y"] * 10.0);
+			// FVector Translation = FVector(GO.position["x"], GO.position["z"], GO.position["y"]);
+			FRotator Rotation = FRotator(GO.rotation["x"], GO.rotation["y"] + rotationYOffset, GO.rotation["z"]);
+			FVector Scale = FVector(GO.scale["x"], GO.scale["y"], GO.scale["z"]);
+			Actor->CreateInstance(Translation, Rotation, Scale);
+		}
 	}
 }

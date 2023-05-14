@@ -123,7 +123,7 @@ void ASocketActor::InitSocket() {
 		}
     });
     WebSocket->OnMessageSent().AddLambda([](const FString& MessageString) {
-        // GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, "Websocket sent message" + MessageString); 
+        // GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, "Websocket sent message" + MessageString);
     });
     WebSocket->Connect();
 }
@@ -179,6 +179,7 @@ void ASocketActor::Emit(FString Route, TMap<FString, FString> Data) {
 	} else {
 		// TODO - ensure socket is open
 		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "SocketActor.Emit " + JsonString);
+		UE_LOG(LogTemp, Display, TEXT("SocketActor.Emit Route %s"), *Route);
 		WebSocket->Send(JsonString);
 	}
 }
