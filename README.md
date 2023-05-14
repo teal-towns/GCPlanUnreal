@@ -7,6 +7,13 @@
     - https://forums.unrealengine.com/t/mac-generate-visual-studio-project-files/467048
     - https://visualstudio.microsoft.com/vs/mac/
 
+## Common Tasks
+
+### Assets (3D Models, Textures)
+- Texture file format: PNG for transparency, JPG otherwise (for reduced file size)
+	- https://forums.unrealengine.com/t/tga-vs-png-for-textures/24211/22
+	- TGA is common and good, but much larger file size; can convert to PNG or JPG, e.g. https://products.aspose.app/imaging/image-resize
+
 ## Coding
 
 - Styleguide / Coding Conventions: https://docs.unrealengine.com/4.26/en-US/ProductionPipelines/DevelopmentSetup/CodingStandard/
