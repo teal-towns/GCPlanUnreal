@@ -9,6 +9,11 @@
 
 ## Common Tasks
 
+### Editor and Game Mode
+- Use `UFUNCTION` to expose a button in editor to trigger code and abstract / reduce use of `GameInstance` and other game / runtime specific code to write code that works in BOTH the editor and at runtime.
+	- Editor mode allows for quicker debugging.
+	- Editor mode is required for sequencer / movie making and HLODs / performance.
+
 ### Assets (3D Models, Textures)
 - Texture file format: PNG for transparency, JPG otherwise (for reduced file size)
 	- https://forums.unrealengine.com/t/tga-vs-png-for-textures/24211/22

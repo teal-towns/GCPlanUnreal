@@ -42,3 +42,7 @@ FString AInstancedStaticMeshActor::GetName() {
 	// UE_LOG(LogTemp, Display, TEXT("MeshName %s"), *MeshName);
 	return MeshName;
 }
+
+void AInstancedStaticMeshActor::ClearInstances() {
+	InstancedStaticMeshComponent->ClearInstances();
+}

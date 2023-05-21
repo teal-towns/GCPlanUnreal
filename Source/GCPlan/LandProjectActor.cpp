@@ -1,7 +1,15 @@
 #include "LandProjectActor.h"
 #include "JsonObjectConverter.h"
 #include "InstancedStaticMeshActor.h"
+#include "Engine/World.h"
 #include "GCPlanGameInstance.h"
+
+#include "Kismet/GameplayStatics.h"
+#include "InstancedStaticMeshActor.h"
+#include "SettingsActor.h"
+#include "SocketActor.h"
+
+#include "GlobalClass.h"
 
 ALandProjectActor::ALandProjectActor()
 {
@@ -23,66 +31,76 @@ void ALandProjectActor::Tick(float DeltaTime)
 	}
 }
 
+void ALandProjectActor::InitSocketOn() {
+	SocketActor->On("login", [this](FString DataString) {
+		FDataLogin* Data = new FDataLogin();
+		if (!FJsonObjectConverter::JsonObjectStringToUStruct(DataString, Data, 0, 0)) {
+			UE_LOG(LogTemp, Error, TEXT("LandProjectActor.On login json parse error"));
+			// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "LandProjectActor.On login json parse error");
+		} else {
+			if (Data->valid > 0) {
+				FString ProjectUName = SettingsActor->ProjectUName;
+				if (ProjectUName.Len() > 0) {
+					this->GetProject(ProjectUName);
+				}
+			}
+		}
+	});
+
+	SocketActor->On("projectGetByUName", [this](FString DataString) {
+		FDataProject* Data = new FDataProject();
+		if (!FJsonObjectConverter::JsonObjectStringToUStruct(DataString, Data, 0, 0)) {
+			UE_LOG(LogTemp, Error, TEXT("LandProjectActor.On projectGetByUName json parse error"));
+			// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "LandProjectActor.On projectGetByUName json parse error");
+		} else {
+			if (Data->valid > 0) {
+				this->GenerateLands(Data->lands);
+			}
+		}
+	});
+}
+
+void ALandProjectActor::Login() {
+	FString LoginEmail = SettingsActor->LoginEmail;
+	FString LoginPassword = SettingsActor->LoginPassword;
+	FString ProjectUName = SettingsActor->ProjectUName;
+	if (LoginEmail.Len() > 0 && LoginPassword.Len() > 0 && ProjectUName.Len() > 0) {
+		TMap<FString, FString> Data = {
+			{ "email", LoginEmail },
+			{ "password", LoginPassword }
+		};
+		SocketActor->Emit("login", Data);
+	}
+}
+
 void ALandProjectActor::Init() {
 	UGCPlanGameInstance* GameInstance = Cast<UGCPlanGameInstance>(GetGameInstance());
 	TArray<FString> Keys = {"settings", "socket"};
 	if (GameInstance && GameInstance->IsIniteds(Keys) && GameInstance->SocketActor->IsConnected()) {
 		Inited = true;
+		// ASettingsActor* SettingsActor = GameInstance->SettingsActor;
+		SettingsActor = GameInstance->SettingsActor;
 
-		ASettingsActor* SettingsActor = GameInstance->SettingsActor;
+		SocketActor = GameInstance->SocketActor;
+		HexActor = GameInstance->GetInstancedStaticMeshActor("HexModule");
 
-		GameInstance->SocketActor->On("login", [this, GameInstance, SettingsActor](FString DataString) {
-			FDataLogin* Data = new FDataLogin();
-			if (!FJsonObjectConverter::JsonObjectStringToUStruct(DataString, Data, 0, 0)) {
-				UE_LOG(LogTemp, Error, TEXT("LandProjectActor.On login json parse error"));
-				// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "LandProjectActor.On login json parse error");
-			} else {
-				if (Data->valid > 0) {
-					FString ProjectUName = SettingsActor->ProjectUName;
-					if (ProjectUName.Len() > 0) {
-						this->GetProject(ProjectUName);
-					}
-				}
-			}
-		});
-
-		GameInstance->SocketActor->On("projectGetByUName", [this](FString DataString) {
-			FDataProject* Data = new FDataProject();
-			if (!FJsonObjectConverter::JsonObjectStringToUStruct(DataString, Data, 0, 0)) {
-				UE_LOG(LogTemp, Error, TEXT("LandProjectActor.On projectGetByUName json parse error"));
-				// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "LandProjectActor.On projectGetByUName json parse error");
-			} else {
-				if (Data->valid > 0) {
-					this->GenerateLands(Data->lands);
-				}
-			}
-		});
-
-		FString LoginEmail = SettingsActor->LoginEmail;
-		FString LoginPassword = SettingsActor->LoginPassword;
-		FString ProjectUName = SettingsActor->ProjectUName;
-		if (LoginEmail.Len() > 0 && LoginPassword.Len() > 0 && ProjectUName.Len() > 0) {
-			TMap<FString, FString> Data = {
-				{ "email", LoginEmail },
-				{ "password", LoginPassword }
-			};
-			GameInstance->SocketActor->Emit("login", Data);
-		}
+		this->InitSocketOn();
+		this->Login();
 	}
 }
 
 void ALandProjectActor::GetProject(FString UName) {
-	UGCPlanGameInstance* GameInstance = Cast<UGCPlanGameInstance>(GetGameInstance());
 	TMap<FString, FString> Data = {
 		{ "uName", UName },
 		{ "getPlotsSupercells", "1" }
 	};
-	GameInstance->SocketActor->Emit("projectGetByUName", Data);
+	SocketActor->Emit("projectGetByUName", Data);
 }
 
 void ALandProjectActor::GenerateLands(TArray<FLand> lands) {
-	UGCPlanGameInstance* GameInstance = Cast<UGCPlanGameInstance>(GetGameInstance());
-	AInstancedStaticMeshActor* Actor = GameInstance->GetInstancedStaticMeshActor("HexModule");
+	HexActor->ClearInstances();
+	// UGCPlanGameInstance* GameInstance = Cast<UGCPlanGameInstance>(GetGameInstance());
+	// AInstancedStaticMeshActor* HexActor = GameInstance->GetInstancedStaticMeshActor("HexModule");
 	// TODO - Unity hex prefab was rotated; reset to 0 rotation as default then remove this.
 	float rotationYOffset = 30.0;
 	// Move up to be above land.
@@ -97,7 +115,37 @@ void ALandProjectActor::GenerateLands(TArray<FLand> lands) {
 			// FVector Translation = FVector(GO.position["x"], GO.position["z"], GO.position["y"]);
 			FRotator Rotation = FRotator(GO.rotation["x"], GO.rotation["y"] + rotationYOffset, GO.rotation["z"]);
 			FVector Scale = FVector(GO.scale["x"], GO.scale["y"], GO.scale["z"]);
-			Actor->CreateInstance(Translation, Rotation, Scale);
+			HexActor->CreateInstance(Translation, Rotation, Scale);
 		}
 	}
+}
+
+// TODO - abstract this to GlobalClass or somewhere else - need to find an Unreal singleton in editor mode (in place of GameInstance).
+void ALandProjectActor::EditorGenerate() {
+	UObject* world = GetWorld();
+
+	TArray<AActor*> OutActors;
+    UGameplayStatics::GetAllActorsOfClass(world, ASettingsActor::StaticClass(), OutActors);
+    for (AActor* a : OutActors) {
+        SettingsActor = Cast<ASettingsActor>(a);
+        break;
+    }
+    UGameplayStatics::GetAllActorsOfClass(world, ASocketActor::StaticClass(), OutActors);
+    for (AActor* a : OutActors) {
+        SocketActor = Cast<ASocketActor>(a);
+        break;
+    }
+    UGameplayStatics::GetAllActorsOfClass(world, AInstancedStaticMeshActor::StaticClass(), OutActors);
+    for (AActor* a : OutActors) {
+        AInstancedStaticMeshActor* Actor = Cast<AInstancedStaticMeshActor>(a);
+        FString Name = Actor->GetName();
+        InstancedStaticMeshActors.Add(Name, Actor);
+    }
+
+    SocketActor->InitSocket();
+
+    HexActor = InstancedStaticMeshActors["HexModule"];
+
+    this->InitSocketOn();
+	this->Login();
 }

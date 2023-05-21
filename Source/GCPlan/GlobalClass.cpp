@@ -1,29 +1,40 @@
-#include "GCPlanGameInstance.h"
+// NOT CURRENTLY USED
+
+#include "GlobalClass.h"
 #include "Kismet/GameplayStatics.h"
 #include "InstancedStaticMeshActor.h"
 #include "SettingsActor.h"
 #include "SocketActor.h"
 
-void UGCPlanGameInstance::Init() {
-    Super::Init();
+GlobalClass::GlobalClass()
+{
 }
 
-void UGCPlanGameInstance::Shutdown() {
-    SocketActor->Destroy();
-    Super::Shutdown();
+GlobalClass::~GlobalClass()
+{
 }
 
-void UGCPlanGameInstance::InitActor(FString name) {
+// AInstancedStaticMeshActor* Actor GetInstancedStaticMeshActor(FString name) {
+// 	UGCPlanGameInstance* GameInstance = Cast<UGCPlanGameInstance>(GetGameInstance());
+// 	if (GameInstance) {
+// 		return GameInstance->GetInstancedStaticMeshActor(name);
+// 	}
+// 	return TODO
+// }
+
+void GlobalClass::InitActor(FString name, UObject* world) {
     TArray<AActor*> OutActors;
     if (name == "settings") {
-        UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASettingsActor::StaticClass(), OutActors);
+        TArray<ASettingsActor*> MyActors;
+        UGameplayStatics::GetAllActorsOfClass(world, ASettingsActor::StaticClass(), OutActors);
         for (AActor* a : OutActors) {
             SettingsActor = Cast<ASettingsActor>(a);
             break;
         }
         Initeds.Add("settings", true);
     } else if (name == "socket") {
-        UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASocketActor::StaticClass(), OutActors);
+        TArray<ASocketActor*> MyActors;
+        UGameplayStatics::GetAllActorsOfClass(world, ASocketActor::StaticClass(), OutActors);
         for (AActor* a : OutActors) {
             SocketActor = Cast<ASocketActor>(a);
             break;
@@ -32,7 +43,7 @@ void UGCPlanGameInstance::InitActor(FString name) {
     }
     // Init others too that should not need specific async timing.
     if (!Initeds.Contains("other")) {
-        UGameplayStatics::GetAllActorsOfClass(GetWorld(), AInstancedStaticMeshActor::StaticClass(), OutActors);
+        UGameplayStatics::GetAllActorsOfClass(world, AInstancedStaticMeshActor::StaticClass(), OutActors);
         for (AActor* a : OutActors) {
             AInstancedStaticMeshActor* Actor = Cast<AInstancedStaticMeshActor>(a);
             FString Name = Actor->GetName();
@@ -42,7 +53,7 @@ void UGCPlanGameInstance::InitActor(FString name) {
     }
 }
 
-bool UGCPlanGameInstance::IsIniteds(TArray<FString> Keys) {
+bool GlobalClass::IsIniteds(TArray<FString> Keys) {
     for (int ii = 0; ii < Keys.Num(); ii++) {
         if (!Initeds.Contains(Keys[ii]) || !Initeds[Keys[ii]]) {
             return false;
@@ -51,7 +62,7 @@ bool UGCPlanGameInstance::IsIniteds(TArray<FString> Keys) {
     return true;
 }
 
-AInstancedStaticMeshActor* UGCPlanGameInstance::GetInstancedStaticMeshActor(FString Name) {
+AInstancedStaticMeshActor* GlobalClass::GetInstancedStaticMeshActor(FString Name) {
     if (InstancedStaticMeshActors.Contains(Name)) {
         return InstancedStaticMeshActors[Name];
     }

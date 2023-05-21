@@ -5,6 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 // #include "GCPlanGameInstance.h"
+
+#include "InstancedStaticMeshActor.h"
+#include "SettingsActor.h"
+#include "SocketActor.h"
+
 #include "LandProjectActor.generated.h"
 
 UCLASS()
@@ -27,11 +32,20 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(CallInEditor)
+	void EditorGenerate();
+	void Init();
+	void InitSocketOn();
+	void Login();
+
 private:
 	bool Inited = false;
 	// UGCPlanGameInstance* GameInstance;
 
-	void Init();
+	TMap<FString, AInstancedStaticMeshActor*> InstancedStaticMeshActors;
+	ASettingsActor* SettingsActor;
+	ASocketActor* SocketActor;
+	AInstancedStaticMeshActor* HexActor;
 };
 
 USTRUCT()

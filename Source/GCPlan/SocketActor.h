@@ -22,6 +22,8 @@ public:
 	void Emit(FString, TMap<FString, FString>);
 	void On(FString, std::function<void(FString)>);
 	void Off(FString);
+	void InitSocket();
+	void Destroy();
 
 protected:
 	virtual void BeginPlay() override;
@@ -34,7 +36,6 @@ protected:
 	FString RawMessageJoiner = "";
 
 	void Init();
-	void InitSocket();
 	void HandleMessage(FString);
 	TMap<FString, FString> GetAuth();
 

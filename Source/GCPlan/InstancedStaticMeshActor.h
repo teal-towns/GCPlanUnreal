@@ -16,6 +16,9 @@ public:
 	// void SetMesh(FString);
 	FString GetName();
 
+	UFUNCTION(CallInEditor)
+	void ClearInstances();
+
 protected:
 	virtual void BeginPlay() override;
 
