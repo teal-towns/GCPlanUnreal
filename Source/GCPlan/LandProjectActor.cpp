@@ -3,6 +3,7 @@
 #include "InstancedStaticMeshActor.h"
 #include "Engine/World.h"
 #include "GCPlanGameInstance.h"
+#include "Plots/PlotFillVoronoi.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "InstancedStaticMeshActor.h"
@@ -146,6 +147,12 @@ void ALandProjectActor::EditorGenerate() {
 
     HexActor = InstancedStaticMeshActors["HexModule"];
 
-    this->InitSocketOn();
-	this->Login();
+	// this->InitSocketOn();
+	// this->Login();
+	TMap<FString, FPlot> Plots = {
+		// { "plot1", { "id1", "plot1", FVector(0,0,0), { FVector(269.0, -767, 82), FVector(159, -85, 152), FVector(962, -85, 153), FVector(962, -586, 70) } } },
+		// { "plot2", { "id2", "plot2", FVector(0,0,0), { FVector(200.0, -700, 100), FVector(150, -500, 100), FVector(300, -500, 100), FVector(350, -500, 100) } } },
+		{ "plot3", { "id3", "plot3", FVector(0,0,0), { FVector(200.0, -700, 100), FVector(150, -600, 100), FVector(225, -600, 100), FVector(250, -700, 100) } } },
+	};
+	auto [spacesVertices, posCenter, boundsRect] = PlotFillVoronoi::Fill(Plots, 50.0f);
 }

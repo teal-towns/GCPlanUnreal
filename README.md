@@ -19,6 +19,10 @@
 	- https://forums.unrealengine.com/t/tga-vs-png-for-textures/24211/22
 	- TGA is common and good, but much larger file size; can convert to PNG or JPG, e.g. https://products.aspose.app/imaging/image-resize
 
+### Include Third Party Code
+- https://georgy.dev/posts/third-party-integration/
+	- Have to update `GCPlan.Build.cs` with both `PublicAdditionalLibraries` and `PublicIncludePaths`
+
 ## Coding
 
 - Styleguide / Coding Conventions: https://docs.unrealengine.com/4.26/en-US/ProductionPipelines/DevelopmentSetup/CodingStandard/
