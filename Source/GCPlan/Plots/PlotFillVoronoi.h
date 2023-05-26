@@ -1,31 +1,6 @@
 #pragma once
 
-// USTRUCT()
-// struct FPlot {
-// 	GENERATED_BODY()
-
-// 	UPROPERTY()
-// 	FString _id;
-// 	UPROPERTY()
-//     FString uName;
-//     UPROPERTY()
-// 	TMap<FString, float> posCenter;
-// 	// TODO - need another struct? Can not do TMap inside TArray??
-// 	// UPROPERTY()
-//     // TArray<TMap<FString, float>> vertices;
-//     TArray<FVector> vertices;
-// };
-
-struct FPlot {
-	FString _id;
-    FString uName;
-	// TMap<FString, float> posCenter;
-	// TODO - need another struct? Can not do TMap inside TArray??
-	// UPROPERTY()
-    // TArray<TMap<FString, float>> vertices;
-    FVector posCenter;
-    TArray<FVector> vertices;
-};
+#include "../BuildingStructsActor.h"
 
 class PlotFillVoronoi {
 public:

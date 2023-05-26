@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 // #include "GCPlanGameInstance.h"
 
+#include "BuildingStructsActor.h"
 #include "InstancedStaticMeshActor.h"
 #include "SettingsActor.h"
 #include "SocketActor.h"
@@ -67,70 +68,33 @@ struct FDataLogin {
 	// FDataLogin(int valid = 0, FString msg = "",  TMap<FString, FString> Auth = {}) {}
 };
 
-USTRUCT()
-struct FLandGameObject {
-	GENERATED_BODY()
-
-	UPROPERTY()
-	FString clone_name;
-	UPROPERTY()
-	TMap<FString, float> position;
-	UPROPERTY()
-	TMap<FString, float> rotation;
-	UPROPERTY()
-	TMap<FString, float> scale;
-	UPROPERTY()
-	TArray<FString> child_renames;
-	UPROPERTY()
-	FString jsonDataString = "";
-};
-
-USTRUCT()
-struct FLand {
-	GENERATED_BODY()
-
-	UPROPERTY()
-	TMap<FString, FLandGameObject> game_objects;
-	UPROPERTY()
-    FString land_id = "";
-};
-
+// TODO - figure out how to declar these ONCE (as either struct or USTRUCT in Building/BuildingStructs - get compile error now..)
 // USTRUCT()
-// struct FPlot {
+// struct FULandGameObject {
 // 	GENERATED_BODY()
 
 // 	UPROPERTY()
-// 	FString _id;
+// 	FString clone_name;
 // 	UPROPERTY()
-//     FString uName;
-//     UPROPERTY()
-// 	TMap<FString, float> posCenter;
-// 	// TODO - need another struct? Can not do TMap inside TArray??
-// 	// UPROPERTY()
-//     // TArray<TMap<FString, float>> vertices;
-//     TArray<FVector> vertices;
+// 	TMap<FString, float> position;
+// 	UPROPERTY()
+// 	TMap<FString, float> rotation;
+// 	UPROPERTY()
+// 	TMap<FString, float> scale;
+// 	UPROPERTY()
+// 	TArray<FString> child_renames;
+// 	UPROPERTY()
+// 	FString jsonDataString = "";
 // };
 
-// TODO
 // USTRUCT()
-// struct FSupercell {
+// struct FULand {
 // 	GENERATED_BODY()
 
 // 	UPROPERTY()
-// 	public string _id;
-// 	public string uName;
-// 	public Dictionary<string, float> posCenterGround;
-// 	public List<Dictionary<string, float>> vertices;
-// 	public int minFloors;
-// 	public int maxFloors;
-// 	public int minFloorsSecondary;
-// 	public int maxFloorsSecondary;
-// 	public int ringWidthHexes;
-// 	public float hexDiameter;
-// 	public float floorHeight;
-// 	public string category;
-// 	public SuperCellStatsClass stats;
-// 	public string land_id;
+// 	TMap<FString, FULandGameObject> game_objects;
+// 	UPROPERTY()
+//     FString land_id = "";
 // };
 
 USTRUCT()
