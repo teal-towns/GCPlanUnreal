@@ -1,7 +1,6 @@
 #include "PlotFillVoronoi.h"
 
 #include "math.h"
-#include <random>
 #include "Math/Vector.h"
 // #include "VectorTypes.h"
 #include "Math/Vector2D.h"
@@ -17,6 +16,8 @@ THIRD_PARTY_INCLUDES_START
 THIRD_PARTY_INCLUDES_END
 #pragma pop_macro("check")  // restore definition
 
+#include "../BuildingStructsActor.h"
+#include "../Common/Lodash.h"
 #include "../Common/MathPolygon.h"
 // TODO - figure out how to include a file with just structs
 // #include "PlotStructs.h"
@@ -32,7 +33,7 @@ std::tuple<TArray<TArray<FVector>>, FVector, TArray<FVector2D>> PlotFillVoronoi:
 	// Cache plot vertices in 2D format for in polygon checking later.
 	TArray<TArray<FVector2D>> plotsVertices2D = {};
 	// Index will match plot.
-	TArray<float> yVals = {};
+	TArray<float> zVals = {};
 
 	// Convert bounds to min and max rectangle.
 	FVector2D min = FVector2D(0,0);
@@ -58,7 +59,7 @@ std::tuple<TArray<TArray<FVector>>, FVector, TArray<FVector2D>> PlotFillVoronoi:
 		}
 		plotsVertices2D.Add(vertices2D);
 		// Just pick one - could get center to be more accurate?
-		yVals.Add(plot.vertices[0].Y);
+		zVals.Add(plot.vertices[0].Z);
 	}
 	TArray<FVector2D> boundsRect = { min, max };
 
@@ -110,8 +111,8 @@ std::tuple<TArray<TArray<FVector>>, FVector, TArray<FVector2D>> PlotFillVoronoi:
 				if (valid1) {
 					TArray<FVector> verticesTemp = {};
 					for (int vt = 0; vt < newRegionVertices2D.Num(); vt++) {
-						verticesTemp.Add(FVector(newRegionVertices2D[vt].X, yVals[pp],
-							newRegionVertices2D[vt].Y));
+						verticesTemp.Add(FVector(newRegionVertices2D[vt].X,
+							newRegionVertices2D[vt].Y, zVals[pp]));
 					}
 					spacesVertices.Add(verticesTemp);
 					break;
@@ -120,12 +121,12 @@ std::tuple<TArray<TArray<FVector>>, FVector, TArray<FVector2D>> PlotFillVoronoi:
 		}
 	}
 	// UE_LOG(LogTemp, Display, TEXT("PFV spacesVertices %d"), spacesVertices.Num());
-	for (int ii = 0; ii < spacesVertices.Num(); ii++) {
-		// UE_LOG(LogTemp, Display, TEXT("PFV spacesVertices ii %d"), ii);
-		for (int jj = 0; jj < spacesVertices[ii].Num(); jj++) {
-			// UE_LOG(LogTemp, Display, TEXT("jj %d vertex %s"), jj, *spacesVertices[ii][jj].ToString());
-		}
-	}
+	// for (int ii = 0; ii < spacesVertices.Num(); ii++) {
+	// 	UE_LOG(LogTemp, Display, TEXT("PFV spacesVertices ii %d"), ii);
+	// 	for (int jj = 0; jj < spacesVertices[ii].Num(); jj++) {
+	// 		UE_LOG(LogTemp, Display, TEXT("jj %d vertex %s"), jj, *spacesVertices[ii][jj].ToString());
+	// 	}
+	// }
 
 	return {spacesVertices, posCenter, boundsRect};
 }
@@ -141,7 +142,6 @@ TArray<FVector2D> PlotFillVoronoi::SpawnPoints(TArray<FVector2D> boundsRect, flo
 	float offsetX, offsetY;
 	TArray<FVector2D> points = {};
 	int counterY = 0;
-	srand((unsigned) time(0));
 	while (curY < boundsRect[1].Y + averageDistance) {
 		curX = boundsRect[0].X;
 		// For hexagon grid, every other one starts at the boundary (offset by half).
@@ -149,8 +149,8 @@ TArray<FVector2D> PlotFillVoronoi::SpawnPoints(TArray<FVector2D> boundsRect, flo
 			curX -= averageDistance * 0.5f;
 		}
 		while (curX < boundsRect[1].X + averageDistance) {
-			offsetX = (-1 * offsetMax) + (float)(rand() / (float)(RAND_MAX / (-1 * offsetMax + offsetMax - -1 * offsetMax)));
-			offsetY = (-1 * offsetMax) + (float)(rand() / (float)(RAND_MAX / (-1 * offsetMax + offsetMax - -1 * offsetMax)));
+			offsetX = Lodash::RandomRangeFloat(-1 * offsetMax, offsetMax);
+			offsetY = Lodash::RandomRangeFloat(-1 * offsetMax, offsetMax);
 			points.Add(FVector2D(curX + offsetX, curY + offsetY));
 			curX += averageDistance;
 		}

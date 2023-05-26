@@ -4,11 +4,17 @@
 #include "Engine/World.h"
 #include "GCPlanGameInstance.h"
 #include "Plots/PlotFillVoronoi.h"
-
 #include "Kismet/GameplayStatics.h"
+
+#include "BuildingStructsActor.h"
 #include "InstancedStaticMeshActor.h"
 #include "SettingsActor.h"
 #include "SocketActor.h"
+
+#include "Building/BuildingRing.h"
+#include "Building/BuildingFlowerHomes.h"
+#include "Common/MathPolygon.h"
+#include "Landscape/HeightMap.h"
 
 #include "GlobalClass.h"
 
@@ -103,19 +109,27 @@ void ALandProjectActor::GenerateLands(TArray<FLand> lands) {
 	// UGCPlanGameInstance* GameInstance = Cast<UGCPlanGameInstance>(GetGameInstance());
 	// AInstancedStaticMeshActor* HexActor = GameInstance->GetInstancedStaticMeshActor("HexModule");
 	// TODO - Unity hex prefab was rotated; reset to 0 rotation as default then remove this.
-	float rotationYOffset = 30.0;
+	bool YIsUp = false;
+	float rotationYOffset = 0.0;
+	if (YIsUp) {
+		rotationYOffset = 30.0;
+	}
 	// Move up to be above land.
-	float zOffset = 25000.0;
+	float zOffset = 2500.0;
 	for (int ii = 0; ii < lands.Num(); ii++) {
-		UE_LOG(LogTemp, Display, TEXT("land_id %s"), *lands[ii].land_id);
+		UE_LOG(LogTemp, Display, TEXT("land_id %s num GO %d"), *lands[ii].land_id, lands[ii].game_objects.Num());
 		for (auto& Elem : lands[ii].game_objects) {
 			FLandGameObject GO = Elem.Value;
-			// Stored in Unity style so swap z and y and convert from meters to centimeters.
-			FVector Translation = FVector(GO.position["x"] * 100.0, GO.position["z"] * 100.0, GO.position["y"] * 100.0 + zOffset);
+			FVector Translation = FVector(GO.position["x"] * 100.0, GO.position["y"] * 100.0, GO.position["z"] * 100.0 + zOffset);
+			if (YIsUp) {
+				// Stored in Unity style so swap z and y and convert from meters to centimeters.
+				Translation = FVector(GO.position["x"] * 100.0, GO.position["z"] * 100.0, GO.position["y"] * 100.0 + zOffset);
+			}
 			// FVector Translation = FVector(GO.position["x"] * 10.0, GO.position["z"] * 10.0, GO.position["y"] * 10.0);
 			// FVector Translation = FVector(GO.position["x"], GO.position["z"], GO.position["y"]);
 			FRotator Rotation = FRotator(GO.rotation["x"], GO.rotation["y"] + rotationYOffset, GO.rotation["z"]);
 			FVector Scale = FVector(GO.scale["x"], GO.scale["y"], GO.scale["z"]);
+			// UE_LOG(LogTemp, Display, TEXT("GO %f %s %s"), GO.position["z"], *Translation.ToString(), *Rotation.ToString());
 			HexActor->CreateInstance(Translation, Rotation, Scale);
 		}
 	}
@@ -149,10 +163,43 @@ void ALandProjectActor::EditorGenerate() {
 
 	// this->InitSocketOn();
 	// this->Login();
+
+    FVector posCurrentGround = FVector(200,-650,0);
+    // float z = 200;
+    float z = HeightMap::GetTerrainHeightAtPoint(posCurrentGround);
+    z = 200;
+    // posCurrentGround.Z = z;
 	TMap<FString, FPlot> Plots = {
 		// { "plot1", { "id1", "plot1", FVector(0,0,0), { FVector(269.0, -767, 82), FVector(159, -85, 152), FVector(962, -85, 153), FVector(962, -586, 70) } } },
 		// { "plot2", { "id2", "plot2", FVector(0,0,0), { FVector(200.0, -700, 100), FVector(150, -500, 100), FVector(300, -500, 100), FVector(350, -500, 100) } } },
-		{ "plot3", { "id3", "plot3", FVector(0,0,0), { FVector(200.0, -700, 100), FVector(150, -600, 100), FVector(225, -600, 100), FVector(250, -700, 100) } } },
+		{ "plot3", { "id3", "plot3", FVector(200,-650,z), { FVector(200.0, -800, z), FVector(50, -600, z), FVector(225, -500, z), FVector(350, -700, z) } } },
+		// { "plot4", { "id4", "plot4", FVector(200,-650,z), { FVector(200.0, -1000, z), FVector(0, -600, z), FVector(225, -400, z), FVector(500, -700, z) } } },
 	};
-	auto [spacesVertices, posCenter, boundsRect] = PlotFillVoronoi::Fill(Plots, 50.0f);
+	float plotSize = 100;
+	// plotSize = 150;
+	auto [spacesVertices, posCenter, boundsRect] = PlotFillVoronoi::Fill(Plots, plotSize);
+	UE_LOG(LogTemp, Display, TEXT("LPA spacesVertices.Num %d"), spacesVertices.Num());
+	float verticesBuffer = -25;
+
+
+	TArray<int> heightFloorsOrder = { 2, 10, 4, 7 };
+
+	FString pattern = "ring";
+	// pattern = "flowerHomes";
+	TArray<FLand> lands = {};
+	FBuildingBlueprint blueprint;
+	for (int ii = 0; ii < spacesVertices.Num(); ii++) {
+		if (verticesBuffer != 0) {
+			FVector posCenterGround = MathPolygon::GetPolygonCenter(spacesVertices[ii]);
+			spacesVertices[ii] = MathPolygon::BufferVertices(spacesVertices[ii], posCenterGround, verticesBuffer, true);
+		}
+		if (pattern == "flowerHomes") {
+			auto [blueprint1, homePlotPaths] = BuildingFlowerHomes::Create(spacesVertices[ii], 0.15, 2000, "outer");
+			blueprint = blueprint1;
+		} else {
+			blueprint = BuildingRing::Create(spacesVertices[ii], heightFloorsOrder);
+		}
+		lands.Add(blueprint.land);
+	}
+	this->GenerateLands(lands);
 }

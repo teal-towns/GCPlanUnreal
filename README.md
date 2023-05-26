@@ -25,6 +25,16 @@
 
 ## Coding
 
+- C++ has no reflection so can not do:
+	- nested arrays without a struct in-between..
+		- https://forums.unrealengine.com/t/tarray-of-tarray-support-request/357202
+	- JSON (de)serialization without Unreal `FJsonObjectConverter` which requires UStruct
+		- e.g. a simple json stringify in other languages is not possible in C++..
+	- named / optional function arguments in any order.. Instead need to pass ALL arguments in order, meaning if we want to pass the 5th named argument but want to leave the 3rd and 4th as default, we can not; we have to set 3rd and 4th also..
+- UStruct requires an empty constructor or will give compile errors
+	- https://forums.unrealengine.com/t/how-to-write-constructor-for-custom-struct/341749
+
+
 - Styleguide / Coding Conventions: https://docs.unrealengine.com/4.26/en-US/ProductionPipelines/DevelopmentSetup/CodingStandard/
 
 - The Unreal C++ documentation seems to just be (auto-generated?) lists of SOME of the source code (I was not able to find all methods and the Search on their site returned 0 results) with no / few code examples, so I found it pretty useless. Instead I opened the engine source code in a code editor (VSCode, Sublime) at your Unreal Editor install location (e.g. `~/Unreal/UE_5.1/Engine/Source`) and searched it to try to find methods and variables for functions.
