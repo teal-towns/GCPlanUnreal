@@ -14,7 +14,7 @@ public class GCPlan : ModuleRules
 		PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "..", "ThirdParty", "cppdelaunay", "libcppdelaunay.a"));
 		PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "..", "ThirdParty", "cppdelaunay"));
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "WebSockets", "Json", "JsonUtilities" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "WebSockets", "Json", "JsonUtilities", "Landscape", "LandscapeEditor", "Foliage" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

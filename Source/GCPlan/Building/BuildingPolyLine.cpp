@@ -284,10 +284,10 @@ std::tuple<FBuildingBlueprint, FBuildData> BuildingPolyLine::PlaceAdjacentSpots(
 	FBuildingBlueprint blueprint, FBuildData buildData,
 	int floors, FVector posGround, float floorHeight, FVector direction, float unitDiameter,
 	FVector directionValid, float degreesStep, float placeMultipleRangeDegrees,
-	bool firstTime, bool placeOnSides, int maxFloors) {
+	bool placeOnSides, int maxFloors, bool firstTime) {
 	float placeMultipleRangeDegreesNext = 0;
 	// Place this column.
-	FVector2D coord = FVector2D(posGround.X, posGround.Z);
+	FVector2D coord = FVector2D(posGround.X, posGround.Y);
 	bool alreadyFilled = IsFilledCoord(buildData.filledCoords, coord);
 	int roofsCountStart = blueprint.stats.roofUnitCount;
 	if (!alreadyFilled) {
@@ -333,7 +333,7 @@ std::tuple<FBuildingBlueprint, FBuildData> BuildingPolyLine::PlaceAdjacentSpots(
 			directionValidNew = posGroundNew - posGround;
 			auto [blueprint1, buildData1] = PlaceAdjacentSpots((widthCount - 1), blueprint, buildData,
 				floors, posGroundNew, floorHeight, directionNew, unitDiameter, directionValidNew,
-				degreesStep, placeMultipleRangeDegreesNext, false, placeOnSides, maxFloors);
+				degreesStep, placeMultipleRangeDegreesNext, placeOnSides, maxFloors, false);
 			blueprint = blueprint1;
 			buildData = buildData1;
 		}
@@ -383,11 +383,12 @@ std::tuple<FBuildingBlueprint, FBuildData> BuildingPolyLine::BuildPositionsSingl
 	FVector scale = FVector(1.15f, 1, 1.15f);
 	FRotator rot = FRotator(0, 0, 0);
 	// LandPrefabClass prefab;
-	// TODO - add this back in once figure out how to access a property / singleton from a static function.
+	HeightMap* heightMap = HeightMap::GetInstance();
+	float terrainZ = heightMap->GetTerrainHeightAtPoint(posCurrentGround);
 	// https://forums.unrealengine.com/t/how-to-get-terrain-height-at-x-and-y-coordinates-in-c/447803
 	// float terrainZ = HeightMap::GetTerrainHeightAtPoint(posCurrentGround);
 	// float terrainZ = _cmtGetTerrain.GetTerrainYAtPoint(posCurrentGround);
-	float terrainZ = 200;
+	// float terrainZ = 200;
 	float posZ = posCurrentGround.Z;
 	TArray<FString> emptyTArray = {};
 
@@ -396,6 +397,7 @@ std::tuple<FBuildingBlueprint, FBuildData> BuildingPolyLine::BuildPositionsSingl
 	TArray<FVector> roofVertices = {};
 	int index;
 	FVector scaleTemp, posTemp;
+	int unitsCreatedStart = buildData.unitsCreated;
 
 	// Check for extra lower floors first.
 	while (posZ > terrainZ) {
@@ -463,7 +465,9 @@ std::tuple<FBuildingBlueprint, FBuildData> BuildingPolyLine::BuildPositionsSingl
 
 		posZ += floorHeight;
 	}
-	blueprint.stats.roofUnitCount += 1;
+	if (buildData.unitsCreated > unitsCreatedStart) {
+		blueprint.stats.roofUnitCount += 1;
+	}
 
 	return {blueprint, buildData};
 }

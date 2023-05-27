@@ -46,9 +46,10 @@ FBuildingBlueprint BuildingRing::CreateOneRing(int unitCount,
 	}
 	blueprint.land.land_id = "Ring_" + uName;
 
-	bool isValid = IsValid(pathVertices, minRadiusSkip, minVerticesSkip);
+	auto [isValid, reason] = IsValid(pathVertices, minRadiusSkip, minVerticesSkip);
 	if (!isValid) {
-		UE_LOG(LogTemp, Warning, TEXT("BuildingRing.CreateOneRing not valid, skipping"));
+		UE_LOG(LogTemp, Warning, TEXT("BuildingRing.CreateOneRing not valid, skipping %s reason: %s"),
+			*blueprint.land.land_id, *reason);
 		return blueprint;
 	}
 
@@ -92,17 +93,20 @@ std::tuple<int, float> BuildingRing::GetMaxRingsByAreaOuter(float radius, float 
     return {maxRings, radiusOpen};
 }
 
-bool BuildingRing::IsValid(TArray<FVector> pathVertices, float minRadiusSkip,
+std::tuple<bool, FString> BuildingRing::IsValid(TArray<FVector> pathVertices, float minRadiusSkip,
 	int minVerticesSkip) {
+	FString reason = "";
 	FVector posCenterGround = MathPolygon::GetPolygonCenter(pathVertices);
 	if (pathVertices.Num() < minVerticesSkip) {
 		// print ("too few vertices, skipping " + pathVertices.Num() + " " + minVerticesSkip + " " + posCenterGround);
-		return false;
+		reason = FString::Printf(TEXT("minVertices: have %d, need %d"), pathVertices.Num(), minRadiusSkip);
+		return {false, reason};
 	}
 	auto [radius, radiusMin] = MathPolygon::GetAverageRadius(pathVertices, posCenterGround);
 	if (minRadiusSkip > 0 && radiusMin < minRadiusSkip) {
 		// print ("radius too small skipping " + radiusMin + " " + minRadiusSkip + " " + posCenterGround);
-		return false;
+		reason = FString::Printf(TEXT("minRadius: %f is below %f"), radiusMin, minRadiusSkip);
+		return {false, reason};
 	}
-	return true;
+	return {true, reason};
 }

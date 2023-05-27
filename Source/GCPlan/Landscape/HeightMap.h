@@ -1,17 +1,39 @@
 #pragma once
 
+#include <mutex>
+#include "LandscapeComponent.h"
+
 class HeightMap {
-	bool seeded = false;
-	// std::vector<unsigned char> image;
-	// unsigned width, height;
+
+// https://refactoring.guru/design-patterns/singleton/cpp/example#example-1
+private:
+	static HeightMap *pinstance_;
+	static std::mutex mutex_;
+
+	static std::vector<unsigned char> image_;
+	static int width_;
+	static int height_;
+
+	static UWorld* _world;
 
 public:
 	HeightMap();
 	~HeightMap();
 
-	static float GetTerrainHeightAtPoint(FVector point, float minMeters = -1000, float maxMeters = 9000, int bits = 16);
+	// Singletons should not be cloneable or assignable.
+	HeightMap(HeightMap &other) = delete;
+	void operator=(const HeightMap &) = delete;
+
+	static HeightMap *GetInstance();
+
+	void SetWorld(UWorld*);
+	float GetZFromWorld(FVector Point, float MaxZ = 9000, float MinZ = -1000);
+
+	float GetTerrainHeightAtPoint(FVector point, float minMeters = -1000, float maxMeters = 9000, int bits = 16);
 	static std::tuple<int, int> GetPixelFromXY(int pointX, int pointY, int imageWidth, int imageHeight, float metersPerPixel);
 	static std::tuple<std::vector<unsigned char>, int, int> GetImage();
 	// static std::tuple<FColor*, int, int> GetImageTexture();
 	// static std::tuple<unsigned char*, int, int> GetImage();	// static std::tuple<float, float> GetZScale(float minMeters = -1000, float maxMeters = 9000);
+
+	void SetHeightMap(ALandscape*);
 };

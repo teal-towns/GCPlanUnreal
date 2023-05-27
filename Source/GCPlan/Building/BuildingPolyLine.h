@@ -26,7 +26,7 @@ public:
 		FBuildingBlueprint blueprint, FBuildData buildData,
 		int floors, FVector posGround, float floorHeight, FVector direction, float unitDiameter,
 		FVector directionValid, float degreesStep, float placeMultipleRangeDegrees = 0,
-		bool firstTime = true, bool placeOnSides = false, int maxFloors = -1);
+		bool placeOnSides = false, int maxFloors = -1, bool firstTime = true);
 	static TArray<FVector> FindAdjacentSpots(FVector pos, FVector direction, float unitDiameter,
 		FVector directionValid, float degreesStep, float placeMultipleRangeDegrees = 0,
 		bool placeOnSides = false, float scaleMagnitude = -1);
