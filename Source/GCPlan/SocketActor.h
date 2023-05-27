@@ -59,21 +59,3 @@ struct FSocketData {
 
 	// FSocketData(FString Route = "", TMap<FString, FString> Data = {}, TMap<FString, FString> Auth = {}) {}
 };
-
-USTRUCT()
-struct FPlayerA
-{
-  GENERATED_BODY()
-
-  UPROPERTY()
-  FString Name;
-
-  UPROPERTY()
-  int32 Level;
-
-  UPROPERTY()
-  TArray<FString> Friends;
-
-  UPROPERTY(Transient)
-  FString PropertyToIgnore;
-};

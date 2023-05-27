@@ -7,7 +7,7 @@ public:
 	BuildingRing();
 	~BuildingRing();
 
-	static bool IsValid(TArray<FVector> pathVertices, float minRadiusSkip = 20,
+	static std::tuple<bool, FString> IsValid(TArray<FVector> pathVertices, float minRadiusSkip = 20,
 		int minVerticesSkip = 5);
 	static FBuildingBlueprint Create(TArray<FVector> pathVertices, TArray<int> heightFloorsOrder,
 	    int residentCount = 1000, int minRingWidthUnits = 1, int maxRingWidthUnits = 5,

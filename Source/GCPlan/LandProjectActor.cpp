@@ -15,6 +15,7 @@
 #include "Building/BuildingFlowerHomes.h"
 #include "Common/MathPolygon.h"
 #include "Landscape/HeightMap.h"
+#include "LandscapeComponent.h"
 
 #include "GlobalClass.h"
 
@@ -115,7 +116,7 @@ void ALandProjectActor::GenerateLands(TArray<FLand> lands) {
 		rotationYOffset = 30.0;
 	}
 	// Move up to be above land.
-	float zOffset = 2500.0;
+	float zOffset = 0;
 	for (int ii = 0; ii < lands.Num(); ii++) {
 		UE_LOG(LogTemp, Display, TEXT("land_id %s num GO %d"), *lands[ii].land_id, lands[ii].game_objects.Num());
 		for (auto& Elem : lands[ii].game_objects) {
@@ -137,7 +138,7 @@ void ALandProjectActor::GenerateLands(TArray<FLand> lands) {
 
 // TODO - abstract this to GlobalClass or somewhere else - need to find an Unreal singleton in editor mode (in place of GameInstance).
 void ALandProjectActor::EditorGenerate() {
-	UObject* world = GetWorld();
+	UWorld* world = GetWorld();
 
 	TArray<AActor*> OutActors;
     UGameplayStatics::GetAllActorsOfClass(world, ASettingsActor::StaticClass(), OutActors);
@@ -164,10 +165,59 @@ void ALandProjectActor::EditorGenerate() {
 	// this->InitSocketOn();
 	// this->Login();
 
+    HeightMap* heightMap = HeightMap::GetInstance();
+
+ //    // https://forums.unrealengine.com/t/making-heightmaps-with-c/270928
+ //    // https://forums.unrealengine.com/t/access-to-landscape-in-c/397363/2
+ //    ALandscape* Landscape;
+	// UGameplayStatics::GetAllActorsOfClass(world, ALandscape::StaticClass(), OutActors);
+ //    for (AActor* a : OutActors) {
+ //        Landscape = Cast<ALandscape>(a);
+ //        UE_LOG(LogTemp, Display, TEXT("LPA yes Landscape"));
+ //        break;
+ //    }
+ //    heightMap->SetHeightMap(Landscape);
+
+    if (true) {
     FVector posCurrentGround = FVector(200,-650,0);
+
+ //    FVector StartLocation{ posCurrentGround.X, posCurrentGround.Y, 9000 * 100 };
+	// FVector EndLocation{ posCurrentGround.X, posCurrentGround.Y, -1000 * 100 };
+	// FHitResult HitResult;
+	// world->LineTraceSingleByObjectType(
+	// 	OUT HitResult,
+	// 	StartLocation,
+	// 	EndLocation,
+	// 	FCollisionObjectQueryParams(ECollisionChannel::ECC_WorldStatic),
+	// 	FCollisionQueryParams()
+	// );
+	// UE_LOG(LogTemp, Display, TEXT("GetZFromWorld1 %s"), *posCurrentGround.ToString());
+
+	// FColor LineColor;
+	// if (HitResult.GetActor()) LineColor = FColor::Red;
+	// else LineColor = FColor::Green;
+	// DrawDebugLine(
+	// 	world,
+	// 	StartLocation,
+	// 	EndLocation,
+	// 	LineColor,
+	// 	true,
+	// 	5.f,
+	// 	0.f,
+	// 	10.f
+	// );
+
+	// if (HitResult.GetActor()) {
+	// 	float z1 = HitResult.ImpactPoint.Z;
+	// 	UE_LOG(LogTemp, Display, TEXT("z1 %f"), z1);
+	// }
+
     // float z = 200;
-    float z = HeightMap::GetTerrainHeightAtPoint(posCurrentGround);
-    z = 200;
+    // float z = HeightMap::GetTerrainHeightAtPoint(posCurrentGround);
+    heightMap->SetWorld(GetWorld());
+    // float z = HeightMap::GetInstance()->GetTerrainHeightAtPoint(posCurrentGround);
+    float z = heightMap->GetTerrainHeightAtPoint(posCurrentGround);
+    // z = 200;
     // posCurrentGround.Z = z;
 	TMap<FString, FPlot> Plots = {
 		// { "plot1", { "id1", "plot1", FVector(0,0,0), { FVector(269.0, -767, 82), FVector(159, -85, 152), FVector(962, -85, 153), FVector(962, -586, 70) } } },
@@ -191,6 +241,11 @@ void ALandProjectActor::EditorGenerate() {
 	for (int ii = 0; ii < spacesVertices.Num(); ii++) {
 		if (verticesBuffer != 0) {
 			FVector posCenterGround = MathPolygon::GetPolygonCenter(spacesVertices[ii]);
+			// Update z for all points.
+			posCenterGround.Z = heightMap->GetTerrainHeightAtPoint(posCenterGround);
+			for (int jj = 0; jj < spacesVertices[ii].Num(); jj++) {
+				spacesVertices[ii][jj].Z = posCenterGround.Z;
+			}
 			spacesVertices[ii] = MathPolygon::BufferVertices(spacesVertices[ii], posCenterGround, verticesBuffer, true);
 		}
 		if (pattern == "flowerHomes") {
@@ -202,4 +257,5 @@ void ALandProjectActor::EditorGenerate() {
 		lands.Add(blueprint.land);
 	}
 	this->GenerateLands(lands);
+	}
 }

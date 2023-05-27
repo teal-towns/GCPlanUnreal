@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Landscape.h"
 // #include "GCPlanGameInstance.h"
 
 #include "BuildingStructsActor.h"
