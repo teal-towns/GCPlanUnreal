@@ -1,6 +1,7 @@
 #include "Lodash.h"
 
 #include <random>
+#include "math.h"
 
 Lodash::Lodash() {
 	if (!seeded) {
@@ -115,4 +116,18 @@ float Lodash::RangeValue(float value, float valueMin, float valueMax, float newS
 	}
 	float changeRatio = abs((value - valueMin) / (valueMax - valueMin));
 	return newStart + (newEnd - newStart) * changeRatio;
+}
+
+FString Lodash::ToFixed(float value, int digits) {
+	// https://nerivec.github.io/old-ue4-wiki/pages/float-as-string-with-precision.html
+	float Rounded = roundf(value);
+	if (abs(value - Rounded) < pow(10, -1 * digits)) {
+		value = Rounded;
+	}
+	FNumberFormattingOptions NumberFormat;
+	// NumberFormat.MinimumIntegralDigits = (IncludeLeadingZero) ? 1 : 0;
+	// NumberFormat.MaximumIntegralDigits = 10000;
+	NumberFormat.MinimumFractionalDigits = digits;
+	NumberFormat.MaximumFractionalDigits = digits;
+	return FText::AsNumber(value, &NumberFormat).ToString();
 }

@@ -11,11 +11,15 @@
 #include "SettingsActor.h"
 #include "SocketActor.h"
 
+#include "LandscapeComponent.h"
+// #include "ProceduralMeshComponent.h"
+
 #include "Building/BuildingRing.h"
+#include "Building/BuildingRoad.h"
 #include "Building/BuildingFlowerHomes.h"
 #include "Common/MathPolygon.h"
 #include "Landscape/HeightMap.h"
-#include "LandscapeComponent.h"
+#include "Landscape/MeshTerrain.h"
 
 #include "GlobalClass.h"
 
@@ -212,6 +216,8 @@ void ALandProjectActor::EditorGenerate() {
 	// 	UE_LOG(LogTemp, Display, TEXT("z1 %f"), z1);
 	// }
 
+    FString pattern = "ring";
+	pattern = "flowerHomes";
     // float z = 200;
     // float z = HeightMap::GetTerrainHeightAtPoint(posCurrentGround);
     heightMap->SetWorld(GetWorld());
@@ -222,20 +228,22 @@ void ALandProjectActor::EditorGenerate() {
 	TMap<FString, FPlot> Plots = {
 		// { "plot1", { "id1", "plot1", FVector(0,0,0), { FVector(269.0, -767, 82), FVector(159, -85, 152), FVector(962, -85, 153), FVector(962, -586, 70) } } },
 		// { "plot2", { "id2", "plot2", FVector(0,0,0), { FVector(200.0, -700, 100), FVector(150, -500, 100), FVector(300, -500, 100), FVector(350, -500, 100) } } },
-		{ "plot3", { "id3", "plot3", FVector(200,-650,z), { FVector(200.0, -800, z), FVector(50, -600, z), FVector(225, -500, z), FVector(350, -700, z) } } },
-		// { "plot4", { "id4", "plot4", FVector(200,-650,z), { FVector(200.0, -1000, z), FVector(0, -600, z), FVector(225, -400, z), FVector(500, -700, z) } } },
+		// { "plot3", { "id3", "plot3", FVector(200,-650,z), { FVector(200.0, -800, z), FVector(50, -600, z), FVector(225, -500, z), FVector(350, -700, z) } } },
+		{ "plot4", { "id4", "plot4", FVector(200,-650,z), { FVector(200.0, -1000, z), FVector(0, -600, z), FVector(225, -400, z), FVector(500, -700, z) } } },
 	};
 	float plotSize = 100;
-	// plotSize = 150;
+	plotSize = 150;
 	auto [spacesVertices, posCenter, boundsRect] = PlotFillVoronoi::Fill(Plots, plotSize);
 	UE_LOG(LogTemp, Display, TEXT("LPA spacesVertices.Num %d"), spacesVertices.Num());
 	float verticesBuffer = -25;
 
+	// Do roads BEFORE buffer vertices.
+	TMap<FString, TArray<FVector>> roadsVertices = BuildingRoad::BetweenSpaces(spacesVertices);
+	MeshTerrain* meshTerrain = MeshTerrain::GetInstance();
+	meshTerrain->DestroyRoads();
+	meshTerrain->AddRoads(roadsVertices);
 
 	TArray<int> heightFloorsOrder = { 2, 10, 4, 7 };
-
-	FString pattern = "ring";
-	// pattern = "flowerHomes";
 	TArray<FLand> lands = {};
 	FBuildingBlueprint blueprint;
 	for (int ii = 0; ii < spacesVertices.Num(); ii++) {
@@ -248,13 +256,21 @@ void ALandProjectActor::EditorGenerate() {
 			}
 			spacesVertices[ii] = MathPolygon::BufferVertices(spacesVertices[ii], posCenterGround, verticesBuffer, true);
 		}
-		if (pattern == "flowerHomes") {
-			auto [blueprint1, homePlotPaths] = BuildingFlowerHomes::Create(spacesVertices[ii], 0.15, 2000, "outer");
-			blueprint = blueprint1;
+
+		auto [isValid, reason] = PlotFillVoronoi::IsValid(spacesVertices[ii]);
+		if (!isValid) {
+			UE_LOG(LogTemp, Warning, TEXT("space not valid, skipping reason: %s"),
+				*reason);
 		} else {
-			blueprint = BuildingRing::Create(spacesVertices[ii], heightFloorsOrder);
+			if (pattern == "flowerHomes") {
+				auto [blueprint1, homePlotPaths] = BuildingFlowerHomes::Create(spacesVertices[ii], 0.15, 2000, "outer");
+				blueprint = blueprint1;
+				meshTerrain->AddRoads(homePlotPaths);
+			} else {
+				blueprint = BuildingRing::Create(spacesVertices[ii], heightFloorsOrder);
+			}
+			lands.Add(blueprint.land);
 		}
-		lands.Add(blueprint.land);
 	}
 	this->GenerateLands(lands);
 	}
