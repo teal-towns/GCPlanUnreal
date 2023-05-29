@@ -18,12 +18,12 @@ FBuildingBlueprint BuildingRing::Create(TArray<FVector> pathVertices, TArray<int
     float unitDiameter, float unitHeight,
     int numRings, float residentToUnitCountFactor,
     FString crossDirection, bool placeOnSides, float maxBuiltRatio,
-    float minRadiusSkip, int minVerticesSkip, FString uName) {
+    FString uName) {
 	int unitCount = (int)round(residentCount * residentToUnitCountFactor);
     return CreateOneRing(unitCount, pathVertices, heightFloorsOrder,
         minRingWidthUnits, maxRingWidthUnits,
         unitDiameter, unitHeight, crossDirection, placeOnSides,
-        maxBuiltRatio, minRadiusSkip, minVerticesSkip, uName);
+        maxBuiltRatio, uName);
 };
 
 // We assume a mix between a circle and a unitagon for ring shape with 4 key height points
@@ -38,20 +38,12 @@ FBuildingBlueprint BuildingRing::CreateOneRing(int unitCount,
 	TArray<FVector> pathVertices, TArray<int> heightFloorsOrder,
 	int minRingWidthUnits, int maxRingWidthUnits, float unitDiameter,
 	float unitHeight, FString crossDirection, bool placeOnSides,
-	float maxBuiltRatio, float minRadiusSkip,
-	int minVerticesSkip, FString uName) {
+	float maxBuiltRatio, FString uName) {
 	FBuildingBlueprint blueprint = FBuildingBlueprint();
 	if (uName.Len() == 0) {
 		uName = Lodash::GetInstanceId();
 	}
 	blueprint.land.land_id = "Ring_" + uName;
-
-	auto [isValid, reason] = IsValid(pathVertices, minRadiusSkip, minVerticesSkip);
-	if (!isValid) {
-		UE_LOG(LogTemp, Warning, TEXT("BuildingRing.CreateOneRing not valid, skipping %s reason: %s"),
-			*blueprint.land.land_id, *reason);
-		return blueprint;
-	}
 
 	FVector posCenterGround = MathPolygon::GetPolygonCenter(pathVertices);
 	blueprint.posCenterGround = posCenterGround;
@@ -91,22 +83,4 @@ std::tuple<int, float> BuildingRing::GetMaxRingsByAreaOuter(float radius, float 
         }
     }
     return {maxRings, radiusOpen};
-}
-
-std::tuple<bool, FString> BuildingRing::IsValid(TArray<FVector> pathVertices, float minRadiusSkip,
-	int minVerticesSkip) {
-	FString reason = "";
-	FVector posCenterGround = MathPolygon::GetPolygonCenter(pathVertices);
-	if (pathVertices.Num() < minVerticesSkip) {
-		// print ("too few vertices, skipping " + pathVertices.Num() + " " + minVerticesSkip + " " + posCenterGround);
-		reason = FString::Printf(TEXT("minVertices: have %d, need %d"), pathVertices.Num(), minRadiusSkip);
-		return {false, reason};
-	}
-	auto [radius, radiusMin] = MathPolygon::GetAverageRadius(pathVertices, posCenterGround);
-	if (minRadiusSkip > 0 && radiusMin < minRadiusSkip) {
-		// print ("radius too small skipping " + radiusMin + " " + minRadiusSkip + " " + posCenterGround);
-		reason = FString::Printf(TEXT("minRadius: %f is below %f"), radiusMin, minRadiusSkip);
-		return {false, reason};
-	}
-	return {true, reason};
 }

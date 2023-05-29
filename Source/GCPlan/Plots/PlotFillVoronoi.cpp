@@ -196,3 +196,19 @@ std::tuple<bool, TArray<FVector2D>> PlotFillVoronoi::CheckAdjustVertices(TArray<
 
 	return {valid, newRegionVertices2D};
 }
+
+std::tuple<bool, FString> PlotFillVoronoi::IsValid(TArray<FVector> pathVertices, float minRadiusSkip,
+	int minVerticesSkip) {
+	FString reason = "";
+	FVector posCenterGround = MathPolygon::GetPolygonCenter(pathVertices);
+	if (pathVertices.Num() < minVerticesSkip) {
+		reason = FString::Printf(TEXT("minVertices: have %d, need %d"), pathVertices.Num(), minRadiusSkip);
+		return {false, reason};
+	}
+	auto [radius, radiusMin] = MathPolygon::GetAverageRadius(pathVertices, posCenterGround);
+	if (minRadiusSkip > 0 && radiusMin < minRadiusSkip) {
+		reason = FString::Printf(TEXT("minRadius: %f is below %f"), radiusMin, minRadiusSkip);
+		return {false, reason};
+	}
+	return {true, reason};
+}
