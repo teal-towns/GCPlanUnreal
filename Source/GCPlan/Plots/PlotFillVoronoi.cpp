@@ -19,6 +19,7 @@ THIRD_PARTY_INCLUDES_END
 #include "../BuildingStructsActor.h"
 #include "../Common/Lodash.h"
 #include "../Common/MathPolygon.h"
+#include "../Landscape/HeightMap.h"
 // TODO - figure out how to include a file with just structs
 // #include "PlotStructs.h"
 
@@ -88,7 +89,7 @@ std::tuple<TArray<TArray<FVector>>, FVector, TArray<FVector2D>> PlotFillVoronoi:
 			regions[ii].Add(FVector2D(regions1[ii][jj]->x, regions1[ii][jj]->y));
 		}
 	}
-	// UE_LOG(LogTemp, Display, TEXT("PFV regions %d"), regions.Num());
+	UE_LOG(LogTemp, Display, TEXT("PFV regions %d"), regions.Num());
 
 	// Go through all regions and remove any vertices that are not in the plots.
 	FVector2D point;
@@ -197,12 +198,35 @@ std::tuple<bool, TArray<FVector2D>> PlotFillVoronoi::CheckAdjustVertices(TArray<
 	return {valid, newRegionVertices2D};
 }
 
+TArray<TArray<FVector>> PlotFillVoronoi::BufferAndRemoveVertices(TArray<TArray<FVector>> spacesVertices,
+	float verticesBuffer, float minRadiusSkip) {
+	HeightMap* heightMap = HeightMap::GetInstance();
+	int verticesCount = spacesVertices.Num();
+	for (int ii = verticesCount - 1; ii >= 0; ii--) {
+		FVector posCenterGround = MathPolygon::GetPolygonCenter(spacesVertices[ii]);
+		// Update z for all points.
+		posCenterGround.Z = heightMap->GetTerrainHeightAtPoint(posCenterGround);
+		for (int jj = 0; jj < spacesVertices[ii].Num(); jj++) {
+			spacesVertices[ii][jj].Z = posCenterGround.Z;
+		}
+		spacesVertices[ii] = MathPolygon::BufferVertices(spacesVertices[ii], posCenterGround, verticesBuffer, true);
+
+		auto [isValid, reason] = IsValid(spacesVertices[ii], minRadiusSkip);
+		if (!isValid) {
+			UE_LOG(LogTemp, Warning, TEXT("space not valid, skipping reason: %s"),
+				*reason);
+			spacesVertices.RemoveAt(ii);
+		}
+	}
+	return spacesVertices;
+}
+
 std::tuple<bool, FString> PlotFillVoronoi::IsValid(TArray<FVector> pathVertices, float minRadiusSkip,
 	int minVerticesSkip) {
 	FString reason = "";
 	FVector posCenterGround = MathPolygon::GetPolygonCenter(pathVertices);
 	if (pathVertices.Num() < minVerticesSkip) {
-		reason = FString::Printf(TEXT("minVertices: have %d, need %d"), pathVertices.Num(), minRadiusSkip);
+		reason = FString::Printf(TEXT("minVertices: have %d, need %d"), pathVertices.Num(), minVerticesSkip);
 		return {false, reason};
 	}
 	auto [radius, radiusMin] = MathPolygon::GetAverageRadius(pathVertices, posCenterGround);

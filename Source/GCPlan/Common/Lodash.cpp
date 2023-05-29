@@ -25,14 +25,14 @@ Lodash::~Lodash() {
 // }
 
 FString Lodash::GetInstanceId(FString prefix, int numChars) {
-	FString prefixFinal = prefix.Len() > 0 ? prefix + "_" : "";
+	FString prefixFinal = prefix.Len() > 0 ? prefix : "";
 	FString chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	int charsLen = chars.Len();
 	FString str = "";
 	for (int ii = 0; ii < numChars; ii++) {
 		str += chars[RandomRangeInt(0, charsLen - 1)];
 	}
-	return prefixFinal + "_" + str;
+	return prefixFinal + str;
 }
 
 // public bool ListsEqual(List<string> list1, List<string> list2) {

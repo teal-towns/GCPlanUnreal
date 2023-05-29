@@ -152,4 +152,31 @@ struct FPlot {
 	// TArray<TMap<FString, float>> vertices;
 	FVector posCenter;
 	TArray<FVector> vertices;
+	FString buildPattern;
+	float averagePlotDistance;
+};
+
+USTRUCT()
+struct FRoadPath {
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString uName;
+	UPROPERTY()
+	TArray<FVector> vertices;
+	UPROPERTY()
+	float widthMeters;
+	UPROPERTY()
+	FString type;
+	UPROPERTY()
+	float laneCount;
+
+	FRoadPath() {};
+	FRoadPath(FString uName_, TArray<FVector> vertices_, float widthMeters_, FString type_, float laneCount_ = 1) {
+		uName = uName_;
+		vertices = vertices_;
+		widthMeters = widthMeters_;
+		type = type_;
+		laneCount = laneCount_;
+	}
 };

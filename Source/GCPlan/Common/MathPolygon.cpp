@@ -112,7 +112,7 @@ float MathPolygon::PolygonArea(TArray<FVector2D> vertices2D) {
 		FVector2D vertexNext = vertices2D[indexNext];
 		sum += vertices2D[ii].X * vertexNext.Y - vertices2D[ii].Y * vertexNext.X;
 	}
-	return sum * 0.5f;
+	return abs(sum * 0.5f);
 }
 
 FVector MathPolygon::GetPolygonCenter(TArray<FVector> vertices) {

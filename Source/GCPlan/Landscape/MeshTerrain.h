@@ -3,6 +3,8 @@
 #include <mutex>
 #include "ProceduralMeshComponent.h"
 
+#include "../BuildingStructsActor.h"
+
 class MeshTerrain {
 
 private:
@@ -18,7 +20,9 @@ private:
 	UMaterialInterface* Material;
 	UMaterialInstanceDynamic* MaterialInstanceDynamic;
 	// UMaterialInstance* MaterialInstance;
-	TMap<FString, TArray<FVector>> _RoadsVertices = {};
+	TMap<FString, TMap<FString, FRoadPath>> _RoadsByType = {};
+	// TMap<FString, FRoadPath> _Roads = {};
+	// TMap<FString, FRoadPath> _WalkPaths = {};
 
 public:
 	MeshTerrain();
@@ -37,7 +41,7 @@ public:
 	void CreateTerrainFromHeightMap(float Scale = 247.71, int UVScale = 1);
 	std::tuple<int, int> CreateVerticesFromHeightMap(float Scale, int UVScale, float ZScale = 100);
 	void CreateTriangles(int XSize, int YSize);
-	void AddRoads(TMap<FString, TArray<FVector>> roadsVertices);
-	void DrawRoads(float widthMeters = 5, float stepFactor = 0.5);
+	void AddRoads(TMap<FString, FRoadPath> roads);
+	void DrawRoads(float stepFactor = 0.5);
 	void DestroyRoads();
 };
