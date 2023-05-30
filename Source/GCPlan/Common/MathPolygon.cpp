@@ -87,6 +87,11 @@ TArray<FVector> MathPolygon::BufferVertices(TArray<FVector> vertices, FVector po
 }
 
 float MathPolygon::StepAngle(float angle, float degreesStep) {
+	// Nothing to do, and avoid divide by zero errors.
+	if (degreesStep < 1 && degreesStep > -1) {
+		UE_LOG(LogTemp, Warning, TEXT("MathPolygon.StepAngle degreesStep near zero, skipping. degreesStep %f angle %f"), degreesStep, angle);
+		return angle;
+	}
 	float steppedAngle;
 	int remainder = ((int)round(angle) % (int)degreesStep);
 	if (remainder < 0) {

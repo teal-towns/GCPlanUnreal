@@ -186,7 +186,7 @@ std::tuple<FBuildingBlueprint, FBuildData> BuildingPolyLine::BuildAlongPolyLine(
 			auto [blueprint1, buildData1] = BuildPositionsCrossSectionColumns(blueprint, buildData, numFloors,
 				buildData.posCurrentGround, floorHeight, crossCountUnits,
 				unitDiameter, mainAxisOneUnit, centerAxisOneUnit, unitsToPlace,
-				placeOnSides, maxFloors);
+				degreesStep, 0, placeOnSides, maxFloors);
 			blueprint = blueprint1;
 			buildData = buildData1;
 
