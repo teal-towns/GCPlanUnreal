@@ -5,16 +5,16 @@
 // #include "VectorTypes.h"
 #include "Math/Vector2D.h"
 
-// https://forums.unrealengine.com/t/errors-when-including-third-party-library/737189/2
-#pragma push_macro("check")   // store 'check' macro current definition
-#undef check  // undef to avoid conflicts
-THIRD_PARTY_INCLUDES_START
-// https://github.com/SirAnthony/cppdelaunay
-#include "delaunay/Voronoi.h"
-#include "geom/Point.h"
-#include "geom/Rectangle.h"
-THIRD_PARTY_INCLUDES_END
-#pragma pop_macro("check")  // restore definition
+// // https://forums.unrealengine.com/t/errors-when-including-third-party-library/737189/2
+// #pragma push_macro("check")   // store 'check' macro current definition
+// #undef check  // undef to avoid conflicts
+// THIRD_PARTY_INCLUDES_START
+// // https://github.com/SirAnthony/cppdelaunay
+// #include "delaunay/Voronoi.h"
+// #include "geom/Point.h"
+// #include "geom/Rectangle.h"
+// THIRD_PARTY_INCLUDES_END
+// #pragma pop_macro("check")  // restore definition
 
 #include "../BuildingStructsActor.h"
 #include "../Common/Lodash.h"
@@ -70,57 +70,93 @@ std::tuple<TArray<TArray<FVector>>, FVector, TArray<FVector2D>> PlotFillVoronoi:
 		min.Y + (plotSizeY / 2));
 	// UE_LOG(LogTemp, Display, TEXT("PFV sizeX %f sizeY %f min %s max %s"), plotSizeX, plotSizeY, *min.ToString(), *max.ToString());
 
-	TArray<FVector2D> pointsTemp = SpawnPoints(boundsRect, averageDistance);
-	// UE_LOG(LogTemp, Display, TEXT("PFV pointsTemp %d"), pointsTemp.Num());
+	// TArray<FVector2D> pointsTemp = SpawnPoints(boundsRect, averageDistance);
+	// // UE_LOG(LogTemp, Display, TEXT("PFV pointsTemp %d"), pointsTemp.Num());
 
-	std::vector<Delaunay::Point*> points = {};
-	for (int ii = 0; ii < pointsTemp.Num(); ii++) {
-		points.push_back(Delaunay::Point::create(pointsTemp[ii].X, pointsTemp[ii].Y));
-		// UE_LOG(LogTemp, Display, TEXT("PFV point %s"), *pointsTemp[ii].ToString());
-	}
-	Delaunay::Rectangle plotBounds = Delaunay::Rectangle(min.X, min.Y, plotSizeX, plotSizeY);
-	const std::vector<unsigned> colors = {};
-	Delaunay::Voronoi voronoi = Delaunay::Voronoi(points, &colors, plotBounds);
-	std::vector<std::vector<Delaunay::Point*>> regions1 = voronoi.regions();
-	TArray<TArray<FVector2D>> regions = {};
-	for (int ii = 0; ii < regions1.size(); ii++) {
-		regions.Add({});
-		for (int jj = 0; jj < regions1[ii].size(); jj++) {
-			regions[ii].Add(FVector2D(regions1[ii][jj]->x, regions1[ii][jj]->y));
-		}
-	}
-	UE_LOG(LogTemp, Display, TEXT("PFV regions %d"), regions.Num());
+	// std::vector<Delaunay::Point*> points = {};
+	// for (int ii = 0; ii < pointsTemp.Num(); ii++) {
+	// 	points.push_back(Delaunay::Point::create(pointsTemp[ii].X, pointsTemp[ii].Y));
+	// 	// UE_LOG(LogTemp, Display, TEXT("PFV point %s"), *pointsTemp[ii].ToString());
+	// }
+	// Delaunay::Rectangle plotBounds = Delaunay::Rectangle(min.X, min.Y, plotSizeX, plotSizeY);
+	// const std::vector<unsigned> colors = {};
+	// Delaunay::Voronoi voronoi = Delaunay::Voronoi(points, &colors, plotBounds);
+	// std::vector<std::vector<Delaunay::Point*>> regions1 = voronoi.regions();
+	// TArray<TArray<FVector2D>> regions = {};
+	// for (int ii = 0; ii < regions1.size(); ii++) {
+	// 	regions.Add({});
+	// 	for (int jj = 0; jj < regions1[ii].size(); jj++) {
+	// 		regions[ii].Add(FVector2D(regions1[ii][jj]->x, regions1[ii][jj]->y));
+	// 	}
+	// }
+	// UE_LOG(LogTemp, Display, TEXT("PFV regions %d"), regions.Num());
 
-	// Go through all regions and remove any vertices that are not in the plots.
+	// // Go through all regions and remove any vertices that are not in the plots.
+	// FVector2D point;
+	// int totalRegions = regions.Num();
+	// TArray<FVector> verticesD;
+	// bool valid, atLeastOneInside, done;
+	// TArray<FVector> verticesTemp;
+	// for (int ii = 0; ii < regions.Num(); ii++) {
+	// 	UE_LOG(LogTemp, Display, TEXT("regions[ii] %d"), regions[ii].Num());
+	// 	if (regions[ii].Num() > 0) {
+	// 		valid = false;
+	// 		atLeastOneInside = false;
+	// 		done = false;
+	// 		TArray<FVector2D> regionVertices2D = {};
+	// 		for (int rr = 0; rr < regions[ii].Num(); rr++) {
+	// 			regionVertices2D.Add(FVector2D(regions[ii][rr].X, regions[ii][rr].Y));
+	// 		}
+	// 		// int plotIndex = -1;
+	// 		// Check first point and see if in a plot.
+	// 		for (int pp = 0; pp < plotsVertices2D.Num(); pp++) {
+	// 			auto [valid1, newRegionVertices2D] =
+	// 				CheckAdjustVertices(regionVertices2D, plotsVertices2D[pp]);
+	// 			if (valid1) {
+	// 				verticesTemp = {};
+	// 				for (int vt = 0; vt < newRegionVertices2D.Num(); vt++) {
+	// 					verticesTemp.Add(FVector(newRegionVertices2D[vt].X,
+	// 						newRegionVertices2D[vt].Y, zVals[pp]));
+	// 				}
+	// 				spacesVertices.Add(verticesTemp);
+	// 				break;
+	// 			}
+	// 		}
+	// 	}
+	// }
+
+	TArray<TArray<FVector>> spacesVertices1 = SpawnSpaces(boundsRect, averageDistance);
+
 	FVector2D point;
-	int totalRegions = regions.Num();
+	int totalSpaces = spacesVertices1.Num();
 	TArray<FVector> verticesD;
-	for (int ii = 0; ii < regions.Num(); ii++) {
-		if (regions[ii].Num() > 0) {
-			bool valid = false;
-			bool atLeastOneInside = false;
-			bool done = false;
-			TArray<FVector2D> regionVertices2D = {};
-			for (int rr = 0; rr < regions[ii].Num(); rr++) {
-				regionVertices2D.Add(FVector2D(regions[ii][rr].X, regions[ii][rr].Y));
-			}
-			// int plotIndex = -1;
-			// Check first point and see if in a plot.
-			for (int pp = 0; pp < plotsVertices2D.Num(); pp++) {
-				auto [valid1, newRegionVertices2D] =
-					CheckAdjustVertices(regionVertices2D, plotsVertices2D[pp]);
-				if (valid1) {
-					TArray<FVector> verticesTemp = {};
-					for (int vt = 0; vt < newRegionVertices2D.Num(); vt++) {
-						verticesTemp.Add(FVector(newRegionVertices2D[vt].X,
-							newRegionVertices2D[vt].Y, zVals[pp]));
-					}
-					spacesVertices.Add(verticesTemp);
-					break;
+	bool valid, atLeastOneInside, done;
+	TArray<FVector> verticesTemp;
+	TArray<FVector2D> vertices2D;
+	for (int ii = totalSpaces - 1; ii >= 0; ii--) {
+		valid = false;
+		atLeastOneInside = false;
+		done = false;
+		vertices2D = {};
+		for (int rr = 0; rr < spacesVertices1[ii].Num(); rr++) {
+			vertices2D.Add(FVector2D(spacesVertices1[ii][rr].X, spacesVertices1[ii][rr].Y));
+		}
+		// Check first point and see if in a plot.
+		for (int pp = 0; pp < plotsVertices2D.Num(); pp++) {
+			auto [valid1, newVertices2D] =
+				CheckAdjustVertices(vertices2D, plotsVertices2D[pp]);
+			if (valid1) {
+				verticesTemp = {};
+				for (int vt = 0; vt < newVertices2D.Num(); vt++) {
+					verticesTemp.Add(FVector(newVertices2D[vt].X,
+						newVertices2D[vt].Y, zVals[pp]));
 				}
+				spacesVertices.Add(verticesTemp);
+				break;
 			}
 		}
 	}
+
 	// UE_LOG(LogTemp, Display, TEXT("PFV spacesVertices %d"), spacesVertices.Num());
 	// for (int ii = 0; ii < spacesVertices.Num(); ii++) {
 	// 	UE_LOG(LogTemp, Display, TEXT("PFV spacesVertices ii %d"), ii);
@@ -130,6 +166,51 @@ std::tuple<TArray<TArray<FVector>>, FVector, TArray<FVector2D>> PlotFillVoronoi:
 	// }
 
 	return {spacesVertices, posCenter, boundsRect};
+}
+
+TArray<TArray<FVector>> PlotFillVoronoi::SpawnSpaces(TArray<FVector2D> boundsRect,
+	float averageDistance, float offsetMaxFactor) {
+	float degreesStep = 60;
+	// Go in a grid until go through all of bounds.
+	float curX = boundsRect[0].X;
+	float curY = boundsRect[0].Y;
+	TArray<TArray<FVector>> spacesVertices = {};
+	int counterY = 0;
+	// Do radius length.
+	// Distance to vertex is slightly longer than distance to edge (smaller circle).
+	// We have the edge distance (have of distance between points) so distance to
+	// a vertex is 2 / sqrt(3) bigger.
+	float distanceToVertex = averageDistance * 0.5 * 2 / 1.732 * 1.075;
+	FVector mainAxisOneUnit = FVector(1,0,0) * distanceToVertex;
+	FVector curAxis;
+	FVector center;
+	TArray<FVector> vertices;
+	while (curY < boundsRect[1].Y + averageDistance) {
+		curX = boundsRect[0].X;
+		// For hexagon grid, every other one starts at the boundary (offset by half).
+		if (counterY % 2 == 1) {
+			curX -= averageDistance * 0.5;
+		}
+		while (curX < boundsRect[1].X + averageDistance) {
+			// offsetX = Lodash::RandomRangeFloat(-1 * offsetMax, offsetMax);
+			// offsetY = Lodash::RandomRangeFloat(-1 * offsetMax, offsetMax);
+			// points.Add(FVector2D(curX + offsetX, curY + offsetY));
+			center = FVector(curX, curY, mainAxisOneUnit.Z);
+			// Go in circle to form points.
+			vertices = {};
+			int curDegrees = 30;
+			while (curDegrees < 360) {
+				curAxis = mainAxisOneUnit.RotateAngleAxis(curDegrees, FVector(0,0,1)).GetClampedToMaxSize(distanceToVertex);
+				vertices.Add(center + curAxis);
+				curDegrees += degreesStep;
+			}
+			spacesVertices.Add(vertices);
+			curX += averageDistance;
+		}
+		curY += averageDistance;
+		counterY += 1;
+	}
+	return spacesVertices;
 }
 
 // Shape mimics where the points are placed so we do a hexagon grid but use the offsetMaxFactor
