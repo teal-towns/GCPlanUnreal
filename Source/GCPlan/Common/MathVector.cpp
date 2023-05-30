@@ -1,5 +1,6 @@
 #include "MathVector.h"
 
+#define _USE_MATH_DEFINES		// for pi
 #include "math.h"
 
 MathVector::MathVector() {

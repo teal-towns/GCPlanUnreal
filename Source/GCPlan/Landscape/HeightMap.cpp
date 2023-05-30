@@ -89,7 +89,6 @@ uint16 HeightMap::GetImageValue(int pixelX, int pixelY) {
 	uint16 imageValue = 0, BigEiV, LitEiV;
 	int imageIndex,imageIndexB;
 	uint8* bptr, byte1, byte2;
-	size_t ii;
 	imageIndex = pixelY * _width + pixelX;
 	imageIndexB = imageIndex * 2;
 	bptr = (uint8*)&_image[imageIndexB];

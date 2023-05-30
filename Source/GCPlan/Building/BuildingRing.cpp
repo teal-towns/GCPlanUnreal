@@ -1,5 +1,6 @@
 #include "BuildingRing.h"
 
+#define _USE_MATH_DEFINES		// for pi
 #include "math.h"
 
 #include "../BuildingStructsActor.h"

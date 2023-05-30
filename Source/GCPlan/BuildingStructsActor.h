@@ -103,19 +103,19 @@ struct FLandGameObject {
 		// rotation = DataConvert::RotatorToDict(rotation_);
 		// scale = DataConvert::VectorToDict(scale_);
 		position = TMap<FString, float> {
-			{ "x", position_.X },
-			{ "y", position_.Y },
-			{ "z", position_.Z },
+			{ "x", (float)position_.X },
+			{ "y", (float)position_.Y },
+			{ "z", (float)position_.Z },
 		};
 		rotation = TMap<FString, float> {
-			{ "x", rotation_.Roll },
-			{ "y", rotation_.Pitch },
-			{ "z", rotation_.Yaw },
+			{ "x", (float)rotation_.Roll },
+			{ "y", (float)rotation_.Pitch },
+			{ "z", (float)rotation_.Yaw },
 		};
 		scale = TMap<FString, float> {
-			{ "x", scale_.X },
-			{ "y", scale_.Y },
-			{ "z", scale_.Z },
+			{ "x", (float)scale_.X },
+			{ "y", (float)scale_.Y },
+			{ "z", (float)scale_.Z },
 		};
 	}
 };
