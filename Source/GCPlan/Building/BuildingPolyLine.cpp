@@ -56,7 +56,7 @@ std::tuple<FBuildingBlueprint, FBuildData> BuildingPolyLine::BuildAlongPolyLine(
 	FVector mainAxisOneUnit = FVector(1,0,0) * unitDiameter;
 	FVector mainAxisOneUnitPast, mainAxisOneUnitTemp;
 	float pathDistanceRemaining;
-	int unitLengthsRemainingOnPath, unitsToPlace;
+	int unitsToPlace;
 	bool firstPlacement = true;
 	float globalAngle, stepAngle, mainAxisOneUnitLength;
 	int heightFloorsIndex = 0;
@@ -395,7 +395,6 @@ std::tuple<FBuildingBlueprint, FBuildData> BuildingPolyLine::BuildPositionsSingl
 	TArray<FString> prefabNames;
 	float roofRadius = unitDiameter * 0.5f;
 	TArray<FVector> roofVertices = {};
-	int index;
 	FVector scaleTemp, posTemp;
 	int unitsCreatedStart = buildData.unitsCreated;
 

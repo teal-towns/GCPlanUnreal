@@ -1,5 +1,6 @@
 #include "MathPolygon.h"
 
+#define _USE_MATH_DEFINES		// for pi
 #include "math.h"
 
 MathPolygon::MathPolygon() {

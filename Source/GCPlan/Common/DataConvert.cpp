@@ -10,9 +10,9 @@ DataConvert::~DataConvert() {
 
 FMapStringFloat DataConvert::VectorToDict(FVector vector) {
 	return FMapStringFloat(TMap<FString, float> {
-		{ "x", vector.X },
-		{ "y", vector.Y },
-		{ "z", vector.Z },
+		{ "x", (float)vector.X },
+		{ "y", (float)vector.Y },
+		{ "z", (float)vector.Z },
 	});
 }
 
@@ -38,9 +38,9 @@ TArray<FVector> DataConvert::DictsToVectors(TArray<FMapStringFloat> dicts) {
 
 FMapStringFloat DataConvert::RotatorToDict(FRotator vector) {
 	return FMapStringFloat(TMap<FString, float> {
-		{ "x", vector.Roll },
-		{ "y", vector.Pitch },
-		{ "z", vector.Yaw },
+		{ "x", (float)vector.Roll },
+		{ "y", (float)vector.Pitch },
+		{ "z", (float)vector.Yaw },
 	});
 }
 
