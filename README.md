@@ -19,9 +19,13 @@
 	- https://forums.unrealengine.com/t/tga-vs-png-for-textures/24211/22
 	- TGA is common and good, but much larger file size; can convert to PNG or JPG, e.g. https://products.aspose.app/imaging/image-resize
 
+### Modeling
+- Actor -> Convert "..." to Static Mesh to save something in the scene as a reusable mesh.
+
 ### Include Third Party Code
 - https://georgy.dev/posts/third-party-integration/
 	- Have to update `GCPlan.Build.cs` with both `PublicAdditionalLibraries` and `PublicIncludePaths`
+
 
 ## Coding
 
