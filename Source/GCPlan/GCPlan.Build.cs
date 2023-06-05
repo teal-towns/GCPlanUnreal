@@ -16,7 +16,7 @@ public class GCPlan : ModuleRules
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "WebSockets", "Json", "JsonUtilities",
 			"Landscape", "LandscapeEditor", "Foliage",
-			"ProceduralMeshComponent",
+			"ProceduralMeshComponent", "MeshDescription"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

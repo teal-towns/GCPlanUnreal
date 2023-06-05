@@ -12,16 +12,18 @@ PMCube::PMCube() {
 PMCube::~PMCube() {
 }
 
-void PMCube::Create() {
-	float unrealScale = 100;
-	int UVScale = 1;
-
+UStaticMesh* PMCube::CreateFromInputs() {
 	PMBase* pmBase = PMBase::GetInstance();
 	FProceduralModelBase inputs = pmBase->GetInputs("Cube1", FVector(1,1,1), FVector(2,2,2));
-	FString name = inputs.name;
-	FVector size = inputs.size;
-	FVector vertices = inputs.vertices;
-	// TArray<FString> tags = inputs.tags;
+	return Create(inputs.name, inputs.size, inputs.vertices, inputs.tags);
+}
+
+UStaticMesh* PMCube::Create(FString name, FVector size, FVector vertices, TArray<FString> tags,
+	bool destroyActor) {
+	float unrealScale = 100;
+	float UVScale = 1;
+
+	PMBase* pmBase = PMBase::GetInstance();
 
 	FVector sizePerVertex = FVector(size.X / (vertices.X - 1), size.Y / (vertices.Y - 1),
 		size.Z / (vertices.Z - 1));
@@ -33,7 +35,7 @@ void PMCube::Create() {
 	AStaticMeshActor* actor;
 
 	// Parent container
-	actor = pmBase->CreateActor(name, location, rotation, scale, spawnParams);
+	actor = pmBase->CreateActor(name, location, rotation, spawnParams);
 	USceneComponent* parent = actor->FindComponentByClass<USceneComponent>();
 	UObject* parentObject = (UObject*)actor;
 	UProceduralMeshComponent* ProceduralMesh = PMBase::CreateMesh(parentObject, parent, "Cube1");
@@ -52,7 +54,7 @@ void PMCube::Create() {
 	for (int zz = 0; zz < vertices.Z; zz++) {
 		for (int yy = 0; yy < vertices.Y; yy++) {
 			Vertices.Add(FVector(x, yy * sizePerVertex.Y * unrealScale, zz * sizePerVertex.Z * unrealScale));
-			UV0.Add(FVector2D(yy * UVScale, zz * UVScale));
+			UV0.Add(FVector2D((float)yy * UVScale, (float)zz * UVScale));
 
 			// Do 1 quad (6 triangles, 2 vertices) at a time so go every other time.
 			if (yy % 2 == 1 && zz < (vertices.Z - 1)) {
@@ -75,4 +77,12 @@ void PMCube::Create() {
 	// TODO - other sides
 
 	PMBase::AddMeshSection(ProceduralMesh, Vertices, UV0, Triangles);
+
+	UStaticMesh* mesh = PMBase::ToStaticMesh(ProceduralMesh);
+	if (!destroyActor) {
+		PMBase::AddMesh(actor, mesh);
+	} else {
+		actor->Destroy();
+	}
+	return mesh;
 }

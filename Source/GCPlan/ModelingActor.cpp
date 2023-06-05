@@ -1,6 +1,7 @@
 #include "ModelingActor.h"
 
 #include "Modeling/ModelBase.h"
+#include "ProceduralModel/PMBase.h"
 
 AModelingActor::AModelingActor()
 {
@@ -20,6 +21,9 @@ void AModelingActor::BeginPlay()
 void AModelingActor::Init() {
 	ModelBase* modelBase = ModelBase::GetInstance();
     modelBase->SetWorld(GetWorld());
+
+    PMBase* pmBase = PMBase::GetInstance();
+    pmBase->SetWorld(GetWorld());
 }
 
 void AModelingActor::GenerateModel() {

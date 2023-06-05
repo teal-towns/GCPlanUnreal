@@ -23,11 +23,13 @@ public:
 	void Create();
 
 	AStaticMeshActor* CreateActor(FString name, FVector location, FRotator rotation,
-		FVector scale, FActorSpawnParameters spawnParams, USceneComponent* parent = nullptr);
+		FActorSpawnParameters spawnParams, USceneComponent* parent = nullptr);
+	static void AddMesh(AStaticMeshActor* actor, UStaticMesh* mesh, FString materialPath = "");
 	static UProceduralMeshComponent* CreateMesh(UObject* parentObject, USceneComponent* parent,
 		FString name);
 	static void AddMeshSection(UProceduralMeshComponent* ProceduralMesh, TArray<FVector> Vertices,
 		TArray<FVector2D> UV0, TArray<int> Triangles);
+	static UStaticMesh* ToStaticMesh(UProceduralMeshComponent* ProceduralMesh);
 
 private:
 	static PMBase *pinstance_;
