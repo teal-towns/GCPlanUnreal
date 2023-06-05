@@ -1,6 +1,8 @@
 #include "PMBase.h"
 
 #include "ProceduralMeshComponent.h"
+#include "ProceduralMeshConversion.h"
+#include "StaticMeshDescription.h"
 
 #include "../Common/Lodash.h"
 #include "../ModelingStructsActor.h"
@@ -73,14 +75,14 @@ void PMBase::Create() {
 		_proceduralModelBase.tagsString.ParseIntoArray(_proceduralModelBase.tags, TEXT(","), true);
 	}
 	if (_proceduralModelBase.category == ProceduralModelCategory::CYLINDER) {
-		PMCylinder::Create();
+		PMCylinder::CreateFromInputs();
 	} else if (_proceduralModelBase.category == ProceduralModelCategory::CUBE) {
-		PMCube::Create();
+		PMCube::CreateFromInputs();
 	}
 }
 
 AStaticMeshActor* PMBase::CreateActor(FString name, FVector location, FRotator rotation,
-	FVector scale, FActorSpawnParameters spawnParams, USceneComponent* parent) {
+	FActorSpawnParameters spawnParams, USceneComponent* parent) {
 	// AActor* actor = (AActor*)World->SpawnActor<AActor>(AActor::StaticClass(), location * 100,
 	// 	rotation, spawnParams);
 	AStaticMeshActor* actor = (AStaticMeshActor*)World->SpawnActor<AStaticMeshActor>(
@@ -90,6 +92,19 @@ AStaticMeshActor* PMBase::CreateActor(FString name, FVector location, FRotator r
 		actor->AttachToComponent(parent, FAttachmentTransformRules::KeepRelativeTransform);
 	}
 	return actor;
+}
+
+void PMBase::AddMesh(AStaticMeshActor* actor, UStaticMesh* mesh, FString materialPath) {
+	UStaticMeshComponent* meshComponent = actor->FindComponentByClass<UStaticMeshComponent>();
+	meshComponent->SetStaticMesh(mesh);
+	if (materialPath.Len() > 0) {
+		if (!meshComponent) {
+			meshComponent = actor->FindComponentByClass<UStaticMeshComponent>();
+		}
+		UMaterial* material = Cast<UMaterial>(StaticLoadObject(UMaterial::StaticClass(), NULL,
+			*materialPath));
+		meshComponent->SetMaterial(0, material);
+	}
 }
 
 UProceduralMeshComponent* PMBase::CreateMesh(UObject* parentObject, USceneComponent* parent, FString name) {
@@ -106,4 +121,34 @@ void PMBase::AddMeshSection(UProceduralMeshComponent* ProceduralMesh, TArray<FVe
 	TArray<FVector2D> UV0, TArray<int> Triangles) {
 	ProceduralMesh->CreateMeshSection(0, Vertices, Triangles, TArray<FVector>(), UV0,
 		TArray<FColor>(), TArray<FProcMeshTangent>(), true);
+}
+
+// https://forums.unrealengine.com/t/procedural-mesh-not-saving-all-of-its-sections-to-static-mesh/382319/17
+UStaticMesh* PMBase::ToStaticMesh(UProceduralMeshComponent* ProceduralMesh) {
+	UStaticMesh* StaticMesh = nullptr;
+	if (IsValid(ProceduralMesh) == false) {
+		return StaticMesh;
+	}
+	FName PMCName = FName(*ProceduralMesh->GetName());
+	StaticMesh = NewObject<UStaticMesh>(GetTransientPackage(), PMCName, EObjectFlags::RF_Transient);
+	StaticMesh->bAllowCPUAccess = true;
+	StaticMesh->NeverStream = true;
+	StaticMesh->InitResources();
+	StaticMesh->SetLightingGuid();
+
+	FMeshDescription PMCDescription = BuildMeshDescription(ProceduralMesh);
+	UStaticMeshDescription* SMDescription = StaticMesh->CreateStaticMeshDescription();
+	SMDescription->SetMeshDescription(PMCDescription);
+	StaticMesh->BuildFromStaticMeshDescriptions({ SMDescription }, false);
+
+	// Collision
+	StaticMesh->CalculateExtendedBounds();
+	StaticMesh->SetBodySetup(ProceduralMesh->ProcMeshBodySetup);
+
+#if WITH_EDITOR    
+	StaticMesh->PostEditChange();
+#endif
+
+	StaticMesh->MarkPackageDirty();
+	return StaticMesh;
 }

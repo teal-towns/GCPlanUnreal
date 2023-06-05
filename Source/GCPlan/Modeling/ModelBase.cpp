@@ -70,7 +70,7 @@ void ModelBase::Create() {
 
 AStaticMeshActor* ModelBase::CreateActor(FString name, FVector location, FRotator rotation,
 	FVector scale, FActorSpawnParameters spawnParams, USceneComponent* parent, FString meshPath,
-	FString materialPath) {
+	FString materialPath, UStaticMesh* mesh) {
 	// Not sure what this is used for; does NOT show up in editor.
 	// spawnParams.Name = FName(name);
 	// * 100 for location since Unreal uses cm
@@ -81,7 +81,12 @@ AStaticMeshActor* ModelBase::CreateActor(FString name, FVector location, FRotato
 		actor->SetActorScale3D(scale);
 	}
 	UStaticMeshComponent* meshComponent = nullptr;
-	if (meshPath.Len() > 0) {
+	if (mesh) {
+		if (!meshComponent) {
+			meshComponent = actor->FindComponentByClass<UStaticMeshComponent>();
+		}
+		meshComponent->SetStaticMesh(mesh);
+	} else if (meshPath.Len() > 0) {
 		if (!meshComponent) {
 			meshComponent = actor->FindComponentByClass<UStaticMeshComponent>();
 		}
@@ -91,7 +96,7 @@ AStaticMeshActor* ModelBase::CreateActor(FString name, FVector location, FRotato
 		// UStaticMesh* mesh = LoadObject(nullptr, "/Script/Engine.StaticMesh'/Game/Modeling/Primitives/Cube.Cube'");
 		// UStaticMesh* mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL,
 		// 	TEXT("/Script/Engine.StaticMesh'/Game/Modeling/Primitives/Cube.Cube'")));
-		UStaticMesh* mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL,
+		mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL,
 			*meshPath));
 		meshComponent->SetStaticMesh(mesh);
 		// const ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObj(TEXT("/Script/Engine.StaticMesh'/Game/Modeling/Primitives/Cube.Cube'"));

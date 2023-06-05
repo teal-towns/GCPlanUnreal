@@ -20,7 +20,10 @@
 	- TGA is common and good, but much larger file size; can convert to PNG or JPG, e.g. https://products.aspose.app/imaging/image-resize
 
 ### Modeling
-- Actor -> Convert "..." to Static Mesh to save something in the scene as a reusable mesh.
+- Use `ModelingStructsActor` as inputs (update / add to structs to add more input options)
+- Use `ProceduralModelActor` to generate new meshes (if need new "lego" building blocks / primitives)
+- Use `ModelingActor` to combine existing meshes (and optionally genereate new meshes via ProceduralModel) (e.g. combine 4 cubes as table legs and 1 cube as a table top to make a table).
+- After meshes are generated, use `Actor -> Convert "..." to Static Mesh` to save something in the scene as a reusable mesh (which can then be inputs to `ModelingActor`).
 
 ### Include Third Party Code
 - https://georgy.dev/posts/third-party-integration/

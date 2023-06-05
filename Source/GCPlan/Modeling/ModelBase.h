@@ -20,7 +20,7 @@ public:
 	void Create();
 	AStaticMeshActor* CreateActor(FString name, FVector location, FRotator rotation,
 		FVector scale, FActorSpawnParameters spawnParams, USceneComponent* parent = nullptr,
-		FString meshPath = "", FString materialPath = "");
+		FString meshPath = "", FString materialPath = "", UStaticMesh* mesh = nullptr);
 
 	void SetInputs(FModelingBase);
 	FModelingBase GetInputs(FString defaultName, FVector defaultSize);

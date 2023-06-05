@@ -5,5 +5,7 @@ public:
 	PMCube();
 	~PMCube();
 
-	static void Create();
+	static UStaticMesh* CreateFromInputs();
+	static UStaticMesh* Create(FString name, FVector size, FVector vertices = FVector(2,2,2),
+		TArray<FString> tags = {}, bool destroyActor = false);
 };

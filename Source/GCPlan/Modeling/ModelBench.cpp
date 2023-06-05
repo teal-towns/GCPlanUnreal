@@ -2,8 +2,9 @@
 
 #include "Engine/StaticMeshActor.h"
 
-#include "../ModelingStructsActor.h"
 #include "ModelBase.h"
+#include "../ModelingStructsActor.h"
+#include "../ProceduralModel/PMCylinder.h"
 
 ModelBench::ModelBench() {
 }
@@ -42,15 +43,22 @@ void ModelBench::Create() {
 	scale = FVector(0.1, 0.1, size.Z);
 	float buffer = 0.1;
 
+	UStaticMesh* mesh = nullptr;
+	if (tags.Contains("cylinderLegs")) {
+		mesh = PMCylinder::Create(name + "_Leg", scale, FVector(10,10,10), {}, true);
+		// Already scaled, so reset.
+		scale = FVector(1,1,1);
+	}
+
 	location = FVector(-0.5 * size.X + buffer, -0.5 * size.Y + buffer, 0);
-	modelBase->CreateActor(name + "_Leg1", location, rotation, scale, spawnParams, parent, meshPath, materialPath);
+	modelBase->CreateActor(name + "_Leg1", location, rotation, scale, spawnParams, parent, meshPath, materialPath, mesh);
 
 	location = FVector(-0.5 * size.X + buffer, 0.5 * size.Y - buffer, 0);
-	modelBase->CreateActor(name + "_Leg2", location, rotation, scale, spawnParams, parent, meshPath, materialPath);
+	modelBase->CreateActor(name + "_Leg2", location, rotation, scale, spawnParams, parent, meshPath, materialPath, mesh);
 
 	location = FVector(0.5 * size.X - buffer, -0.5 * size.Y + buffer, 0);
-	modelBase->CreateActor(name + "_Leg3", location, rotation, scale, spawnParams, parent, meshPath, materialPath);
+	modelBase->CreateActor(name + "_Leg3", location, rotation, scale, spawnParams, parent, meshPath, materialPath, mesh);
 
 	location = FVector(0.5 * size.X - buffer, 0.5 * size.Y - buffer, 0);
-	modelBase->CreateActor(name + "_Leg4", location, rotation, scale, spawnParams, parent, meshPath, materialPath);
+	modelBase->CreateActor(name + "_Leg4", location, rotation, scale, spawnParams, parent, meshPath, materialPath, mesh);
 }
