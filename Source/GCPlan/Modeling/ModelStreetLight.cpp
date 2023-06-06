@@ -42,49 +42,51 @@ void ModelStreetLight::Create()
     float baseBottomHeight = size.Z * 2 / 5;
     float baseMiddleHeight = size.Z / 5;
     float baseTopHeight = size.Z / 5;
-    float vShapeWidth = 0.2;
+    float yShapeWidth = 0.2;
     float vShapeAngle = 15;
     float vShapeRadian = vShapeAngle * PI / 180;
     float vShapeLength = baseTopHeight / (cos(vShapeRadian));
-    float lightBulbHeight = baseTopHeight * 2 / 3;
-    float lightBulbRadius = lightBulbHeight * sin(vShapeRadian) / (1 - sin(vShapeRadian));
+
+    float lightBulbRadius = baseTopHeight / 2 - yShapeWidth;
+    float lightBulbCenterToBaseTopHeight = lightBulbRadius / sin(vShapeRadian) + lightBulbRadius;
+
     float solarPanelHeight = size.Z / 5;
-    float solarPanelWidth = (tan(vShapeRadian) * baseTopHeight) * 2 + vShapeWidth;
+    float solarPanelWidth = (tan(vShapeRadian) * baseTopHeight) * 2 + yShapeWidth;
 
     float currentHeight = 0;
 
     // Base Bottom
-    location = FVector(0, 0, 0);
+    location = FVector(0, 0, baseBottomHeight / 2);
     scale = FVector(0.3, 0.3, baseBottomHeight);
     modelBase->CreateActor(name + "_BaseBottom", location, rotation, scale, spawnParams, parent, meshPathCylinder, materialPath);
     currentHeight += baseBottomHeight;
 
     // Base middle
-    location = FVector(0, 0, currentHeight);
+    location = FVector(0, 0, currentHeight + baseMiddleHeight);
     scale = FVector(0.3, 0.3, baseMiddleHeight);
     modelBase->CreateActor(name + "_BaseMiddle", location, rotation, scale, spawnParams, parent, meshPathCylinder, materialPath);
     currentHeight += baseMiddleHeight;
 
     // Base top V right
-    location = FVector(0, 0, currentHeight);
-    scale = FVector(vShapeWidth, vShapeWidth, vShapeLength);
+    location = FVector(0, 0, currentHeight + baseTopHeight);
+    scale = FVector(0.2, 0.2, vShapeLength );
     modelBase->CreateActor(name + "_BaseTopRight", location, FRotator(vShapeAngle, 0, 0), scale, spawnParams, parent, meshPathCylinder, materialPath);
 
     // Base top V left
-    location = FVector(0, 0, currentHeight);
-    scale = FVector(vShapeWidth, vShapeWidth, vShapeLength);
+    location = FVector(0, 0, currentHeight + baseTopHeight);
+    scale = FVector(yShapeWidth, yShapeWidth, vShapeLength );
     modelBase->CreateActor(name + "_BaseTopLeft", location, FRotator(-vShapeAngle, 0, 0), scale, spawnParams, parent, meshPathCylinder, materialPath);
 
 
     // Light bulb
-    location = FVector(0, 0, currentHeight + lightBulbHeight);
+    location = FVector(0, 0, currentHeight + lightBulbCenterToBaseTopHeight);
     scale = FVector(lightBulbRadius, lightBulbRadius, lightBulbRadius);
     modelBase->CreateActor(name + "_LightBulb", location, rotation, scale, spawnParams, parent, meshPathSphere, materialPath);
 
     currentHeight += baseTopHeight;
 
     // Solar panel
-    location = FVector(0, 0, currentHeight);
+    location = FVector(0, 0, currentHeight + solarPanelHeight);
     scale = FVector(solarPanelWidth, 0.1, solarPanelHeight * 1.5);
     modelBase->CreateActor(name + "_SolarPanel", location, FRotator(0, 0, 30), scale, spawnParams, parent, meshPathCube, materialPath);
 }

@@ -44,30 +44,24 @@ void ModelEVCharger::Create()
     float rectHorizontalHeight = chargerTopHeight * 0.1;
 
     // Charger Bottom
-    location = FVector(0, 0, 0);
+    location = FVector(0, 0, chargerBottomHeight / 2);
     scale = FVector(chargerWidth, 0.3, chargerBottomHeight);
     modelBase->CreateActor(name + "_ChargerBottom", location, rotation, scale, spawnParams, parent, meshPathCube);
 
     // Charger Top Rectangular Frame Left
-    location = FVector(-(chargerWidth - rectVerticalWidth) / 2, 0, chargerBottomHeight);
+    location = FVector(-(chargerWidth - rectVerticalWidth) / 2, 0, chargerBottomHeight + chargerTopHeight);
     scale = FVector(rectVerticalWidth, 0.3, chargerTopHeight);
     modelBase->CreateActor(name + "_ChargerTopRectLeft", location, rotation, scale, spawnParams, parent, meshPathCube);
 
     // Charger Top Rectangular Frame Right
-    location = FVector((chargerWidth - rectVerticalWidth) / 2, 0, chargerBottomHeight);
+    location = FVector((chargerWidth - rectVerticalWidth) / 2, 0, chargerBottomHeight + chargerTopHeight);
     scale = FVector(rectVerticalWidth, 0.3, chargerTopHeight);
     modelBase->CreateActor(name + "_ChargerTopRectRight", location, rotation, scale, spawnParams, parent, meshPathCube);
 
     // Charger Top Rectangular Frame Top
-    location = FVector(0, 0, chargerBottomHeight + chargerTopHeight - rectHorizontalHeight / 2);
+    location = FVector(0, 0, chargerBottomHeight + chargerTopHeight * 2 - rectHorizontalHeight);
     scale = FVector(chargerWidth, 0.3, rectHorizontalHeight);
     modelBase->CreateActor(name + "_ChargerTopRectTop", location, rotation, scale, spawnParams, parent, meshPathCube);
 
-    // Charging Cable
-    // CreateChargingCable(modelBase, 0.1, 2, FVector(0, chargerWidth / 2, chargerBottomHeight / 2 + chargerTopHeight), FVector(0, 0, chargerWidth / 2, chargerBottomHeight / 2 + chargerTopHeight + 0.2));
-
-    // float stepAngleDegree = 10;
-    // location = FVector(0, chargerWidth / 2, chargerBottomHeight / 2 + chargerTopHeight);
-    // scale = FVector(0.1, 0.1, 1);
-    // modelBase->CreateActor(name + "_ChargingCable", location, FRotator(0, 0, 10), scale, spawnParams, parent, meshPathCylinder);
+    // Charging Cable Slot
 }
