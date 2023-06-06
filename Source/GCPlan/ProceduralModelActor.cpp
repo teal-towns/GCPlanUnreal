@@ -1,6 +1,7 @@
 #include "ProceduralModelActor.h"
 
-#include "Modeling/ModelBase.h"
+#include "Common/UnrealGlobal.h"
+// #include "Modeling/ModelBase.h"
 #include "ProceduralModel/PMBase.h"
 
 AProceduralModelActor::AProceduralModelActor()
@@ -19,16 +20,18 @@ void AProceduralModelActor::BeginPlay()
 // }
 
 void AProceduralModelActor::Init() {
-	ModelBase* modelBase = ModelBase::GetInstance();
-    modelBase->SetWorld(GetWorld());
+	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+	unrealGlobal->InitCommon(GetWorld());
+	// ModelBase* modelBase = ModelBase::GetInstance();
+	// modelBase->SetWorld(GetWorld());
 
-    PMBase* pmBase = PMBase::GetInstance();
-    pmBase->SetWorld(GetWorld());
+	// PMBase* pmBase = PMBase::GetInstance();
+	// pmBase->SetWorld(GetWorld());
 }
 
 void AProceduralModelActor::GenerateModel() {
 	Init();
 	PMBase* pmBase = PMBase::GetInstance();
 	pmBase->SetInputs(ProceduralModelBase);
-    pmBase->Create();
+	pmBase->Create();
 }

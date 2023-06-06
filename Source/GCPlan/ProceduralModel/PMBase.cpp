@@ -5,6 +5,7 @@
 #include "StaticMeshDescription.h"
 
 #include "../Common/Lodash.h"
+#include "../Common/UnrealGlobal.h"
 #include "../ModelingStructsActor.h"
 
 #include "PMCube.h"
@@ -83,10 +84,20 @@ void PMBase::Create() {
 
 AStaticMeshActor* PMBase::CreateActor(FString name, FVector location, FRotator rotation,
 	FActorSpawnParameters spawnParams, USceneComponent* parent) {
-	// AActor* actor = (AActor*)World->SpawnActor<AActor>(AActor::StaticClass(), location * 100,
+	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+
+	// In case of recompile in editor, will lose reference so need to check scene too.
+	AActor* actor1 = unrealGlobal->GetActorByName(name, AStaticMeshActor::StaticClass());
+	if (actor1) {
+		return (AStaticMeshActor*)actor1;
+	}
+
+	spawnParams.Name = FName(name);
+	// AActor* actor = (AActor*)World->SpawnActor<AActor>(AActor::StaticClass(), location * unrealGlobal->Scale(),
 	// 	rotation, spawnParams);
 	AStaticMeshActor* actor = (AStaticMeshActor*)World->SpawnActor<AStaticMeshActor>(
-		AStaticMeshActor::StaticClass(), location * 100, rotation, spawnParams);
+		AStaticMeshActor::StaticClass(), location * unrealGlobal->Scale(), rotation, spawnParams);
+	unrealGlobal->SetActorFolder(actor);
 	actor->SetActorLabel(name);
 	if (parent) {
 		actor->AttachToComponent(parent, FAttachmentTransformRules::KeepRelativeTransform);

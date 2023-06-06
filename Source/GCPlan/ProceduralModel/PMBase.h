@@ -22,8 +22,9 @@ public:
 	FProceduralModelBase GetInputs(FString defaultName, FVector defaultSize, FVector defaultVertices);
 	void Create();
 
-	AStaticMeshActor* CreateActor(FString name, FVector location, FRotator rotation,
-		FActorSpawnParameters spawnParams, USceneComponent* parent = nullptr);
+	AStaticMeshActor* CreateActor(FString name, FVector location,
+		FRotator rotation, FActorSpawnParameters spawnParams,
+		USceneComponent* parent = nullptr);
 	static void AddMesh(AStaticMeshActor* actor, UStaticMesh* mesh, FString materialPath = "");
 	static UProceduralMeshComponent* CreateMesh(UObject* parentObject, USceneComponent* parent,
 		FString name);

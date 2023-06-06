@@ -2,6 +2,8 @@
 
 #include "ProceduralMeshComponent.h"
 
+#include "../Common/UnrealGlobal.h"
+
 #include "PMBase.h"
 
 PMCylinder::PMCylinder() {
@@ -17,7 +19,7 @@ UStaticMesh* PMCylinder::CreateFromInputs() {
 }
 
 UStaticMesh* PMCylinder::Create(FString name, FVector size, FVector vertices, TArray<FString> tags, bool destroyActor) {
-	float unrealScale = 100;
+	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	float UVScale = 1;
 
 	PMBase* pmBase = PMBase::GetInstance();
@@ -51,7 +53,7 @@ UStaticMesh* PMCylinder::Create(FString name, FVector size, FVector vertices, TA
 	for (int zz = 0; zz < vertices.Z; zz++) {
 		for (int xy = 0; xy < vertices.X; xy++) {
 			xyLine = centerToEdge.RotateAngleAxis(anglePerVertex * xy, FVector(0,0,1)).GetClampedToMaxSize(radius) * extrudeFactors[zz];
-			Vertices.Add(FVector(center.X + xyLine.X * unrealScale, center.Y + xyLine.Y * unrealScale, zz * zSizePerVertex * unrealScale));
+			Vertices.Add(FVector(center.X + xyLine.X * unrealGlobal->Scale(), center.Y + xyLine.Y * unrealGlobal->Scale(), zz * zSizePerVertex * unrealGlobal->Scale()));
 
 			UV0.Add(FVector2D((float)xy * UVScale, (float)zz * UVScale));
 			// UE_LOG(LogTemp, Display, TEXT("UVs %f %f %d %d %d"), (float)xy * UVScale, (float)zz * UVScale, zz, xy, UVScale);
