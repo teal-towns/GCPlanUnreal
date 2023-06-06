@@ -5,8 +5,8 @@
 
 #include "../Common/Lodash.h"
 #include "../ModelingStructsActor.h"
-
 #include "ModelBench.h"
+#include "ModelStreetLight.h"
 
 ModelBase* ModelBase::pinstance_{nullptr};
 std::mutex ModelBase::mutex_;
@@ -64,6 +64,10 @@ void ModelBase::Create() {
 	}
 	if (_modelingBase.subCategory == ModelingSubCategory::BENCH) {
 		ModelBench::Create();
+	}
+	else if (_modelingBase.subCategory == ModelingSubCategory::STREETLIGHT)
+	{
+		ModelStreetLight::Create();
 	}
 	// TODO
 }

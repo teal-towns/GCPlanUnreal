@@ -34,10 +34,12 @@ enum ModelingCategory {
 };
 
 UENUM()
-enum ModelingSubCategory {
+enum ModelingSubCategory
+{
 	BENCH,
 	CHAIR,
-	TABLE
+	TABLE,
+	STREETLIGHT
 };
 
 USTRUCT()
