@@ -9,6 +9,7 @@
 #include "ModelBench.h"
 #include "ModelDesk.h"
 #include "ModelStreetLight.h"
+#include "ModelEVCharger.h"
 
 ModelBase* ModelBase::pinstance_{nullptr};
 std::mutex ModelBase::mutex_;
@@ -80,6 +81,10 @@ void ModelBase::Create() {
 	else if (_modelingBase.subCategory == ModelingSubCategory::STREETLIGHT)
 	{
 		ModelStreetLight::Create();
+	}
+	else if (_modelingBase.subCategory == ModelingSubCategory::EVCHARGER)
+	{
+		ModelEVCharger::Create();
 	}
 	// TODO
 }
