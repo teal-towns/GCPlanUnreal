@@ -44,22 +44,22 @@ void ModelEVCharger::Create()
     float rectHorizontalHeight = chargerTopHeight * 0.1;
 
     // Charger Bottom
-    location = FVector(0, 0, chargerBottomHeight / 2);
+    location = FVector(0, 0, 0);
     scale = FVector(chargerWidth, 0.3, chargerBottomHeight);
     modelBase->CreateActor(name + "_ChargerBottom", location, rotation, scale, spawnParams, parent, meshPathCube);
 
     // Charger Top Rectangular Frame Left
-    location = FVector(-(chargerWidth - rectVerticalWidth) / 2, 0, chargerBottomHeight + chargerTopHeight);
+    location = FVector(-(chargerWidth - rectVerticalWidth) / 2, 0, chargerBottomHeight);
     scale = FVector(rectVerticalWidth, 0.3, chargerTopHeight);
     modelBase->CreateActor(name + "_ChargerTopRectLeft", location, rotation, scale, spawnParams, parent, meshPathCube);
 
     // Charger Top Rectangular Frame Right
-    location = FVector((chargerWidth - rectVerticalWidth) / 2, 0, chargerBottomHeight + chargerTopHeight);
+    location = FVector((chargerWidth - rectVerticalWidth) / 2, 0, chargerBottomHeight);
     scale = FVector(rectVerticalWidth, 0.3, chargerTopHeight);
     modelBase->CreateActor(name + "_ChargerTopRectRight", location, rotation, scale, spawnParams, parent, meshPathCube);
 
     // Charger Top Rectangular Frame Top
-    location = FVector(0, 0, chargerBottomHeight + chargerTopHeight * 2 - rectHorizontalHeight);
+    location = FVector(0, 0, chargerBottomHeight + chargerTopHeight - rectHorizontalHeight);
     scale = FVector(chargerWidth, 0.3, rectHorizontalHeight);
     modelBase->CreateActor(name + "_ChargerTopRectTop", location, rotation, scale, spawnParams, parent, meshPathCube);
 
