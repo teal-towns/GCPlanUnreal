@@ -36,7 +36,7 @@ void ModelBench::Create() {
 	// Seat
 	location = FVector(0, 0, size.Z);
 	scale = FVector(size.X, size.Y, 0.2);
-	modelBase->CreateActor(name + "_Leg4", location, rotation, scale, spawnParams, parent, meshPath, materialPath);
+	modelBase->CreateActor(name + "_Seat", location, rotation, scale, spawnParams, parent, meshPath, materialPath);
 
 	// Legs
 	spawnParams.Owner = bench;

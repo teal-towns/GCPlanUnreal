@@ -3,6 +3,7 @@
 #include "Engine/StaticMeshActor.h"
 #include "ProceduralMeshComponent.h"
 
+#include "../Common/UnrealGlobal.h"
 // #include "../Modeling/ModelBase.h"
 #include "PMBase.h"
 
@@ -20,7 +21,7 @@ UStaticMesh* PMCube::CreateFromInputs() {
 
 UStaticMesh* PMCube::Create(FString name, FVector size, FVector vertices, TArray<FString> tags,
 	bool destroyActor) {
-	float unrealScale = 100;
+	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	float UVScale = 1;
 
 	PMBase* pmBase = PMBase::GetInstance();
@@ -53,7 +54,7 @@ UStaticMesh* PMCube::Create(FString name, FVector size, FVector vertices, TArray
 	x = size.X * -0.5;
 	for (int zz = 0; zz < vertices.Z; zz++) {
 		for (int yy = 0; yy < vertices.Y; yy++) {
-			Vertices.Add(FVector(x, yy * sizePerVertex.Y * unrealScale, zz * sizePerVertex.Z * unrealScale));
+			Vertices.Add(FVector(x, yy * sizePerVertex.Y * unrealGlobal->Scale(), zz * sizePerVertex.Z * unrealGlobal->Scale()));
 			UV0.Add(FVector2D((float)yy * UVScale, (float)zz * UVScale));
 
 			// Do 1 quad (6 triangles, 2 vertices) at a time so go every other time.

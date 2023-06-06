@@ -8,7 +8,6 @@
 // #include "GCPlanGameInstance.h"
 
 #include "BuildingStructsActor.h"
-#include "InstancedStaticMeshActor.h"
 #include "SettingsActor.h"
 #include "SocketActor.h"
 
@@ -36,6 +35,8 @@ public:
 
 	UFUNCTION(CallInEditor)
 	void EditorGenerate();
+	UFUNCTION(CallInEditor)
+	void EditorClear();
 	void Init();
 	void InitSocketOn();
 	void Login();
@@ -44,10 +45,8 @@ private:
 	bool Inited = false;
 	// UGCPlanGameInstance* GameInstance;
 
-	TMap<FString, AInstancedStaticMeshActor*> InstancedStaticMeshActors;
 	ASettingsActor* SettingsActor;
 	ASocketActor* SocketActor;
-	AInstancedStaticMeshActor* HexActor;
 };
 
 USTRUCT()

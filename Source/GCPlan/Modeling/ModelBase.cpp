@@ -4,6 +4,7 @@
 #include "Components/StaticMeshComponent.h"
 
 #include "../Common/Lodash.h"
+#include "../Common/UnrealGlobal.h"
 #include "../ModelingStructsActor.h"
 
 #include "ModelBench.h"
@@ -71,11 +72,18 @@ void ModelBase::Create() {
 AStaticMeshActor* ModelBase::CreateActor(FString name, FVector location, FRotator rotation,
 	FVector scale, FActorSpawnParameters spawnParams, USceneComponent* parent, FString meshPath,
 	FString materialPath, UStaticMesh* mesh) {
-	// Not sure what this is used for; does NOT show up in editor.
-	// spawnParams.Name = FName(name);
-	// * 100 for location since Unreal uses cm
+	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+
+	// In case of recompile in editor, will lose reference so need to check scene too.
+	AActor* actor1 = unrealGlobal->GetActorByName(name, AStaticMeshActor::StaticClass());
+	if (actor1) {
+		return (AStaticMeshActor*)actor1;
+	}
+
+	spawnParams.Name = FName(name);
 	AStaticMeshActor* actor = (AStaticMeshActor*)World->SpawnActor<AStaticMeshActor>(
-		AStaticMeshActor::StaticClass(), location * 100, rotation, spawnParams);
+		AStaticMeshActor::StaticClass(), location * unrealGlobal->Scale(), rotation, spawnParams);
+	unrealGlobal->SetActorFolder(actor);
 	actor->SetActorLabel(name);
 	if (scale.X != 1 || scale.Y != 1 || scale.Z != 1) {
 		actor->SetActorScale3D(scale);
