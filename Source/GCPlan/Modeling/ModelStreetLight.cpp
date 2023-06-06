@@ -48,7 +48,7 @@ void ModelStreetLight::Create()
     float vShapeLength = baseTopHeight / (cos(vShapeRadian));
 
     float lightBulbRadius = baseTopHeight / 2 - yShapeWidth;
-    float lightBulbCenterToBaseTopHeight = lightBulbRadius / sin(vShapeRadian);
+    float lightBulbCenterToBaseTopHeight = lightBulbRadius / sin(vShapeRadian) + lightBulbRadius;
 
     float solarPanelHeight = size.Z / 5;
     float solarPanelWidth = (tan(vShapeRadian) * baseTopHeight) * 2 + yShapeWidth;
@@ -62,18 +62,18 @@ void ModelStreetLight::Create()
     currentHeight += baseBottomHeight;
 
     // Base middle
-    location = FVector(0, 0, currentHeight + baseMiddleHeight / 2);
+    location = FVector(0, 0, currentHeight + baseMiddleHeight);
     scale = FVector(0.3, 0.3, baseMiddleHeight);
     modelBase->CreateActor(name + "_BaseMiddle", location, rotation, scale, spawnParams, parent, meshPathCylinder, materialPath);
     currentHeight += baseMiddleHeight;
 
     // Base top V right
-    location = FVector(0, 0, currentHeight + baseTopHeight / 2);
+    location = FVector(0, 0, currentHeight + baseTopHeight);
     scale = FVector(0.2, 0.2, vShapeLength );
     modelBase->CreateActor(name + "_BaseTopRight", location, FRotator(vShapeAngle, 0, 0), scale, spawnParams, parent, meshPathCylinder, materialPath);
 
     // Base top V left
-    location = FVector(0, 0, currentHeight + baseTopHeight / 2);
+    location = FVector(0, 0, currentHeight + baseTopHeight);
     scale = FVector(yShapeWidth, yShapeWidth, vShapeLength );
     modelBase->CreateActor(name + "_BaseTopLeft", location, FRotator(-vShapeAngle, 0, 0), scale, spawnParams, parent, meshPathCylinder, materialPath);
 
@@ -86,7 +86,7 @@ void ModelStreetLight::Create()
     currentHeight += baseTopHeight;
 
     // Solar panel
-    location = FVector(0, 0, currentHeight + solarPanelHeight / 2);
+    location = FVector(0, 0, currentHeight + solarPanelHeight);
     scale = FVector(solarPanelWidth, 0.1, solarPanelHeight * 1.5);
-    modelBase->CreateActor(name + "_SolarPanel", location, FRotator(0, 0, 15), scale, spawnParams, parent, meshPathCube, materialPath);
+    modelBase->CreateActor(name + "_SolarPanel", location, FRotator(0, 0, 30), scale, spawnParams, parent, meshPathCube, materialPath);
 }

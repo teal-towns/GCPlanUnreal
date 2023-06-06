@@ -39,7 +39,8 @@ enum ModelingSubCategory
 	BENCH,
 	CHAIR,
 	TABLE,
-	STREETLIGHT
+	STREETLIGHT,
+	EVCHARGER
 };
 
 USTRUCT()
