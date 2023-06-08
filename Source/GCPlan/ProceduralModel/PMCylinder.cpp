@@ -53,7 +53,7 @@ UStaticMesh* PMCylinder::Create(FString name, FVector size, FVector vertices, TA
 	for (int zz = 0; zz < vertices.Z; zz++) {
 		for (int xy = 0; xy < vertices.X; xy++) {
 			xyLine = centerToEdge.RotateAngleAxis(anglePerVertex * xy, FVector(0,0,1)).GetClampedToMaxSize(radius) * extrudeFactors[zz];
-			Vertices.Add(FVector(center.X + xyLine.X * unrealGlobal->Scale(), center.Y + xyLine.Y * unrealGlobal->Scale(), zz * zSizePerVertex * unrealGlobal->Scale()));
+			Vertices.Add(FVector(center.X + xyLine.X * unrealGlobal->GetScale(), center.Y + xyLine.Y * unrealGlobal->GetScale(), zz * zSizePerVertex * unrealGlobal->GetScale()));
 
 			UV0.Add(FVector2D((float)xy * UVScale, (float)zz * UVScale));
 			// UE_LOG(LogTemp, Display, TEXT("UVs %f %f %d %d %d"), (float)xy * UVScale, (float)zz * UVScale, zz, xy, UVScale);

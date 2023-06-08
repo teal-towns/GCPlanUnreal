@@ -29,6 +29,15 @@
 - https://georgy.dev/posts/third-party-integration/
 	- Have to update `GCPlan.Build.cs` with both `PublicAdditionalLibraries` and `PublicIncludePaths`
 
+### (Git) Workflow
+- `git pull origin main` to get up to date code, then `git checkout -b [branch]` to create a new branch for your work.
+- [Do the work]
+- `git status -s` to see file changes. It is not uncommon for files you did not touch to be edited in the process; in general revert those changes with `git checkout -- [filename]` optionally with wildcards for pattern matching: https://stackoverflow.com/questions/15160978/is-there-a-way-to-use-wildcards-with-git-checkout
+	- Ensure no large file changes that are not vital: `git status --porcelain | awk "{print $2}" | xargs ls -hl` (then search for `G ` and `M ` for gigabytes and megabytes files)
+	- Check & do above steps (for any mesh, texture or materials additions or changes).
+- After confirmed the work is good, `git commit -am 'SUMMARY-OF-CHANGES'` then `git push origin [branch]` then go to github.com and open a Pull Request and request a review / tell a team member.
+	- Once code is reviewed, changed (if needed) and approved, merge the Pull Request on Github, do a `git pull origin main` locally to get your changes and delete the branch on github.com and locally.
+
 
 ## Coding
 
@@ -40,6 +49,7 @@
 	- named / optional function arguments in any order.. Instead need to pass ALL arguments in order, meaning if we want to pass the 5th named argument but want to leave the 3rd and 4th as default, we can not; we have to set 3rd and 4th also..
 - UStruct requires an empty constructor or will give compile errors
 	- https://forums.unrealengine.com/t/how-to-write-constructor-for-custom-struct/341749
+- FRotator is NOT x,y,z it is y, z, x (x = roll, y = pitch, z = yaw)
 
 
 - Styleguide / Coding Conventions: https://docs.unrealengine.com/4.26/en-US/ProductionPipelines/DevelopmentSetup/CodingStandard/

@@ -138,7 +138,6 @@ std::tuple<FBuildingBlueprint, FBuildData> BuildingPolyLine::BuildAlongPolyLine(
 				mainAxis = pathEndCurrent - posCurrentGround;
 				globalAngle = MathVector::SignedAngle(mainAxisOneUnitPast, mainAxis, FVector(0,0,1));
 				stepAngle = MathPolygon::StepAngle(globalAngle, degreesStep);
-				// mainAxisOneUnit = (FRotator(0, 0, stepAngle).RotateVector(mainAxisOneUnit)).GetClampedToMaxSize(unitDiameter);
 				mainAxisOneUnit = mainAxisOneUnit.RotateAngleAxis(stepAngle, FVector(0,0,1)).GetClampedToMaxSize(unitDiameter);
 			}
 			if (!firstPlacement && iterations != 0) {
@@ -152,7 +151,6 @@ std::tuple<FBuildingBlueprint, FBuildData> BuildingPolyLine::BuildAlongPolyLine(
 				globalAngle = MathVector::SignedAngle(mainAxisOneUnitPast, mainAxis, FVector(0,0,1));
 				stepAngle = MathPolygon::StepAngle(globalAngle, degreesStep);
 
-				// mainAxisOneUnitTemp = (FRotator(0, 0, stepAngle).RotateVector(mainAxisOneUnitPast)).GetClampedToMaxSize(unitDiameter);
 				mainAxisOneUnitTemp = mainAxisOneUnitPast.RotateAngleAxis(stepAngle, FVector(0,0,1)).GetClampedToMaxSize(unitDiameter);
 				mainAxisOneUnitLength = mainAxisOneUnitTemp.Size();
 				if (mainAxisOneUnitLength < unitDiameter) {

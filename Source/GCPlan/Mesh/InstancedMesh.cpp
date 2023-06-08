@@ -42,6 +42,23 @@ void InstancedMesh::SetWorld(UWorld* World1) {
 	World = World1;
 }
 
+void InstancedMesh::InitMeshes() {
+	// TODO - init from JSON so meshes and materials are dynamic / per environment.
+	AddMesh("HexModule", "/Script/Engine.StaticMesh'/Game/Buildings/Hex/HexModule/HexModule.HexModule'",
+		"/Script/Engine.Material'/Game/Nature/Wood/wood-pale-material.wood-pale-material'");
+	AddMesh("RoadRoundabout", "/Script/Engine.StaticMesh'/Game/Landscape/Roundabout1.Roundabout1'",
+		"/Script/Engine.Material'/Game/Landscape/Asphalt_M.Asphalt_M'");
+
+	AddMesh("VertexWhite", "/Script/Engine.StaticMesh'/Game/Landscape/VerticesEdit/VertexWhite.VertexWhite'",
+		"");
+	AddMesh("EdgeBlack", "/Script/Engine.StaticMesh'/Game/Landscape/VerticesEdit/EdgeBlack.EdgeBlack'",
+		"");
+	AddMesh("EdgeBlue", "/Script/Engine.StaticMesh'/Game/Landscape/VerticesEdit/EdgeBlue.EdgeBlue'",
+		"");
+	AddMesh("EdgeRed", "/Script/Engine.StaticMesh'/Game/Landscape/VerticesEdit/EdgeRed.EdgeRed'",
+		"");
+}
+
 // UWorld* InstancedMesh::GetWorld() {
 // 	return World;
 // }
@@ -63,7 +80,7 @@ void InstancedMesh::AddMesh(FString name, FString meshPath, FString materialPath
 			// 	FVector(1,1,1), spawnParams, meshesParent, meshPath, materialPath);
 			spawnParams.Name = FName(name);
 			actor = (AActor*)World->SpawnActor<AActor>(
-				AActor::StaticClass(), FVector(0,0,0) * unrealGlobal->Scale(), FRotator(0,0,0), spawnParams);
+				AActor::StaticClass(), FVector(0,0,0) * unrealGlobal->GetScale(), FRotator(0,0,0), spawnParams);
 			actor->SetActorLabel(name);
 			_instancedMeshActors.Add(name, actor);
 
@@ -95,16 +112,54 @@ void InstancedMesh::AddMesh(FString name, FString meshPath, FString materialPath
 	// return actor;
 }
 
-void InstancedMesh::CreateInstance(FString meshKey, FVector Translation, FRotator Rotation, FVector Scale) {
+int InstancedMesh::CreateInstance(FString meshKey, FVector Translation, FRotator Rotation, FVector Scale,
+	bool unrealScaleTranslation) {
+	int index = -1;
 	if (_instancedMeshActors.Contains(meshKey)) {
+		if (unrealScaleTranslation) {
+			Translation = UnrealGlobal::Scale(Translation);
+		}
 		UInstancedStaticMeshComponent* component = _instancedMeshActors[meshKey]->FindComponentByClass<UInstancedStaticMeshComponent>();
-		component->AddInstance(FTransform(Rotation, Translation, Scale));
+		index = component->AddInstance(FTransform(Rotation, Translation, Scale));
 	}
+	return index;
 }
 
 void InstancedMesh::ClearInstances(FString meshKey) {
 	if (_instancedMeshActors.Contains(meshKey)) {
 		UInstancedStaticMeshComponent* component = _instancedMeshActors[meshKey]->FindComponentByClass<UInstancedStaticMeshComponent>();
 		component->ClearInstances();
+	}
+}
+
+int InstancedMesh::UpdateInstance(FString meshKey, int instanceIndex, FVector Translation, FRotator Rotation,
+	FVector Scale, bool unrealScaleTranslation) {
+	int index = -1;
+	if (_instancedMeshActors.Contains(meshKey)) {
+		UInstancedStaticMeshComponent* component = _instancedMeshActors[meshKey]->FindComponentByClass<UInstancedStaticMeshComponent>();
+		if (instanceIndex < component->GetInstanceCount()) {
+			if (unrealScaleTranslation) {
+				Translation = UnrealGlobal::Scale(Translation);
+			}
+			bool valid = component->UpdateInstanceTransform(instanceIndex, FTransform(Rotation, Translation, Scale));
+			if (valid) {
+				index = instanceIndex;
+			}
+		}
+	}
+	return index;
+}
+
+int InstancedMesh::SaveInstance(FString meshKey, int instanceIndex, FVector Translation, FRotator Rotation,
+	FVector Scale, bool unrealScaleTranslation) {
+	if (instanceIndex < 0) {
+		return CreateInstance(meshKey, Translation, Rotation, Scale, unrealScaleTranslation);
+	}
+	return UpdateInstance(meshKey, instanceIndex, Translation, Rotation, Scale, unrealScaleTranslation);
+}
+
+void InstancedMesh::ClearInstancesBulk(TArray<FString> meshKeys) {
+	for (int ii = 0; ii < meshKeys.Num(); ii++) {
+		ClearInstances(meshKeys[ii]);
 	}
 }

@@ -175,3 +175,51 @@ struct FRoadPath {
 		laneCount = laneCount_;
 	}
 };
+
+USTRUCT()
+struct FVerticesEdit {
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString uName;
+	UPROPERTY()
+	TArray<FVector> vertices;
+	UPROPERTY()
+	FString type;
+	UPROPERTY()
+	FVector center;
+	UPROPERTY()
+	int connectEndToStart;
+
+	FVerticesEdit() {};
+	FVerticesEdit(FString uName_, TArray<FVector> vertices_, FString type_) {
+		uName = uName_;
+		vertices = vertices_;
+		type = type_;
+		center = FVector(0,0,0);
+		connectEndToStart = (type == "road") ? 0 : 1;
+	}
+};
+
+USTRUCT()
+struct FVerticesEditActor {
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString uName;
+	UPROPERTY()
+	TArray<int> verticesInstanceIndices;
+	UPROPERTY()
+	TArray<int> edgesInstanceIndices;
+	UPROPERTY()
+	int centerInstanceIndex;
+
+	FVerticesEditActor() {};
+	FVerticesEditActor(FString uName_, TArray<int> verticesInstanceIndices_ = {},
+		TArray<int> edgesInstanceIndices_ = {}, int centerInstanceIndex_ = -1) {
+		uName = uName_;
+		verticesInstanceIndices = verticesInstanceIndices_;
+		edgesInstanceIndices = edgesInstanceIndices_;
+		centerInstanceIndex = centerInstanceIndex_;
+	}
+};

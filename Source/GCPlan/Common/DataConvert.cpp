@@ -45,7 +45,7 @@ FMapStringFloat DataConvert::RotatorToDict(FRotator vector) {
 }
 
 FRotator DataConvert::DictToRotator(FMapStringFloat dict) {
-	return FRotator(dict.v["x"], dict.v["y"], dict.v["z"]);
+	return FRotator(dict.v["y"], dict.v["z"], dict.v["x"]);
 }
 
 // TArray<float> DataConvert::VectorToArray(FVector vector) {

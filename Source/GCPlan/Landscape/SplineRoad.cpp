@@ -117,7 +117,7 @@ void SplineRoad::DrawRoads() {
 			// actor = pmBase->CreateActor(UName, location, rotation, spawnParams, roadsParent);
 			spawnParams.Name = FName(UName);
 			actor = (AActor*)World->SpawnActor<AActor>(
-				AActor::StaticClass(), FVector(0,0,0) * unrealGlobal->Scale(), FRotator(0,0,0), spawnParams);
+				AActor::StaticClass(), FVector(0,0,0) * unrealGlobal->GetScale(), FRotator(0,0,0), spawnParams);
 			actor->SetActorLabel(UName);
 			_RoadsActors.Add(UName, actor);
 			parent = actor->FindComponentByClass<USceneComponent>();
@@ -144,15 +144,15 @@ void SplineRoad::DrawRoads() {
 					// Set Z to the same to ensure flat.
 					pointToUse.Z = vertices[vv].Z;
 					// UE_LOG(LogTemp, Display, TEXT("pre-point %s prev %s cur %s"), *pointToUse.ToString(), *vertices[(vv-1)].ToString(), *vertices[vv].ToString());
-					point = FSplinePoint((float)pointCount, pointToUse * unrealGlobal->Scale());
+					point = FSplinePoint((float)pointCount, pointToUse * unrealGlobal->GetScale());
 					spline->AddPoint(point, false);
 					// AddSplineMesh(UName, pointCount, parentObject, parent, widthMeters, spline);
 					pointCount += 1;
 				}
 
 				// UE_LOG(LogTemp, Display, TEXT("point %s"), *vertices[vv].ToString());
-				point = FSplinePoint((float)pointCount, vertices[vv] * unrealGlobal->Scale());
-				// point = FSplinePoint((float)vv, vertices[vv] * unrealGlobal->Scale());
+				point = FSplinePoint((float)pointCount, vertices[vv] * unrealGlobal->GetScale());
+				// point = FSplinePoint((float)vv, vertices[vv] * unrealGlobal->GetScale());
 				spline->AddPoint(point, false);
 				// AddSplineMesh(UName, pointCount, parentObject, parent, widthMeters, spline);
 				pointCount += 1;
@@ -164,7 +164,7 @@ void SplineRoad::DrawRoads() {
 					// Set Z to the same to ensure flat.
 					pointToUse.Z = vertices[vv].Z;
 					// UE_LOG(LogTemp, Display, TEXT("post-point %s cur %s next %s"), *pointToUse.ToString(), *vertices[vv].ToString(), *vertices[(vv+1)].ToString());
-					point = FSplinePoint((float)pointCount, pointToUse * unrealGlobal->Scale());
+					point = FSplinePoint((float)pointCount, pointToUse * unrealGlobal->GetScale());
 					spline->AddPoint(point, false);
 					// AddSplineMesh(UName, pointCount, parentObject, parent, widthMeters, spline);
 					pointCount += 1;
@@ -176,7 +176,7 @@ void SplineRoad::DrawRoads() {
 					// Move up a bit to cover roads.
 					FVector pos = vertices[vv];
 					pos.Z += 0.25;
-					instancedMesh->CreateInstance("RoadRoundabout", pos * unrealGlobal->Scale(), FRotator(1,1,1), FVector(2,2,1));
+					instancedMesh->CreateInstance("RoadRoundabout", pos, FRotator(0,0,0), FVector(2,2,1));
 					roundaboutUNames.Add(uNameRoundabout);
 				}
 			}

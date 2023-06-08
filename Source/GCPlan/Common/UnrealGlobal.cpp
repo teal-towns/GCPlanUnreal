@@ -4,6 +4,7 @@
 
 #include "../Landscape/HeightMap.h"
 #include "../Landscape/SplineRoad.h"
+#include "../Landscape/VerticesEdit.h"
 #include "../Mesh/InstancedMesh.h"
 #include "../Modeling/ModelBase.h"
 #include "../ProceduralModel/PMBase.h"
@@ -25,10 +26,12 @@ UnrealGlobal *UnrealGlobal::GetInstance() {
 	return pinstance_;
 }
 
-void UnrealGlobal::InitAll(UWorld* World1) {
+void UnrealGlobal::InitAll(UWorld* World1, TArray<FString> skipKeys) {
 	InitCommon(World1);
 	InitMeshes(World1);
-	InitWeb(World1);
+	if (!skipKeys.Contains("web")) {
+		InitWeb(World1);
+	}
 }
 
 void UnrealGlobal::InitCommon(UWorld* World1) {
@@ -45,6 +48,8 @@ void UnrealGlobal::InitCommon(UWorld* World1) {
 
     SplineRoad* splineRoad = SplineRoad::GetInstance();
     splineRoad->SetWorld(World1);
+
+    // VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
 }
 
 void UnrealGlobal::InitWeb(UWorld* World1) {
@@ -68,14 +73,10 @@ void UnrealGlobal::InitWeb(UWorld* World1) {
 void UnrealGlobal::InitMeshes(UWorld* World1) {
 	SetWorld(World1);
 
-	// TODO - init from JSON so meshes and materials are dynamic / per environment.
 	// Must be after modelBase as uses that.
 	InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
 	instancedMesh->SetWorld(World);
-	instancedMesh->AddMesh("HexModule", "/Script/Engine.StaticMesh'/Game/Buildings/Hex/HexModule/HexModule.HexModule'",
-		"/Script/Engine.Material'/Game/Nature/Wood/wood-pale-material.wood-pale-material'");
-	instancedMesh->AddMesh("RoadRoundabout", "/Script/Engine.StaticMesh'/Game/Landscape/Roundabout1.Roundabout1'",
-		"/Script/Engine.Material'/Game/Landscape/Asphalt_M.Asphalt_M'");
+	instancedMesh->InitMeshes();
 }
 
 void UnrealGlobal::SetWorld(UWorld* World1) {
@@ -86,8 +87,12 @@ UWorld* UnrealGlobal::GetWorld() {
 	return World;
 }
 
-float UnrealGlobal::Scale() {
+float UnrealGlobal::GetScale() {
 	return 100;
+}
+
+FVector UnrealGlobal::Scale(FVector location) {
+	return location * 100;
 }
 
 void UnrealGlobal::SetActorFolder(AActor* actor, FString path) {
@@ -121,12 +126,22 @@ void UnrealGlobal::RemoveAttachedActors(AActor* actor) {
 // 	return found;
 // }
 
-AActor* UnrealGlobal::GetActorByName(FString name, TSubclassOf<AActor> ActorClass) {
+AActor* UnrealGlobal::GetActorByName(FString name, TSubclassOf<AActor> ActorClass, bool save, bool matchStartsWith) {
+	// UE_LOG(LogTemp, Display, TEXT("GetActorByName %s"), *name);
+	if (_actors.Contains(name)) {
+		return _actors[name];
+	}
+
 	AActor* actor = nullptr;
 	TArray<AActor*> OutActors;
+	FString nameTemp;
 	UGameplayStatics::GetAllActorsOfClass(World, ActorClass, OutActors);
 	for (AActor* a : OutActors) {
-		if (a->GetName() == name) {
+		nameTemp = a->GetName();
+		if (nameTemp == name || (matchStartsWith && nameTemp.StartsWith(name, ESearchCase::CaseSensitive))) {
+			if (save) {
+				_actors.Add(name, a);
+			}
 			return a;
 		}
 	}
