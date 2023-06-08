@@ -124,15 +124,15 @@ void ALandProjectActor::GenerateLands(TArray<FLand> lands) {
 		UE_LOG(LogTemp, Display, TEXT("land_id %s num GO %d"), *lands[ii].land_id, lands[ii].game_objects.Num());
 		for (auto& Elem : lands[ii].game_objects) {
 			FLandGameObject GO = Elem.Value;
-			FVector Translation = FVector(GO.position["x"] * unrealGlobal->Scale(), GO.position["y"] * unrealGlobal->Scale(), GO.position["z"] * unrealGlobal->Scale() + zOffset);
+			FVector Translation = FVector(GO.position["x"] * unrealGlobal->GetScale(), GO.position["y"] * unrealGlobal->GetScale(), GO.position["z"] * unrealGlobal->GetScale() + zOffset);
 			if (YIsUp) {
 				// Stored in Unity style so swap z and y and convert from meters to centimeters.
-				Translation = FVector(GO.position["x"] * unrealGlobal->Scale(), GO.position["z"] * unrealGlobal->Scale(), GO.position["y"] * unrealGlobal->Scale() + zOffset);
+				Translation = FVector(GO.position["x"] * unrealGlobal->GetScale(), GO.position["z"] * unrealGlobal->GetScale(), GO.position["y"] * unrealGlobal->GetScale() + zOffset);
 			}
 			FRotator Rotation = FRotator(GO.rotation["x"], GO.rotation["y"] + rotationYOffset, GO.rotation["z"]);
 			FVector Scale = FVector(GO.scale["x"], GO.scale["y"], GO.scale["z"]);
 			// UE_LOG(LogTemp, Display, TEXT("GO %f %s %s"), GO.position["z"], *Translation.ToString(), *Rotation.ToString());
-			instancedMesh->CreateInstance("HexModule", Translation, Rotation, Scale);
+			instancedMesh->CreateInstance("HexModule", Translation, Rotation, Scale, false);
 		}
 	}
 }
@@ -177,8 +177,8 @@ void ALandProjectActor::EditorGenerate() {
 	if (true) {
 	FVector posCurrentGround = FVector(200,-650,0);
 
- //	FVector StartLocation{ posCurrentGround.X, posCurrentGround.Y, 9000 * unrealGlobal->Scale() };
-	// FVector EndLocation{ posCurrentGround.X, posCurrentGround.Y, -1000 * unrealGlobal->Scale() };
+ //	FVector StartLocation{ posCurrentGround.X, posCurrentGround.Y, 9000 * unrealGlobal->GetScale() };
+	// FVector EndLocation{ posCurrentGround.X, posCurrentGround.Y, -1000 * unrealGlobal->GetScale() };
 	// FHitResult HitResult;
 	// world->LineTraceSingleByObjectType(
 	// 	OUT HitResult,

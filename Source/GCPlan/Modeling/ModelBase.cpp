@@ -82,7 +82,7 @@ AStaticMeshActor* ModelBase::CreateActor(FString name, FVector location, FRotato
 
 	spawnParams.Name = FName(name);
 	AStaticMeshActor* actor = (AStaticMeshActor*)World->SpawnActor<AStaticMeshActor>(
-		AStaticMeshActor::StaticClass(), location * unrealGlobal->Scale(), rotation, spawnParams);
+		AStaticMeshActor::StaticClass(), location * unrealGlobal->GetScale(), rotation, spawnParams);
 	unrealGlobal->SetActorFolder(actor);
 	actor->SetActorLabel(name);
 	if (scale.X != 1 || scale.Y != 1 || scale.Z != 1) {

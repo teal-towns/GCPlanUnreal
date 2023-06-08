@@ -1,10 +1,15 @@
 #include "GCPlanGameInstance.h"
 #include "Kismet/GameplayStatics.h"
+
 #include "SettingsActor.h"
 #include "SocketActor.h"
+#include "Common/UnrealGlobal.h"
 
 void UGCPlanGameInstance::Init() {
     Super::Init();
+    UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+    TArray<FString> skipKeys = { "web" };
+	unrealGlobal->InitAll(GetWorld(), skipKeys);
 }
 
 void UGCPlanGameInstance::Shutdown() {
