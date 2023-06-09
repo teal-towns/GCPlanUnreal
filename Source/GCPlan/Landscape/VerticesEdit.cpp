@@ -55,6 +55,7 @@ void VerticesEdit::CleanUp() {
 	pinstance_ = nullptr;
 
 	_listenersSavePolygon.Empty();
+	_listenersDeletePolygon.Empty();
 
 	// _listenersDeleteVertex.Empty();
 	// _listenersMoveVertex.Empty();
@@ -96,7 +97,6 @@ void VerticesEdit::Trash() {
 		} else if (_lastSelectedObject->objectType == "center") {
 			DeletePolygon(_lastSelectedObject->uName);
 		}
-		SavePolygon(_lastSelectedObject->uName);
 	}
 }
 
@@ -337,12 +337,17 @@ void VerticesEdit::HidePolygon(FString uName) {
 }
 
 void VerticesEdit::DeletePolygon(FString uName) {
+	FString type = _items[uName].type;
 	HidePolygon(uName);
 	_items.Remove(uName);
 	if (_selectedObject && _selectedObject->uName == uName) {
 		_selectedObject = nullptr;
 		_lastSelectedObject = nullptr;
 		_currentUName = "";
+	}
+
+	for (auto& Elem : _listenersDeletePolygon) {
+		Elem.Value(uName, type);
 	}
 }
 
@@ -480,13 +485,13 @@ TMap<FString, FPolygon> VerticesEdit::ExportPolygonsByType(FString type) {
 }
 
 void VerticesEdit::SavePolygon(FString uName) {
-	FString type = _items[uName].type;
+	// FString type = _items[uName].type;
 	for (auto& Elem : _listenersSavePolygon) {
-		Elem.Value(uName, type);
+		Elem.Value(uName, _items[uName]);
 	}
 }
 
-void VerticesEdit::AddOnSavePolygon(FString key, std::function<void(FString, FString)> callback) {
+void VerticesEdit::AddOnSavePolygon(FString key, std::function<void(FString, FPolygon)> callback) {
 	if (!_listenersSavePolygon.Contains(key)) {
 		_listenersSavePolygon.Add(key, callback);
 	}
@@ -495,6 +500,18 @@ void VerticesEdit::AddOnSavePolygon(FString key, std::function<void(FString, FSt
 void VerticesEdit::RemoveOnSavePolygon(FString key) {
 	if (_listenersSavePolygon.Contains(key)) {
 		_listenersSavePolygon.Remove(key);
+	}
+}
+
+void VerticesEdit::AddOnDeletePolygon(FString key, std::function<void(FString, FString)> callback) {
+	if (!_listenersDeletePolygon.Contains(key)) {
+		_listenersDeletePolygon.Add(key, callback);
+	}
+}
+
+void VerticesEdit::RemoveOnDeletePolygon(FString key) {
+	if (_listenersDeletePolygon.Contains(key)) {
+		_listenersDeletePolygon.Remove(key);
 	}
 }
 

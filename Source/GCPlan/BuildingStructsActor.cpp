@@ -1,6 +1,7 @@
 #include "BuildingStructsActor.h"
 
 #include "Common/DataConvert.h"
+#include "Common/MathPolygon.h"
 
 ABuildingStructsActor::ABuildingStructsActor()
 {
@@ -48,7 +49,9 @@ void ABuildingStructsActor::BeginPlay()
 
 
 FPlot ABuildingStructsActor::PolygonToPlot(FPolygon obj) {
-	return FPlot(obj._id, obj.uName, obj.vertices, obj.posCenter);
+	TArray<FVector2D> vertices2D = MathPolygon::PointsTo2D(obj.vertices);
+	float squareMeters = MathPolygon::PolygonArea(vertices2D);
+	return FPlot(obj._id, obj.uName, obj.vertices, obj.posCenter, "", 100, squareMeters);
 }
 FPolygon ABuildingStructsActor::PlotToPolygon(FPlot obj) {
 	return FPolygon(obj._id, obj.uName, obj.vertices, obj.posCenter, "plot");
@@ -68,16 +71,26 @@ TMap<FString, FPolygon> ABuildingStructsActor::PlotsToPolygons(TMap<FString, FPl
 	return objsOut;
 }
 
+FPlot ABuildingStructsActor::UpdatePlotFromPolygon(FPolygon polygon, FPlot plot) {
+	plot.vertices = polygon.vertices;
+	plot.posCenter = polygon.posCenter;
+	TArray<FVector2D> vertices2D = MathPolygon::PointsTo2D(plot.vertices);
+	plot.squareMeters = MathPolygon::PolygonArea(vertices2D);
+	return plot;
+}
+
 
 FPlotSimplified ABuildingStructsActor::PlotToSimplified(FPlot plot) {
 	return FPlotSimplified(plot._id, plot.uName, DataConvert::VectorsToDicts(plot.vertices),
-		DataConvert::VectorToDict(plot.posCenter), plot.buildPattern, plot.averagePlotDistance);
+		DataConvert::VectorToDict(plot.posCenter), plot.buildPattern, plot.averagePlotDistance,
+		plot.squareMeters, plot.parentPlotUName, plot.childPlotUNames, plot.verticesBuffer);
 }
 
 FPlot ABuildingStructsActor::PlotFromSimplified(FPlotSimplified plotSimplified) {
 	return FPlot(plotSimplified._id, plotSimplified.uName, DataConvert::DictsToVectors(plotSimplified.vertices),
 		DataConvert::DictToVector(plotSimplified.posCenter), plotSimplified.buildPattern,
-		plotSimplified.averagePlotDistance);
+		plotSimplified.averagePlotDistance, plotSimplified.squareMeters, plotSimplified.parentPlotUName,
+		plotSimplified.childPlotUNames, plotSimplified.verticesBuffer);
 }
 
 TMap<FString, FPlotSimplified> ABuildingStructsActor::PlotsToSimplified(TMap<FString, FPlot> plots) {

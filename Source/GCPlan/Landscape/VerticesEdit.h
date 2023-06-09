@@ -35,7 +35,8 @@ private:
 	FVector _displayScale = FVector(20,20,20);
 	FVector _displayScaleEdge = FVector(10,10,10);
 
-	TMap<FString, std::function<void(FString, FString)>> _listenersSavePolygon = {};
+	TMap<FString, std::function<void(FString, FPolygon)>> _listenersSavePolygon = {};
+	TMap<FString, std::function<void(FString, FString)>> _listenersDeletePolygon = {};
 
 	// TMap<FString, std::function<void(FString, int)>> _listenersDeleteVertex = {};
 	// TMap<FString, std::function<void(FString, int, FVector)>> _listenersMoveVertex = {};
@@ -86,8 +87,10 @@ public:
 	void StartDrag();
 	void StopDrag();
 
-	void AddOnSavePolygon(FString key, std::function<void(FString, FString)> callback);
+	void AddOnSavePolygon(FString key, std::function<void(FString, FPolygon)> callback);
 	void RemoveOnSavePolygon(FString key);
+	void AddOnDeletePolygon(FString key, std::function<void(FString, FString)> callback);
+	void RemoveOnDeletePolygon(FString key);
 
 	// void AddOnDeleteVertex(FString key, std::function<void(FString, int)> callback);
 	// void RemoveOnDeleteVertex(FString key);

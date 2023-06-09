@@ -20,6 +20,7 @@
 #include "Mesh/InstancedMesh.h"
 // #include "Modeling/ModelBase.h"
 #include "Plot/PlotBuild.h"
+#include "Plot/PlotData.h"
 #include "Plot/PlotDivide.h"
 // #include "ProceduralModel/PMBase.h"
 
@@ -101,17 +102,28 @@ void ALandProjectActor::Init() {
 		if (valid) {
 			plots = data.plots;
 		}
-		plots = PlotDivide::SubdividePlots(plots);
+		auto [plots1, countNew] = PlotDivide::SubdividePlots(plots);
+		if (countNew > 0) {
+			plots = plots1;
+			FDataProjectJson* json = new FDataProjectJson(plots);
+			DataFileProject::SaveProject(*json, unrealGlobal->_settings->projectJsonFiles["plot"]);
+		}
 		VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
 		verticesEdit->ImportPolygons(ABuildingStructsActor::PlotsToPolygons(plots));
 		UE_LOG(LogTemp, Display, TEXT("init %d"), plots.Num());
+		PlotData* plotData = PlotData::GetInstance();
 
-		verticesEdit->AddOnSavePolygon("LandProjectActor", [this, verticesEdit, unrealGlobal](FString uName, FString type) {
-			UE_LOG(LogTemp, Display, TEXT("on save polygon type %s"), *type);
-			TMap<FString, FPolygon> polygons = verticesEdit->ExportPolygonsByType(type);
+		verticesEdit->AddOnSavePolygon("LandProjectActor", [this, verticesEdit, unrealGlobal, plotData](FString uName, FPolygon polygon) {
+			UE_LOG(LogTemp, Display, TEXT("on save polygon uName %s type %s"), *uName, *polygon.type);
+			// TMap<FString, FPolygon> polygons = verticesEdit->ExportPolygonsByType(type);
+			if (polygon.type == "plot") {
+				plotData->SavePlotFromPolygon(uName, polygon);
+			}
+		});
+		verticesEdit->AddOnDeletePolygon("LandProjectActor", [this, verticesEdit, unrealGlobal, plotData](FString uName, FString type) {
+			UE_LOG(LogTemp, Display, TEXT("on delete polygon uName %s type %s"), *uName, *type);
 			if (type == "plot") {
-				FDataProjectJson* json = new FDataProjectJson(ABuildingStructsActor::PolygonsToPlots(polygons));
-				DataFileProject::SaveProject(*json, unrealGlobal->_settings->projectJsonFiles["plot"]);
+				plotData->DeletePlot(uName);
 			}
 		});
 	}
@@ -154,7 +166,10 @@ void ALandProjectActor::EditorGenerate() {
 	// 	FDataProjectJson* json = new FDataProjectJson(plots);
 	// 	DataFileProject::SaveProject(*json, unrealGlobal->_settings->projectJsonFiles["plot"]);
 	}
-	plots = PlotDivide::SubdividePlots(plots);
+	auto [plots1, countNew] = PlotDivide::SubdividePlots(plots);
+	if (countNew > 0) {
+		plots = plots1;
+	}
 	// VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
 	// verticesEdit->ImportPolygons(ABuildingStructsActor::PlotsToPolygons(plots));
 

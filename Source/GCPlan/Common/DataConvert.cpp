@@ -104,7 +104,8 @@ std::tuple<FString, bool, FString> DataConvert::ReadStringFromFile(FString FileP
 std::tuple<bool, FString> DataConvert::WriteStringToFile(FString FilePath, FString String) {
 	bool valid = true;
 	FString msg = "";
-	if (!FFileHelper::SaveStringToFile(String, *FilePath)) {
+	if (!FFileHelper::SaveStringToFile(String, *FilePath, FFileHelper::EEncodingOptions::AutoDetect,
+			&IFileManager::Get(), EFileWrite::FILEWRITE_None)) {
 		valid = false;
 		UE_LOG(LogTemp, Warning, TEXT("DataFileProject.WriteStringToFile unable to write file %s"), *FilePath);
 		msg = FString::Printf(TEXT("Unable to write file %s"), *FilePath);

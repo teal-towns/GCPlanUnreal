@@ -28,6 +28,8 @@ public:
 	static TMap<FString, FPlot> PolygonsToPlots(TMap<FString, FPolygon> objs);
 	static TMap<FString, FPolygon> PlotsToPolygons(TMap<FString, FPlot> objs);
 
+	static FPlot UpdatePlotFromPolygon(FPolygon polygon, FPlot plot);
+
 	static FPlotSimplified PlotToSimplified(FPlot plot);
 	static FPlot PlotFromSimplified(FPlotSimplified plotSimplified);
 	static TMap<FString, FPlotSimplified> PlotsToSimplified(TMap<FString, FPlot> plots);
@@ -237,22 +239,28 @@ struct FPlotSimplified {
 	UPROPERTY()
 	float averagePlotDistance;
 	UPROPERTY()
+	float squareMeters;
+	UPROPERTY()
 	FString parentPlotUName;
 	UPROPERTY()
 	TArray<FString> childPlotUNames;
+	UPROPERTY()
+	float verticesBuffer;
 
 	FPlotSimplified() {};
 	FPlotSimplified(FString id_, FString uName_, TArray<FMapStringFloat> vertices_, FMapStringFloat posCenter_,
-		FString buildPattern_ = "", float averagePlotDistance_ = 100, FString parentPlotUName_ = "",
-		TArray<FString> childPlotUNames_ = {}) {
+		FString buildPattern_ = "", float averagePlotDistance_ = 100, float squareMeters_ = -1,
+		FString parentPlotUName_ = "", TArray<FString> childPlotUNames_ = {}, float verticesBuffer_ = -25) {
 		_id = id_;
 		uName = uName_;
 		vertices = vertices_;
 		posCenter = posCenter_;
 		buildPattern = buildPattern_;
 		averagePlotDistance = averagePlotDistance_;
+		squareMeters = squareMeters_;
 		parentPlotUName = parentPlotUName_;
 		childPlotUNames = childPlotUNames_;
+		verticesBuffer = verticesBuffer_;
 	};
 };
 

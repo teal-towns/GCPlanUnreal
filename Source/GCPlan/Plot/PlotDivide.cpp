@@ -14,11 +14,12 @@ PlotDivide::PlotDivide() {
 PlotDivide::~PlotDivide() {
 }
 
-TMap<FString, FPlot> PlotDivide::SubdividePlots(TMap<FString, FPlot> Plots, float minRadiusSkip,
+std::tuple<TMap<FString, FPlot>, int> PlotDivide::SubdividePlots(TMap<FString, FPlot> Plots, float minRadiusSkip,
 	float minSquareMetersSkip, bool addRoads) {
 	MeshTerrain* meshTerrain = MeshTerrain::GetInstance();
 	SplineRoad* splineRoad = SplineRoad::GetInstance();
 
+	int countNew = 0;
 	if (addRoads) {
 		// meshTerrain->DestroyRoads();
 		splineRoad->DestroyRoads();
@@ -65,6 +66,7 @@ TMap<FString, FPlot> PlotDivide::SubdividePlots(TMap<FString, FPlot> Plots, floa
 						plotTemp.buildPattern, newAveragePlotDistance, squareMeters, parentPlotUName, {}));
 					// Add this as a child of the existing plot too.
 					Plots[parentPlotUName].childPlotUNames.Add(uName);
+					countNew += 1;
 				}
 
 				if (addRoads) {
@@ -77,5 +79,5 @@ TMap<FString, FPlot> PlotDivide::SubdividePlots(TMap<FString, FPlot> Plots, floa
 		// Return the parent plot too, as it may have been updated with children.
 		newPlots.Add(parentPlotUName, Plots[parentPlotUName]);
 	}
-	return newPlots;
+	return { newPlots, countNew };
 }
