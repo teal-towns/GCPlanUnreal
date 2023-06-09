@@ -70,7 +70,7 @@ std::tuple<FBuildingBlueprint, TMap<FString, FRoadPath>> BuildingFlowerHomes::Cr
 			nextTemp = verticesInnerCircle[ii];
 			edgeCenter = currentTemp + (nextTemp - currentTemp) * 0.5;
 			uNameTemp = "BuildingPath_" + Lodash::ToFixed(edgeCenter.X, 1) + "_" + Lodash::ToFixed(edgeCenter.Y, 1);
-			homePlotPaths.Add(uNameTemp, FRoadPath(uNameTemp, { currentTemp, nextTemp }, 3, "WalkPath"));
+			homePlotPaths.Add(uNameTemp, FRoadPath(uNameTemp, uNameTemp, { currentTemp, nextTemp }, 3, "WalkPath"));
 		}
 		// Since we start at 2nd one, on that last one, write the last one too.
 		if (ii == (verticesCount - 1)) {
@@ -78,7 +78,7 @@ std::tuple<FBuildingBlueprint, TMap<FString, FRoadPath>> BuildingFlowerHomes::Cr
 			nextTemp = verticesInnerCircle[0];
 			edgeCenter = currentTemp + (nextTemp - currentTemp) * 0.5;
 			uNameTemp = "BuildingPath_" + Lodash::ToFixed(edgeCenter.X, 1) + "_" + Lodash::ToFixed(edgeCenter.Y, 1);
-			homePlotPaths.Add(uNameTemp, FRoadPath(uNameTemp, { currentTemp, nextTemp }, 3, "WalkPath"));
+			homePlotPaths.Add(uNameTemp, FRoadPath(uNameTemp, uNameTemp, { currentTemp, nextTemp }, 3, "WalkPath"));
 		}
 
 		// Check that plot is big enough (on plot edges will be squished / small).
@@ -96,7 +96,7 @@ std::tuple<FBuildingBlueprint, TMap<FString, FRoadPath>> BuildingFlowerHomes::Cr
 			nextTemp = vertexInner;
 			edgeCenter = currentTemp + (nextTemp - currentTemp) * 0.5;
 			uNameTemp = "BuildingPath_" + Lodash::ToFixed(edgeCenter.X, 1) + "_" + Lodash::ToFixed(edgeCenter.Y, 1);
-			homePlotPaths.Add(uNameTemp, FRoadPath(uNameTemp, { currentTemp, nextTemp }, 3, "WalkPath"));
+			homePlotPaths.Add(uNameTemp, FRoadPath(uNameTemp, uNameTemp, { currentTemp, nextTemp }, 3, "WalkPath"));
 
 			TArray<int> heightFloorsOrder = {};
 			int minCrossCountUnits = -1;

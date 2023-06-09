@@ -2,7 +2,7 @@
 
 #include <mutex>
 
-#include "../SettingsActor.h"
+#include "../DataStructsActor.h"
 #include "../SocketActor.h"
 
 class UnrealGlobal {
@@ -12,6 +12,7 @@ private:
 	static std::mutex mutex_;
 
 	UWorld* World;
+	TMap<FString, bool> _initeds = {};
 
 public:
 	UnrealGlobal();
@@ -21,7 +22,7 @@ public:
 	UnrealGlobal(UnrealGlobal &other) = delete;
 	void operator=(const UnrealGlobal &) = delete;
 
-	ASettingsActor* SettingsActor;
+	FDataSettings* _settings;
 	ASocketActor* SocketActor;
 	TMap<FString, AActor*> _actors;
 
@@ -30,6 +31,10 @@ public:
 	void InitCommon(UWorld*);
 	void InitWeb(UWorld*);
 	void InitMeshes(UWorld*);
+	void SetInited(FString key);
+	bool IsIniteds(TArray<FString>);
+	void GetSocket(UWorld*);
+	void CleanUp(TArray<FString> skipKeys = {});
 	void SetWorld(UWorld*);
 	UWorld* GetWorld();
 	float GetScale();
@@ -38,4 +43,5 @@ public:
 	void RemoveAttachedActors(AActor* actor);
 	// bool RemoveActorByName(FString name, TSubclassOf<AActor> ActorClass, bool removeAttached = true);
 	AActor* GetActorByName(FString name, TSubclassOf<AActor> ActorClass, bool save = false, bool matchStartsWith = false);
+	static std::tuple<FDataSettings*, bool> LoadSettings(FString fileName = "settings.json");
 };

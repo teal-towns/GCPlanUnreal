@@ -18,6 +18,21 @@ protected:
 public:	
 	// virtual void Tick(float DeltaTime) override;
 
+	// static FPolygonSimplified PolygonToSimplified(FPolygon polygon);
+	// static FPolygon PolygonFromSimplified(FPolygonSimplified polygonSimplified);
+	// static TMap<FString, FPolygonSimplified> PolygonsToSimplified(TMap<FString, FPolygon> polygons);
+	// static TMap<FString, FPolygon> PolygonsFromSimplified(TMap<FString, FPolygonSimplified> polygonSimplified);
+
+	static FPlot PolygonToPlot(FPolygon obj);
+	static FPolygon PlotToPolygon(FPlot obj);
+	static TMap<FString, FPlot> PolygonsToPlots(TMap<FString, FPolygon> objs);
+	static TMap<FString, FPolygon> PlotsToPolygons(TMap<FString, FPlot> objs);
+
+	static FPlotSimplified PlotToSimplified(FPlot plot);
+	static FPlot PlotFromSimplified(FPlotSimplified plotSimplified);
+	static TMap<FString, FPlotSimplified> PlotsToSimplified(TMap<FString, FPlot> plots);
+	static TMap<FString, FPlot> PlotsFromSimplified(TMap<FString, FPlotSimplified> plotSimplified);
+
 };
 
 USTRUCT()
@@ -30,7 +45,7 @@ struct FMapStringFloat {
 	FMapStringFloat() {};
 	FMapStringFloat(TMap<FString, float> v_) {
 		v = v_;
-	}
+	};
 };
 
 USTRUCT()
@@ -47,14 +62,22 @@ struct FBuildingBlueprintJsonData {
 	FBuildingBlueprintJsonData() {};
 	FBuildingBlueprintJsonData(TArray<FMapStringFloat> openEdgePositions_, int floor_, FString edgeType_) {
 		openEdgePositions = openEdgePositions_, floor = floor_, edgeType = edgeType_;
-	}
+	};
 };
 
+USTRUCT()
 struct FBuildData {
+	GENERATED_BODY()
+
+	UPROPERTY()
 	FVector posCenterGround;
+	UPROPERTY()
 	FVector posCurrentGround;
+	UPROPERTY()
 	int unitsCreated = 0;
+	UPROPERTY()
 	int unitLengthsCreatedOriginRing = 0;
+	UPROPERTY()
 	TArray<FVector2D> filledCoords = {};
 
 	FBuildData() {};
@@ -63,12 +86,21 @@ struct FBuildData {
 	};
 };
 
+USTRUCT()
 struct FBuildingStats {
+	GENERATED_BODY()
+
+	UPROPERTY()
 	int unitCount;
+	UPROPERTY()
 	int ringWidthUnits;
+	UPROPERTY()
 	int roofUnitCount = 0;
+	UPROPERTY()
 	float averageRadiusInner = 0;
+	UPROPERTY()
 	float averageRadiusOuter = 0;
+	UPROPERTY()
 	int residentCount = 0;
 };
 
@@ -112,7 +144,7 @@ struct FLandGameObject {
 			{ "y", (float)scale_.Y },
 			{ "z", (float)scale_.Z },
 		};
-	}
+	};
 };
 
 USTRUCT()
@@ -125,11 +157,19 @@ struct FLand {
 	FString land_id = "";
 };
 
+USTRUCT()
 struct FBuildingBlueprint {
+	GENERATED_BODY()
+
+	UPROPERTY()
 	int valid = 0;
+	UPROPERTY()
 	FString msg = "";
+	UPROPERTY()
 	FLand land;
+	UPROPERTY()
 	FBuildingStats stats;
+	UPROPERTY()
 	FVector posCenterGround = FVector(0,0,0);
 
 	FBuildingBlueprint() {};
@@ -138,23 +178,90 @@ struct FBuildingBlueprint {
 	};
 };
 
+USTRUCT()
 struct FPlot {
+	GENERATED_BODY()
+
+	UPROPERTY()
 	FString _id;
+	UPROPERTY()
 	FString uName;
-	// TMap<FString, float> posCenter;
-	// TODO - need another struct? Can not do TMap inside TArray??
-	// UPROPERTY()
-	// TArray<TMap<FString, float>> vertices;
-	FVector posCenter;
+	UPROPERTY()
 	TArray<FVector> vertices;
+	UPROPERTY()
+	FVector posCenter;
+	UPROPERTY()
 	FString buildPattern;
+	UPROPERTY()
 	float averagePlotDistance;
+	UPROPERTY()
+	float squareMeters;
+	UPROPERTY()
+	FString parentPlotUName;
+	UPROPERTY()
+	TArray<FString> childPlotUNames;
+	UPROPERTY()
+	float verticesBuffer;
+
+	FPlot() {};
+	FPlot(FString id_, FString uName_, TArray<FVector> vertices_, FVector posCenter_,
+		FString buildPattern_ = "", float averagePlotDistance_ = 100, float squareMeters_ = -1,
+		FString parentPlotUName_ = "", TArray<FString> childPlotUNames_ = {}, float verticesBuffer_ = -25) {
+		_id = id_;
+		uName = uName_;
+		vertices = vertices_;
+		posCenter = posCenter_;
+		buildPattern = buildPattern_;
+		averagePlotDistance = averagePlotDistance_;
+		squareMeters = squareMeters_;
+		parentPlotUName = parentPlotUName_;
+		childPlotUNames = childPlotUNames_;
+		verticesBuffer = verticesBuffer_;
+	};
+};
+
+USTRUCT()
+struct FPlotSimplified {
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString _id;
+	UPROPERTY()
+	FString uName;
+	UPROPERTY()
+	TArray<FMapStringFloat> vertices;
+	UPROPERTY()
+	FMapStringFloat posCenter;
+	UPROPERTY()
+	FString buildPattern;
+	UPROPERTY()
+	float averagePlotDistance;
+	UPROPERTY()
+	FString parentPlotUName;
+	UPROPERTY()
+	TArray<FString> childPlotUNames;
+
+	FPlotSimplified() {};
+	FPlotSimplified(FString id_, FString uName_, TArray<FMapStringFloat> vertices_, FMapStringFloat posCenter_,
+		FString buildPattern_ = "", float averagePlotDistance_ = 100, FString parentPlotUName_ = "",
+		TArray<FString> childPlotUNames_ = {}) {
+		_id = id_;
+		uName = uName_;
+		vertices = vertices_;
+		posCenter = posCenter_;
+		buildPattern = buildPattern_;
+		averagePlotDistance = averagePlotDistance_;
+		parentPlotUName = parentPlotUName_;
+		childPlotUNames = childPlotUNames_;
+	};
 };
 
 USTRUCT()
 struct FRoadPath {
 	GENERATED_BODY()
 
+	UPROPERTY()
+	FString _id;
 	UPROPERTY()
 	FString uName;
 	UPROPERTY()
@@ -167,39 +274,128 @@ struct FRoadPath {
 	float laneCount;
 
 	FRoadPath() {};
-	FRoadPath(FString uName_, TArray<FVector> vertices_, float widthMeters_, FString type_, float laneCount_ = 1) {
+	FRoadPath(FString id_, FString uName_, TArray<FVector> vertices_, float widthMeters_, FString type_, float laneCount_ = 1) {
+		_id = id_;
 		uName = uName_;
 		vertices = vertices_;
 		widthMeters = widthMeters_;
 		type = type_;
 		laneCount = laneCount_;
-	}
+	};
 };
 
 USTRUCT()
-struct FVerticesEdit {
+struct FPolygon {
 	GENERATED_BODY()
 
+	UPROPERTY()
+	FString _id;
 	UPROPERTY()
 	FString uName;
 	UPROPERTY()
 	TArray<FVector> vertices;
 	UPROPERTY()
+	FVector posCenter;
+	UPROPERTY()
 	FString type;
 	UPROPERTY()
-	FVector center;
+	int closedLoop;
 	UPROPERTY()
-	int connectEndToStart;
+	FString jsonDataString;
 
-	FVerticesEdit() {};
-	FVerticesEdit(FString uName_, TArray<FVector> vertices_, FString type_) {
+	FPolygon() {};
+	FPolygon(FString id_, FString uName_, TArray<FVector> vertices_, FVector posCenter_,
+		FString type_ = "", int closedLoop_ = -1, FString jsonDataString_ = "") {
+		_id = id_;
 		uName = uName_;
 		vertices = vertices_;
+		posCenter = posCenter_;
 		type = type_;
-		center = FVector(0,0,0);
-		connectEndToStart = (type == "road") ? 0 : 1;
-	}
+		if (closedLoop_ == -1) {
+			closedLoop = (type == "road") ? 0 : 1;
+		} else {
+			closedLoop = closedLoop_;
+		}
+		jsonDataString = jsonDataString_;
+	};
 };
+
+// USTRUCT()
+// struct FPolygonSimplified {
+// 	GENERATED_BODY()
+
+// 	UPROPERTY()
+// 	FString _id;
+// 	UPROPERTY()
+// 	FString uName;
+// 	UPROPERTY()
+// 	TArray<FMapStringFloat> vertices;
+// 	UPROPERTY()
+// 	FMapStringFloat posCenter;
+// 	UPROPERTY()
+// 	FString type;
+// 	UPROPERTY()
+// 	int closedLoop;
+// 	UPROPERTY()
+// 	FString jsonDataString;
+
+// 	FPolygonSimplified() {};
+// 	FPolygonSimplified(FString id_, FString uName_, TArray<FMapStringFloat> vertices_, FMapStringFloat posCenter_,
+// 		FString type_ = "", int closedLoop_ = 1, FString jsonDataString_ = "") {
+// 		_id = id_;
+// 		uName = uName_;
+// 		vertices = vertices_;
+// 		posCenter = posCenter_;
+// 		type = type_;
+// 		closedLoop = closedLoop_;
+// 		jsonDataString = jsonDataString_;
+// 	};
+// };
+
+USTRUCT()
+struct FVerticesEditSelectedObject {
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString uName;
+	UPROPERTY()
+	FString objectType;
+	UPROPERTY()
+	int objectIndex;
+
+	// FVerticesEditSelectedObject() {};
+	FVerticesEditSelectedObject(FString uName_ = "", FString objectType_ = "", int objectIndex_ = -1) {
+		uName = uName_;
+		objectType = objectType_;
+		objectIndex = objectIndex_;
+	};
+};
+
+// USTRUCT()
+// struct FVerticesEdit {
+// 	GENERATED_BODY()
+
+// 	UPROPERTY()
+// 	FString uName;
+// 	UPROPERTY()
+// 	TArray<FVector> vertices;
+// 	UPROPERTY()
+// 	FString type;
+// 	UPROPERTY()
+// 	FVector center;
+// 	UPROPERTY()
+// 	int closedLoop;
+
+// 	FVerticesEdit() {};
+// 	FVerticesEdit(FString uName_, TArray<FVector> vertices_, FString type_,
+// 		FVector center_ = FVector(0,0,0)) {
+// 		uName = uName_;
+// 		vertices = vertices_;
+// 		type = type_;
+// 		center = center_;
+// 		closedLoop = (type == "road") ? 0 : 1;
+// 	};
+// };
 
 USTRUCT()
 struct FVerticesEditActor {
@@ -221,5 +417,5 @@ struct FVerticesEditActor {
 		verticesInstanceIndices = verticesInstanceIndices_;
 		edgesInstanceIndices = edgesInstanceIndices_;
 		centerInstanceIndex = centerInstanceIndex_;
-	}
+	};
 };

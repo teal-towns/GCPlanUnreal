@@ -1,7 +1,10 @@
 #include "UnrealGlobal.h"
 
+#include "JsonObjectConverter.h"
 #include "Kismet/GameplayStatics.h"
 
+#include "../DataStructsActor.h"
+#include "../Common/DataConvert.h"
 #include "../Landscape/HeightMap.h"
 #include "../Landscape/SplineRoad.h"
 #include "../Landscape/VerticesEdit.h"
@@ -27,6 +30,7 @@ UnrealGlobal *UnrealGlobal::GetInstance() {
 }
 
 void UnrealGlobal::InitAll(UWorld* World1, TArray<FString> skipKeys) {
+	// CleanUp({ "socket"} );
 	InitCommon(World1);
 	InitMeshes(World1);
 	if (!skipKeys.Contains("web")) {
@@ -36,6 +40,11 @@ void UnrealGlobal::InitAll(UWorld* World1, TArray<FString> skipKeys) {
 
 void UnrealGlobal::InitCommon(UWorld* World1) {
 	SetWorld(World1);
+
+	auto [dataSettings, valid] = LoadSettings();
+	if (valid) {
+		_settings = dataSettings;
+	}
 
 	ModelBase* modelBase = ModelBase::GetInstance();
     modelBase->SetWorld(World1);
@@ -48,26 +57,21 @@ void UnrealGlobal::InitCommon(UWorld* World1) {
 
     SplineRoad* splineRoad = SplineRoad::GetInstance();
     splineRoad->SetWorld(World1);
-
-    // VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
 }
 
 void UnrealGlobal::InitWeb(UWorld* World1) {
 	SetWorld(World1);
+	GetSocket(World1);
+	SocketActor->InitSocket();
+}
 
+void UnrealGlobal::GetSocket(UWorld* World1) {
 	TArray<AActor*> OutActors;
-	UGameplayStatics::GetAllActorsOfClass(World, ASettingsActor::StaticClass(), OutActors);
-	for (AActor* a : OutActors) {
-		SettingsActor = Cast<ASettingsActor>(a);
-		break;
-	}
-	UGameplayStatics::GetAllActorsOfClass(World, ASocketActor::StaticClass(), OutActors);
+	UGameplayStatics::GetAllActorsOfClass(World1, ASocketActor::StaticClass(), OutActors);
 	for (AActor* a : OutActors) {
 		SocketActor = Cast<ASocketActor>(a);
 		break;
 	}
-
-	SocketActor->InitSocket();
 }
 
 void UnrealGlobal::InitMeshes(UWorld* World1) {
@@ -77,6 +81,34 @@ void UnrealGlobal::InitMeshes(UWorld* World1) {
 	InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
 	instancedMesh->SetWorld(World);
 	instancedMesh->InitMeshes();
+}
+
+void UnrealGlobal::SetInited(FString key) {
+	_initeds.Add(key, true);
+}
+
+bool UnrealGlobal::IsIniteds(TArray<FString> Keys) {
+	for (int ii = 0; ii < Keys.Num(); ii++) {
+		if (!_initeds.Contains(Keys[ii]) || !_initeds[Keys[ii]]) {
+			return false;
+		}
+	}
+	return true;
+}
+
+void UnrealGlobal::CleanUp(TArray<FString> skipKeys) {
+	InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
+	instancedMesh->CleanUp();
+
+	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
+    verticesEdit->CleanUp();
+
+    if (!skipKeys.Contains("socket")) {
+		SocketActor->Destroy();
+	}
+	_initeds.Empty();
+	_actors.Empty();
+	// World = nullptr;
 }
 
 void UnrealGlobal::SetWorld(UWorld* World1) {
@@ -146,4 +178,23 @@ AActor* UnrealGlobal::GetActorByName(FString name, TSubclassOf<AActor> ActorClas
 		}
 	}
 	return actor;
+}
+
+std::tuple<FDataSettings*, bool> UnrealGlobal::LoadSettings(FString fileName) {
+	FDataSettings* data = new FDataSettings();
+	if (fileName.Len() > 0) {
+		FString filePath = "Source/Conditional/" + fileName;
+		FString projectPath = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir());
+		filePath = projectPath + filePath;
+
+		auto [jsonString, valid, msg] = DataConvert::ReadStringFromFile(filePath);
+		if (valid) {
+			if (!FJsonObjectConverter::JsonObjectStringToUStruct(jsonString, data, 0, 0)) {
+				UE_LOG(LogTemp, Error, TEXT("UnrealGlobal.LoadSettings json parse error"));
+			} else {
+				return { data, true };
+			}
+		}
+	}
+	return { data, false };
 }

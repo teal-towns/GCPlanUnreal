@@ -5,6 +5,7 @@ public:
 	MathPolygon();
 	~MathPolygon();
 
+	static TArray<FVector> Bounds(TArray<FVector> Vertices);
 	static std::tuple<float, float> GetAverageRadius(TArray<FVector> vertices, FVector posCenter);
 	static float GetCircleRadiusByArea(float radiusOuter, float innerAreaRatio);
 	static FVector GetPolygonCenter(TArray<FVector> vertices);
@@ -17,4 +18,6 @@ public:
 	static float StepAngle(float, float);
 	static TArray<FVector> BufferVertices(TArray<FVector> vertices, FVector posCenter, float buffer,
 		bool setZToCenter = false);
+	static std::tuple<int, FVector> FindNewVertexOnEdge(TArray<FVector> vertices, FVector posNonEditing,
+	float distanceError = 1);
 };

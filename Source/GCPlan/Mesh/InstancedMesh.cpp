@@ -42,6 +42,14 @@ void InstancedMesh::SetWorld(UWorld* World1) {
 	World = World1;
 }
 
+void InstancedMesh::CleanUp() {
+	for (auto& Elem : _instancedMeshActors) {
+		ClearInstances(Elem.Key);
+	}
+	_instancedMeshActors = {};
+	pinstance_ = nullptr;
+}
+
 void InstancedMesh::InitMeshes() {
 	// TODO - init from JSON so meshes and materials are dynamic / per environment.
 	AddMesh("HexModule", "/Script/Engine.StaticMesh'/Game/Buildings/Hex/HexModule/HexModule.HexModule'",
@@ -141,7 +149,7 @@ int InstancedMesh::UpdateInstance(FString meshKey, int instanceIndex, FVector Tr
 			if (unrealScaleTranslation) {
 				Translation = UnrealGlobal::Scale(Translation);
 			}
-			bool valid = component->UpdateInstanceTransform(instanceIndex, FTransform(Rotation, Translation, Scale));
+			bool valid = component->UpdateInstanceTransform(instanceIndex, FTransform(Rotation, Translation, Scale), false, true, true);
 			if (valid) {
 				index = instanceIndex;
 			}
@@ -156,6 +164,14 @@ int InstancedMesh::SaveInstance(FString meshKey, int instanceIndex, FVector Tran
 		return CreateInstance(meshKey, Translation, Rotation, Scale, unrealScaleTranslation);
 	}
 	return UpdateInstance(meshKey, instanceIndex, Translation, Rotation, Scale, unrealScaleTranslation);
+}
+
+bool InstancedMesh::RemoveInstances(FString meshKey, TArray<int> instanceIndices) {
+	if (_instancedMeshActors.Contains(meshKey) && instanceIndices.Num() > 0) {
+		UInstancedStaticMeshComponent* component = _instancedMeshActors[meshKey]->FindComponentByClass<UInstancedStaticMeshComponent>();
+		return component->RemoveInstances(instanceIndices);
+	}
+	return false;
 }
 
 void InstancedMesh::ClearInstancesBulk(TArray<FString> meshKeys) {

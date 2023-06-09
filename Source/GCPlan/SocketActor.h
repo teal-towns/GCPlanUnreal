@@ -11,7 +11,6 @@ class GCPLAN_API ASocketActor : public AActor
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this actor's properties
 	ASocketActor();
 	virtual void Tick(float DeltaTime) override;
 

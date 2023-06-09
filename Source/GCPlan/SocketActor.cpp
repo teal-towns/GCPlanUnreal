@@ -7,6 +7,8 @@
 #include <string>
 // #include "utf8.h"
 
+#include "Common/UnrealGlobal.h"
+
 ASocketActor::ASocketActor()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -26,37 +28,41 @@ void ASocketActor::Tick(float DeltaTime)
 }
 
 void ASocketActor::Init() {
+	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	UGCPlanGameInstance* GameInstance = Cast<UGCPlanGameInstance>(GetGameInstance());
 	if (GameInstance) {
 		Inited = true;
 		InitSocket();
-		GameInstance->InitActor("socket");
+		unrealGlobal->GetSocket(GetWorld());
+		unrealGlobal->SetInited("socket");
+		// GameInstance->InitActor("socket");
 	}
 }
 
 void ASocketActor::InitSocket() {
 	if (!FModuleManager::Get().IsModuleLoaded("WebSockets")) {
-        FModuleManager::Get().LoadModule("WebSockets");
-    }
-    this->Destroy();
-    FString Url = "wss://plan.greencity.earth/ws";
-	// FString Url = "ws://localhost:8087/ws";
-    WebSocket = FWebSocketsModule::Get().CreateWebSocket(Url);
+		FModuleManager::Get().LoadModule("WebSockets");
+	}
+	this->Destroy();
 
-    WebSocket->OnConnected().AddLambda([]() {
+	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+	FString Url = unrealGlobal->_settings->urlWebsocket;
+	WebSocket = FWebSocketsModule::Get().CreateWebSocket(Url);
+
+	WebSocket->OnConnected().AddLambda([]() {
 		UE_LOG(LogTemp, Display, TEXT("Websocket connected"));
-    });
-    WebSocket->OnConnectionError().AddLambda([](const FString& Error) {
+	});
+	WebSocket->OnConnectionError().AddLambda([](const FString& Error) {
 		UE_LOG(LogTemp, Error, TEXT("Websocket error %s"), *Error);
-    });
-    WebSocket->OnClosed().AddLambda([](int32 StatusCode, const FString& Reason, bool bWasClean) {
+	});
+	WebSocket->OnClosed().AddLambda([](int32 StatusCode, const FString& Reason, bool bWasClean) {
 		UE_LOG(LogTemp, Warning, TEXT("Websocket closed %s"), *Reason);
-    });
-    WebSocket->OnMessage().AddLambda([this](const FString& MessageString) {
+	});
+	WebSocket->OnMessage().AddLambda([this](const FString& MessageString) {
 		// UE_LOG(LogTemp, Display, TEXT("Websocket OnMessage %s"), *MessageString);
 		this->HandleMessage(MessageString);
-    });
-    WebSocket->OnRawMessage().AddLambda([this](const void* Data, SIZE_T Size, SIZE_T BytesRemaining) {
+	});
+	WebSocket->OnRawMessage().AddLambda([this](const void* Data, SIZE_T Size, SIZE_T BytesRemaining) {
 		uint8* line = (uint8*)Data;
 		FString ValidString = "";
 		for (int ii = 0; ii < Size; ii++) {
@@ -76,11 +82,11 @@ void ASocketActor::InitSocket() {
 			// Reset for next time.
 			RawMessageJoiner = "";
 		}
-    });
-    WebSocket->OnMessageSent().AddLambda([](const FString& MessageString) {
-        // GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, "Websocket sent message" + MessageString);
-    });
-    WebSocket->Connect();
+	});
+	WebSocket->OnMessageSent().AddLambda([](const FString& MessageString) {
+		// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, "Websocket sent message" + MessageString);
+	});
+	WebSocket->Connect();
 }
 
 void ASocketActor::Destroy() {
@@ -90,8 +96,8 @@ void ASocketActor::Destroy() {
 
 void ASocketActor::Close() {
 	if (WebSocket && WebSocket->IsConnected()) {
-        WebSocket->Close();
-    }
+		WebSocket->Close();
+	}
 }
 
 bool ASocketActor::IsConnected() {

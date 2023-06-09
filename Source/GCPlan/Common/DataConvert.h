@@ -13,4 +13,7 @@ public:
 	static TArray<FVector> DictsToVectors(TArray<FMapStringFloat> dicts);
 	static FMapStringFloat RotatorToDict(FRotator vector);
 	static FRotator DictToRotator(FMapStringFloat dict);
+
+	static std::tuple<FString, bool, FString> ReadStringFromFile(FString FilePath);
+	static std::tuple<bool, FString> WriteStringToFile(FString FilePath, FString String);
 };
