@@ -10,3 +10,6 @@
 /.vscode
 /.vs
 /*.code-workspace
+
+/Content/Conditional
+/Source/Conditional

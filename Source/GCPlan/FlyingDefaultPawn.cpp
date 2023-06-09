@@ -1,3 +1,5 @@
+#include "FlyingDefaultPawn.h"
+
 #include "Blueprint/UserWidget.h"
 #include "Engine.h"
 #include "Input/Events.h"
@@ -8,26 +10,32 @@
 #include "Landscape/HeightMap.h"
 #include "Landscape/VerticesEdit.h"
 
-#include "FlyingDefaultPawn.h"
-
 void AFlyingDefaultPawn::BeginPlay() {
 	Super::BeginPlay();
-	CreateMiniMap();
+	CreateUI();
 	SetupMouse();
 }
 
-void AFlyingDefaultPawn::CreateMiniMap() {
+void AFlyingDefaultPawn::CreateUI() {
+	// Mini map
 	// TODO - not working.
 	// FString path = "/Script/UMGEditor.WidgetBlueprint'/Game/UI/MiniMapWidget_BP.MiniMapWidget_BP'";
 	// UUserWidget* miniMap = Cast<UUserWidget>(StaticLoadObject(UUserWidget::StaticClass(), NULL,
 	// 	*path));
 	if (!MiniMap) {
-		UE_LOG(LogTemp, Warning, TEXT("FlyingDefaultPawn.CreateMiniMap missing MiniMap"));
+		UE_LOG(LogTemp, Warning, TEXT("FlyingDefaultPawn.CreateUI missing MiniMap"));
 	} else {
 		MiniMap->AddToViewport(0);
 		// FGeometry geometry;
 		// FPointerEvent mouseEvent;
 		// FEventReply reply = MiniMap->OnMouseButtonUp(geometry, mouseEvent);
+	}
+
+	if (!EditVerticesWidget) {
+		UE_LOG(LogTemp, Warning, TEXT("FlyingDefaultPawn.CreateUI missing EditVerticesWidget"));
+	} else {
+		EditVerticesWidget->AddToViewport(1);
+		EditVerticesWidget->Init();
 	}
 }
 
@@ -38,6 +46,40 @@ void AFlyingDefaultPawn::CreateMiniMap() {
 // 	// return reply;
 // }
 void AFlyingDefaultPawn::OnMouseDownMiniMap(const FGeometry& geometry, const FPointerEvent& mouseEvent) {
+	auto [worldLocation, valid] = GetMouseLocation(geometry, mouseEvent);
+	if (valid) {
+		// UE_LOG(LogTemp, Display, TEXT("worldLocation %s"), *worldLocation.ToString());
+		VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
+		verticesEdit->OnMouseDown(worldLocation);
+	}
+}
+
+void AFlyingDefaultPawn::OnMouseUpMiniMap(const FGeometry& geometry, const FPointerEvent& mouseEvent) {
+	auto [worldLocation, valid] = GetMouseLocation(geometry, mouseEvent);
+	if (valid) {
+		// UE_LOG(LogTemp, Display, TEXT("worldLocation %s"), *worldLocation.ToString());
+		VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
+		verticesEdit->OnMouseUp(worldLocation);
+	}
+}
+
+// void AFlyingDefaultPawn::OnDragStartMiniMap(const FGeometry& geometry, const FPointerEvent& mouseEvent) {
+// 	UE_LOG(LogTemp, Display, TEXT("drag start"));
+// 	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
+// 	verticesEdit->OnDragStart();
+// }
+
+void AFlyingDefaultPawn::OnMouseMoveMiniMap(const FGeometry& geometry, const FPointerEvent& mouseEvent) {
+	auto [worldLocation, valid] = GetMouseLocation(geometry, mouseEvent);
+	if (valid) {
+		VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
+		verticesEdit->OnMouseMove(worldLocation);
+	}
+}
+
+std::tuple<FVector, bool> AFlyingDefaultPawn::GetMouseLocation(const FGeometry& geometry, const FPointerEvent& mouseEvent) {
+	bool valid = false;
+	FVector worldLocation = FVector(0,0,0);
 	// https://forums.unrealengine.com/t/getting-mouse-location-in-umg/594940
 	FVector2D screenPosition = mouseEvent.GetScreenSpacePosition();
 	FVector2D localPosition = geometry.AbsoluteToLocal(screenPosition);
@@ -86,12 +128,10 @@ void AFlyingDefaultPawn::OnMouseDownMiniMap(const FGeometry& geometry, const FPo
 		float yMeters = y / unrealGlobal->GetScale();
 		HeightMap* heightMap = HeightMap::GetInstance();
 		float zMeters = heightMap->GetTerrainHeightAtPoint(FVector(xMeters, yMeters, 0));
-		FVector worldLocation = FVector(xMeters, yMeters, zMeters);
-
-		// UE_LOG(LogTemp, Display, TEXT("worldLocation %s"), *worldLocation.ToString());
-		VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
-		verticesEdit->AddVertex(worldLocation);
+		worldLocation = FVector(xMeters, yMeters, zMeters);
+		valid = true;
 	}
+	return { worldLocation, valid };
 }
 
 // https://forums.unrealengine.com/t/how-to-show-the-mouse-cursor-at-runtime-in-c/35581

@@ -33,7 +33,7 @@ TMap<FString, FRoadPath> BuildingRoad::BetweenSpaces(TArray<TArray<FVector>> spa
 			FVector edgeCenter = vertex + (vertexNext - vertex) * 0.5;
 			FString uName = "BuildingRoad_" + Lodash::ToFixed(edgeCenter.X, 1) + "_" + Lodash::ToFixed(edgeCenter.Y, 1);
 			if (!usedKeys.Contains(uName)) {
-				roads.Add(uName, FRoadPath(uName, { vertex, vertexNext }, 10, "Road"));
+				roads.Add(uName, FRoadPath(uName, uName, { vertex, vertexNext }, 10, "Road"));
 				usedKeys.Add(uName);
 				// TODO - add piece if want 3D model too.
 				// // Only add if creating new and does not already exist.

@@ -17,6 +17,7 @@ public:
 
 	void SetWorld(UWorld*);
 	// UWorld* GetWorld();
+	void CleanUp();
 	void InitMeshes();
 	void AddMesh(FString name, FString meshPath = "", FString materialPath = "");
 	int CreateInstance(FString uName, FVector Translation, FRotator Rotation = FRotator(0,0,0), FVector Scale = FVector(1,1,1),
@@ -27,6 +28,7 @@ public:
 		bool unrealScaleTranslation = true);
 	void ClearInstances(FString);
 	void ClearInstancesBulk(TArray<FString>);
+	bool RemoveInstances(FString meshKey, TArray<int> instanceIndices);
 
 private:
 	static InstancedMesh *pinstance_;

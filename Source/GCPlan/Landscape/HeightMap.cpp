@@ -183,7 +183,6 @@ float HeightMap::GetZFromWorld(FVector Point, float MaxZ, float MinZ) {
 
 std::tuple<std::vector<unsigned char>, int, int> HeightMap::GetImage(FString filePath) {
 // std::tuple<unsigned char*, int, int> HeightMap::GetImage() {
-	// /Script/CoreUObject.Class'/Script/GCPlan.GCPlanGameInstance'
 	// filePath = "Source/GCPlan/Assets/Images/homes.png";
 	FString projectPath = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir());
 	filePath = projectPath + filePath;
@@ -210,7 +209,7 @@ std::tuple<std::vector<unsigned char>, int, int> HeightMap::GetImage(FString fil
 // https://forums.unrealengine.com/t/load-png-image-from-disk/680334
 // https://isaratech.com/ue4-reading-the-pixels-from-a-utexture2d/
 // std::tuple<FColor*, int, int> HeightMap::GetImageTexture() {
-// 	FString FullPath = "Source/GCPlan/Assets/Images/image-heightmap.png";
+// 	FString FullPath = "Source/Conditional/Images/image-heightmap.png";
 // 	FString projectPath = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir());
 // 	FullPath = projectPath + FullPath;
 // 	// FString contentPath = FPaths::ProjectContentDir();
@@ -262,7 +261,7 @@ std::tuple<std::vector<unsigned char>, int, int> HeightMap::GetImage(FString fil
 // https://hippowombat.tumblr.com/post/180615213251/blueprint-powered-landscape-edits-in-ue4-420
 // https://www.reddit.com/r/unrealengine/comments/hore2q/landscape_runtime_editing/
 // void HeightMap::SetHeightMap(ALandscape* Landscape) {
-// 	FString FullPath = "Source/GCPlan/Assets/Images/image-heightmap-flat.png";
+// 	FString FullPath = "Source/Conditional/Images/image-heightmap-flat.png";
 // 	FString projectPath = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir());
 // 	FullPath = projectPath + FullPath;
 // 	UTexture2D* texture = FImageUtils::ImportFileAsTexture2D(FullPath);

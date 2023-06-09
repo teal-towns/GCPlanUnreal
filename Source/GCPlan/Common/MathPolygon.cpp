@@ -9,30 +9,35 @@ MathPolygon::MathPolygon() {
 MathPolygon::~MathPolygon() {
 }
 
-// public TArray<FVector> MathPolygon::Bounds(TArray<FVector> Vertices) {
-// 	FVector min = FVector::Zero;
-// 	FVector max = FVector::Zero;
-// 	for (int vv = 0; vv < Vertices.Num(); vv++) {
-// 		FVector2D bounds = FVector2D(plot.vertices[vv].X, plot.vertices[vv].Z);
-// 		vertices2D.Add(bounds);
-// 		if (min.X == 0 || bounds.X < min.X) {
-// 			min.X = bounds.X;
-// 		}
-// 		if (max.X == 0 || bounds.X > max.X) {
-// 			max.X = bounds.X;
-// 		}
-// 		if (min.Y == 0 || bounds.Y < min.Y) {
-// 			min.Y = bounds.Y;
-// 		}
-// 		if (max.Y == 0 || bounds.Y > max.Y) {
-// 			max.Y = bounds.Y;
-// 		}
-// 	}
-// 	TArray<FVector2D> boundsRect = { min, max };
-// 	return boundsRect;
-// }
+TArray<FVector> MathPolygon::Bounds(TArray<FVector> Vertices) {
+	FVector min = FVector(0,0,0);
+	FVector max = FVector(0,0,0);
+	for (int vv = 0; vv < Vertices.Num(); vv++) {
+		// FVector2D bounds = FVector2D(Vertices[vv].X, Vertices[vv].Y);
+		FVector bounds = Vertices[vv];
+		if (min.X == 0 || bounds.X < min.X) {
+			min.X = bounds.X;
+		}
+		if (max.X == 0 || bounds.X > max.X) {
+			max.X = bounds.X;
+		}
+		if (min.Y == 0 || bounds.Y < min.Y) {
+			min.Y = bounds.Y;
+		}
+		if (max.Y == 0 || bounds.Y > max.Y) {
+			max.Y = bounds.Y;
+		}
+		if (min.Z == 0 || bounds.Z < min.Z) {
+			min.Z = bounds.Z;
+		}
+		if (max.Z == 0 || bounds.Z > max.Z) {
+			max.Z = bounds.Z;
+		}
+	}
+	TArray<FVector> boundsRect = { min, max };
+	return boundsRect;
+}
 
-// TODO - convert from C# to C++
 TArray<FVector2D> MathPolygon::PointsTo2D(TArray<FVector> points) {
 	TArray<FVector2D> points2D = {};
 	for (int ii = 0; ii < points.Num(); ii++) {
@@ -144,56 +149,56 @@ FVector2D MathPolygon::GetPolygonCenter2D(TArray<FVector2D> vertices) {
 	return center;
 }
 
-// public Tuple<int, FVector> FindNewVertexOnEdge(TArray<FVector> vertices, FVector posNonEditing,
-// 	float distanceError = 1) {
-// 	int insertIndex = -1;
-// 	FVector insertPos = FVector.Zero;
-// 	// Insert new vertex IN the right order.
-// 	// Point C is on line A to B if the distance from A to B is the same as the sum of AC and CB.
-// 	// https://stackoverflow.com/questions/17692922/check-is-a-point-x-y-is-between-two-points-drawn-on-a-straight-line
-// 	float distanceAC, distanceCB, distanceAB, diff;
-// 	FVector pointA, pointB;
-// 	FVector pointC = posNonEditing;
-// 	int indexPrev;
-// 	float minDiff = -1;
-// 	int minIndex = -1;
-// 	float minDistanceVertices = -1;
-// 	bool edited = false;
-// 	for (int ii = 0; ii < vertices.Num(); ii++) {
-// 		indexPrev = ii > 0 ? ii - 1 : vertices.Num() - 1;
-// 		pointA = vertices[indexPrev];
-// 		pointB = vertices[ii];
-// 		// Move pos down to same y (pick one of the vertices, assume they are the same).
-// 		pointC.Y = pointA.Y;
-// 		distanceAB = (pointB - pointA).Size();
-// 		distanceAC = (pointC - pointA).Size();
-// 		distanceCB = (pointB - pointC).Size();
-// 		diff = Mathf.Abs(distanceAB - (distanceAC + distanceCB));
-// 		if (minDiff == -1 || diff < minDiff) {
-// 			minDiff = diff;
-// 			minIndex = ii;
-// 			posNonEditing.Y = pointC.Y;
-// 		}
-// 		if (minDistanceVertices == -1 || distanceAB < minDistanceVertices) {
-// 			minDistanceVertices = distanceAB;
-// 		}
-// 		if (diff < distanceError) {
-// 			posNonEditing.Y = pointC.Y;
-// 			insertIndex = ii;
-// 			insertPos = posNonEditing;
-// 			edited = true;
-// 			break;
-// 		}
-// 	}
-// 	// For some reason we are not always getting a position on the line, so if close enough, use it..
-// 	if (!edited && minDiff != -1 && minDiff < minDistanceVertices) {
-// 		insertIndex = minIndex;
-// 		insertPos = posNonEditing;
-// 		edited = true;
-// 	}
+std::tuple<int, FVector> MathPolygon::FindNewVertexOnEdge(TArray<FVector> vertices, FVector posNonEditing,
+	float distanceError) {
+	int insertIndex = -1;
+	FVector insertPos = FVector(0,0,0);
+	// Insert new vertex IN the right order.
+	// Point C is on line A to B if the distance from A to B is the same as the sum of AC and CB.
+	// https://stackoverflow.com/questions/17692922/check-is-a-point-x-y-is-between-two-points-drawn-on-a-straight-line
+	float distanceAC, distanceCB, distanceAB, diff;
+	FVector pointA, pointB;
+	FVector pointC = posNonEditing;
+	int indexPrev;
+	float minDiff = -1;
+	int minIndex = -1;
+	float minDistanceVertices = -1;
+	bool edited = false;
+	for (int ii = 0; ii < vertices.Num(); ii++) {
+		indexPrev = ii > 0 ? ii - 1 : vertices.Num() - 1;
+		pointA = vertices[indexPrev];
+		pointB = vertices[ii];
+		// Move pos down to same z (pick one of the vertices, assume they are the same).
+		pointC.Z = pointA.Z;
+		distanceAB = (pointB - pointA).Size();
+		distanceAC = (pointC - pointA).Size();
+		distanceCB = (pointB - pointC).Size();
+		diff = abs(distanceAB - (distanceAC + distanceCB));
+		if (minDiff == -1 || diff < minDiff) {
+			minDiff = diff;
+			minIndex = ii;
+			posNonEditing.Z = pointC.Z;
+		}
+		if (minDistanceVertices == -1 || distanceAB < minDistanceVertices) {
+			minDistanceVertices = distanceAB;
+		}
+		if (diff < distanceError) {
+			posNonEditing.Z = pointC.Z;
+			insertIndex = ii;
+			insertPos = posNonEditing;
+			edited = true;
+			break;
+		}
+	}
+	// For some reason we are not always getting a position on the line, so if close enough, use it..
+	if (!edited && minDiff != -1 && minDiff < minDistanceVertices) {
+		insertIndex = minIndex;
+		insertPos = posNonEditing;
+		edited = true;
+	}
 
-// 	return new Tuple<int, FVector>(insertIndex, insertPos);
-// }
+	return { insertIndex, insertPos };
+}
 
 // If want an inner radius to take up 15% of the total area, how long is the inner radius?
 // formula: PI * radiusOuter ^ 2 * innerAreaRatio = PI * radiusInner ^ 2

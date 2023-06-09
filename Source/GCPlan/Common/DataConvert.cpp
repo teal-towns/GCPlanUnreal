@@ -1,5 +1,9 @@
 #include "DataConvert.h"
 
+#include "JsonObjectConverter.h"
+#include "HAL/PlatformFileManager.h"
+#include "Misc/FileHelper.h"
+
 #include "../BuildingStructsActor.h"
 
 DataConvert::DataConvert() {
@@ -79,3 +83,31 @@ FRotator DataConvert::DictToRotator(FMapStringFloat dict) {
 // FRotator DataConvert::ArrayToRotator(TArray<float> array1) {
 // 	return FRotator(array1[0], array1[1], array1[2]);
 // }
+
+std::tuple<FString, bool, FString> DataConvert::ReadStringFromFile(FString FilePath) {
+	bool valid = true;
+	FString msg = "";
+	FString RetString = "";
+	if (!FPlatformFileManager::Get().GetPlatformFile().FileExists(*FilePath)) {
+		valid = false;
+		UE_LOG(LogTemp, Warning, TEXT("DataFileProject.ReadStringFromFile file does not exist %s"), *FilePath);
+		msg = FString::Printf(TEXT("File does not exist %s"), *FilePath);
+	}
+	if (!FFileHelper::LoadFileToString(RetString, *FilePath)) {
+		valid = false;
+		UE_LOG(LogTemp, Warning, TEXT("DataFileProject.ReadStringFromFile unable to read file %s"), *FilePath);
+		msg = FString::Printf(TEXT("Unable to read file %s"), *FilePath);
+	}
+	return {RetString, valid, msg};
+}
+
+std::tuple<bool, FString> DataConvert::WriteStringToFile(FString FilePath, FString String) {
+	bool valid = true;
+	FString msg = "";
+	if (!FFileHelper::SaveStringToFile(String, *FilePath)) {
+		valid = false;
+		UE_LOG(LogTemp, Warning, TEXT("DataFileProject.WriteStringToFile unable to write file %s"), *FilePath);
+		msg = FString::Printf(TEXT("Unable to write file %s"), *FilePath);
+	}
+	return {valid, msg};
+}
