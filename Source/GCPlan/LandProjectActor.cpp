@@ -14,10 +14,12 @@
 #include "Common/MathPolygon.h"
 #include "Common/UnrealGlobal.h"
 // #include "Landscape/HeightMap.h"
+#include "Landscape/LandNature.h"
 #include "Landscape/MeshTerrain.h"
 #include "Landscape/SplineRoad.h"
 #include "Landscape/VerticesEdit.h"
 #include "Layout/LayoutPolygon.h"
+#include "Layout/LayoutPolyLine.h"
 #include "Mesh/InstancedMesh.h"
 #include "Mesh/LoadContent.h"
 // #include "Modeling/ModelBase.h"
@@ -98,23 +100,12 @@ void ALandProjectActor::Init() {
 		this->InitSocketOn();
 		this->Login();
 
-		TMap<FString, FPlot> plots = {};
-		TMap<FString, FString> jsonFiles = unrealGlobal->_settings->projectJsonFiles;
-		auto [data, valid] = DataFileProject::LoadProject(jsonFiles["plot"]);
-		if (valid) {
-			plots = data.plots;
-		}
-		auto [plots1, countNew] = PlotDivide::SubdividePlots(plots);
-		if (countNew > 0) {
-			plots = plots1;
-			FDataProjectJson* json = new FDataProjectJson(plots);
-			DataFileProject::SaveProject(*json, unrealGlobal->_settings->projectJsonFiles["plot"]);
-		}
+		PlotData* plotData = PlotData::GetInstance();
+		TMap<FString, FPlot> plots = plotData->LoadAndSubdividePlots();
+
 		VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
 		verticesEdit->ImportPolygons(ABuildingStructsActor::PlotsToPolygons(plots));
 		UE_LOG(LogTemp, Display, TEXT("init %d"), plots.Num());
-		PlotData* plotData = PlotData::GetInstance();
-
 		verticesEdit->AddOnSavePolygon("LandProjectActor", [this, verticesEdit, unrealGlobal, plotData](FString uName, FPolygon polygon) {
 			UE_LOG(LogTemp, Display, TEXT("on save polygon uName %s type %s"), *uName, *polygon.type);
 			// TMap<FString, FPolygon> polygons = verticesEdit->ExportPolygonsByType(type);
@@ -145,7 +136,6 @@ void ALandProjectActor::EditorClear() {
 	unrealGlobal->InitAll(GetWorld());
 
 	InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
-	// instancedMesh->ClearInstances("HexModule");
 	instancedMesh->CleanUp();
 	SplineRoad* splineRoad = SplineRoad::GetInstance();
 	splineRoad->DestroyRoads();
@@ -155,23 +145,12 @@ void ALandProjectActor::EditorGenerate() {
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	unrealGlobal->InitAll(GetWorld());
 
-	// TODO - this is probably broken now; will need to fix to re-use.
 	// this->InitSocketOn();
 	// this->Login();
 
-	TMap<FString, FPlot> plots = {};
-	TMap<FString, FString> jsonFiles = unrealGlobal->_settings->projectJsonFiles;
-	auto [data, valid] = DataFileProject::LoadProject(jsonFiles["plot"]);
-	if (valid) {
-		plots = data.plots;
-	// } else {
-	// 	FDataProjectJson* json = new FDataProjectJson(plots);
-	// 	DataFileProject::SaveProject(*json, unrealGlobal->_settings->projectJsonFiles["plot"]);
-	}
-	auto [plots1, countNew] = PlotDivide::SubdividePlots(plots);
-	if (countNew > 0) {
-		plots = plots1;
-	}
+	PlotData* plotData = PlotData::GetInstance();
+	TMap<FString, FPlot> plots = plotData->LoadAndSubdividePlots();
+
 	// VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
 	// verticesEdit->ImportPolygons(ABuildingStructsActor::PlotsToPolygons(plots));
 
@@ -181,53 +160,11 @@ void ALandProjectActor::EditorGenerate() {
 	MeshTerrain* meshTerrain = MeshTerrain::GetInstance();
 	SplineRoad* splineRoad = SplineRoad::GetInstance();
 	// meshTerrain->DrawRoads();
-	splineRoad->DrawRoads();
+	splineRoad->DrawRoads(false);
 
-
-	LayoutPolygon* layoutPolygon = LayoutPolygon::GetInstance();
-	LoadContent* loadContent = LoadContent::GetInstance();
-	// Use another json file for the land polygon.
-	TMap<FString, FPlot> landPlots = {};
-	auto [data1, valid1] = DataFileProject::LoadProject(jsonFiles["landNature"]);
-	// if (false) {
-	if (valid1) {
-		landPlots = data1.plots;
-	} else {
-		float z = 0;
-		landPlots = {
-			{ "marinaVillage", {"id6", "plot6",
-				{ FVector(114, -444, z), FVector(-182, -187, z), FVector(-284, 414, z), FVector(524, 421, z) },
-				FVector(0,0,z), "flowerHomes", 150 }
-			},
-		};
-	}
-	FVector center;
-	TArray<FString> meshNames = loadContent->GetMeshNamesByTypes({ "tree" });
-	FPlaceParams placeParams = FPlaceParams();
-	placeParams.snapToGround = true;
-	// Skip plots.
-	for (auto& Elem : plots) {
-		// // Only add final plots (not parent plots).
-		// if (Elem.Value.childPlotUNames.Num() < 1) {
-		// 	placeParams.skipPolygons.Add(Elem.Value.vertices);
-		// }
-		// Only add parent plots.
-		if (Elem.Value.parentPlotUName == "") {
-			placeParams.skipPolygons.Add(Elem.Value.vertices);
-		}
-	}
-
-	placeParams.offsetAverage = 30;
-	for (auto& Elem : landPlots) {
-		center = MathPolygon::GetPolygonCenter(Elem.Value.vertices);
-		layoutPolygon->PlaceInPolygon(Elem.Value.vertices, meshNames, center, placeParams);
-	}
-	meshNames = loadContent->GetMeshNamesByTypes({ "bush" });
-	// placeParams.snapToGround = true;
-	placeParams.offsetAverage = 10;
-	for (auto& Elem : landPlots) {
-		center = MathPolygon::GetPolygonCenter(Elem.Value.vertices);
-		layoutPolygon->PlaceInPolygon(Elem.Value.vertices, meshNames, center, placeParams);
+	// Place nature on land.
+	if (false) {
+	LandNature::PlaceNature(plots);
 	}
 
 

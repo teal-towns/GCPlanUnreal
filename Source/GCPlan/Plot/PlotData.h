@@ -24,4 +24,6 @@ public:
 	void DeletePlot(FString uName);
 	void SavePlotFromPolygon(FString uName, FPolygon polygon);
 	TMap<FString, FPlot> LoadPlots();
+	TMap<FString, FPlot> LoadAndSubdividePlots(bool removeFinalChildren = true);
+	FString GetParentPattern(FString childUName);
 };

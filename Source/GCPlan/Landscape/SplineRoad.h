@@ -36,6 +36,6 @@ public:
 	void SetWorld(UWorld*);
 
 	void AddRoads(TMap<FString, FRoadPath> roads);
-	void DrawRoads();
+	void DrawRoads(bool addPlants = true);
 	void DestroyRoads();
 };

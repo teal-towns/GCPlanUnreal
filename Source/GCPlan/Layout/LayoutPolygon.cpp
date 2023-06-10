@@ -1,5 +1,6 @@
 #include "LayoutPolygon.h"
 
+#include "LayoutPlace.h"
 #include "../DataStructsActor.h"
 #include "../Common/DataConvert.h"
 #include "../Common/Lodash.h"
@@ -152,8 +153,6 @@ bool LayoutPolygon::PlaceInPolygon(TArray<FVector> vertices, TArray<FString> mes
 			}
 		}
 	}
-
-	UE_LOG(LogTemp, Display, TEXT("meshes %d %d"), meshes.Num(), iterations);
 
 	// Place them.
 	InstancedMesh* instancedMesh = InstancedMesh::GetInstance();

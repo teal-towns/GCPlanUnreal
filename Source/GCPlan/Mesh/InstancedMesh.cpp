@@ -53,6 +53,8 @@ void InstancedMesh::CleanUp() {
 void InstancedMesh::InitMeshes() {
 	AddMesh("HexModule", "/Script/Engine.StaticMesh'/Game/Buildings/Hex/HexModule/HexModule.HexModule'",
 		"/Script/Engine.Material'/Game/Nature/Wood/wood-pale-material.wood-pale-material'");
+	AddMesh("HexModuleBlock", "/Script/Engine.StaticMesh'/Game/Buildings/Hex/HexModule/HexModule_LOD2.HexModule_LOD2'",
+		"/Script/Engine.Material'/Game/Nature/Wood/wood-pale-material.wood-pale-material'");
 	AddMesh("RoadRoundabout", "/Script/Engine.StaticMesh'/Game/Landscape/Roundabout1.Roundabout1'",
 		"/Script/Engine.Material'/Game/Landscape/Asphalt_M.Asphalt_M'");
 
