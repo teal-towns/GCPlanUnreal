@@ -1,5 +1,6 @@
 #include "PlotData.h"
 
+#include "PlotDivide.h"
 #include "../BuildingStructsActor.h"
 #include "../Common/UnrealGlobal.h"
 #include "../Data/DataFileProject.h"
@@ -56,4 +57,41 @@ TMap<FString, FPlot> PlotData::LoadPlots() {
 	return _plots;
 }
 
+TMap<FString, FPlot> PlotData::LoadAndSubdividePlots(bool removeFinalChildren) {
+	_plots.Empty();
+	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+	auto [data, valid] = DataFileProject::LoadProject(unrealGlobal->_settings->projectJsonFiles["plot"]);
+	if (valid) {
+		if (removeFinalChildren) {
+			for (auto& Elem : data.plots) {
+				if (Elem.Value.childPlotUNames.Num() > 0) {
+					_plots.Add(Elem.Key, Elem.Value);
+				}
+			}
+		} else {
+			_plots = data.plots;
+		}
+	}
 
+	auto [plots1, countNew] = PlotDivide::SubdividePlots(_plots);
+	if (countNew > 0) {
+		_plots = plots1;
+		FDataProjectJson* json = new FDataProjectJson(_plots);
+		DataFileProject::SaveProject(*json, unrealGlobal->_settings->projectJsonFiles["plot"]);
+	}
+
+	return _plots;
+}
+
+FString PlotData::GetParentPattern(FString childUName) {
+	FString buildPattern = "";
+	if (_plots.Contains(childUName)) {
+		FString uName = _plots[childUName].parentPlotUName;
+		while (uName != "" && _plots.Contains(uName)) {
+			if (_plots[uName].buildPattern != "") {
+				return _plots[uName].buildPattern;
+			}
+		}
+	}
+	return buildPattern;
+}

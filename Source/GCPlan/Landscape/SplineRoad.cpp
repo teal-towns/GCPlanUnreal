@@ -8,7 +8,10 @@
 
 #include "../Common/Lodash.h"
 #include "../Common/UnrealGlobal.h"
+#include "../Layout/LayoutPlace.h"
+#include "../Layout/LayoutPolyLine.h"
 #include "../Mesh/InstancedMesh.h"
+#include "../Mesh/LoadContent.h"
 #include "../ProceduralModel/PMBase.h"
 
 SplineRoad* SplineRoad::pinstance_{nullptr};
@@ -84,9 +87,10 @@ void SplineRoad::AddRoads(TMap<FString, FRoadPath> roadsPaths) {
 	}
 }
 
-void SplineRoad::DrawRoads() {
+void SplineRoad::DrawRoads(bool addPlants) {
 	float flatteningMeters = 10;
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+	LoadContent* loadContent = LoadContent::GetInstance();
 	float widthMeters;
 	FString UName, name, nameTemp, uNameRoundabout;
 	TArray<FVector> vertices;
@@ -107,8 +111,17 @@ void SplineRoad::DrawRoads() {
 
 	TArray<FString> roundaboutUNames = {};
 
+	TArray<FString> meshNamesBush = loadContent->GetMeshNamesByTypes({ "bush" });
+	TArray<FString> meshNamesTree = loadContent->GetMeshNamesByTypes({ "tree" });
+
 	for (auto& Elem1 : _RoadsByType) {
 		FString type = Elem1.Key;
+
+		FPlaceParams placeParamsNature = FPlaceParams();
+		placeParamsNature.snapToGround = true;
+		placeParamsNature.width = 5;
+		float placingOffset = 5;
+
 		for (auto& Elem : _RoadsByType[type]) {
 			UName = Elem.Key;
 			widthMeters = Elem.Value.widthMeters;
@@ -185,6 +198,18 @@ void SplineRoad::DrawRoads() {
 			spline->UpdateSpline();
 			for (int ii = 1; ii < pointCount; ii++) {
 				AddSplineMesh(UName, ii, parentObject, parent, widthMeters, spline);
+			}
+
+			if (addPlants) {
+				// Place nature / trees on sides of roads.
+				placeParamsNature.spacing = 5;
+				placeParamsNature.spacingCrossAxis = 2;
+				LayoutPolyLine::PlaceOnLineSides(vertices, widthMeters + placingOffset * 2,
+					meshNamesBush, placeParamsNature);
+				placeParamsNature.spacing = 20;
+				placeParamsNature.spacingCrossAxis = 999;
+				LayoutPolyLine::PlaceOnLineSides(vertices, widthMeters + placingOffset * 2,
+					meshNamesTree, placeParamsNature);
 			}
 		}
 	}
