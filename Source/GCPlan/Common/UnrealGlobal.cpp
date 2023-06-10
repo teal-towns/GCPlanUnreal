@@ -9,6 +9,7 @@
 #include "../Landscape/SplineRoad.h"
 #include "../Landscape/VerticesEdit.h"
 #include "../Mesh/InstancedMesh.h"
+#include "../Mesh/LoadContent.h"
 #include "../Modeling/ModelBase.h"
 #include "../ProceduralModel/PMBase.h"
 
@@ -74,6 +75,14 @@ void UnrealGlobal::GetSocket(UWorld* World1) {
 	}
 }
 
+FDataSettings* UnrealGlobal::Settings() {
+	if (!_settings) {
+		UE_LOG(LogTemp, Warning, TEXT("UnrealGlobal.Settings no settings"));
+		return nullptr;
+	}
+	return _settings;
+}
+
 void UnrealGlobal::InitMeshes(UWorld* World1) {
 	SetWorld(World1);
 
@@ -81,6 +90,10 @@ void UnrealGlobal::InitMeshes(UWorld* World1) {
 	InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
 	instancedMesh->SetWorld(World);
 	instancedMesh->InitMeshes();
+
+	// Load from JSON too.
+	LoadContent* loadContent = LoadContent::GetInstance();
+	loadContent->LoadMeshes();
 }
 
 void UnrealGlobal::SetInited(FString key) {

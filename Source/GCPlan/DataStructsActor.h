@@ -40,6 +40,12 @@ struct FDataSettings {
 	TMap<FString, FString> projectJsonFiles;
 	UPROPERTY()
 	FString urlWebsocket;
+	UPROPERTY()
+	FString contentMeshesJsonFile;
+	UPROPERTY()
+	int performanceQuantityLevel;
+	UPROPERTY()
+	int performanceQualityLevel;
 
 	FDataSettings() {};
 	FDataSettings(FString loginEmail_, FString loginPassword_, FString projectUName_,
@@ -112,5 +118,41 @@ struct FDataProjectJson {
 	FDataProjectJson() {};
 	FDataProjectJson(TMap<FString, FPlot> plots_) {
 		plots = plots_;
+	};
+};
+
+USTRUCT()
+struct FContentMeshModel {
+	GENERATED_BODY()
+
+	UPROPERTY()
+	TArray<float> size;
+	UPROPERTY()
+	FString type;
+	UPROPERTY()
+	FString path;
+	UPROPERTY()
+	FString materialPath;
+
+	FContentMeshModel() {};
+	FContentMeshModel(TArray<float> size_, FString type_, FString path_,
+		FString materialPath_ = "") {
+		size = size_;
+		type = type_;
+		path = path_;
+		materialPath = materialPath_;
+	};
+};
+
+USTRUCT()
+struct FDataContentMesh {
+	GENERATED_BODY()
+
+	UPROPERTY()
+	TMap<FString, FContentMeshModel> models;
+
+	FDataContentMesh() {};
+	FDataContentMesh(TMap<FString, FContentMeshModel> models_) {
+		models = models_;
 	};
 };

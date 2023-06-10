@@ -34,6 +34,7 @@ public:
 	void SetInited(FString key);
 	bool IsIniteds(TArray<FString>);
 	void GetSocket(UWorld*);
+	FDataSettings* Settings();
 	void CleanUp(TArray<FString> skipKeys = {});
 	void SetWorld(UWorld*);
 	UWorld* GetWorld();

@@ -39,6 +39,12 @@
 	- Once code is reviewed, changed (if needed) and approved, merge the Pull Request on Github, do a `git pull origin main` locally to get your changes and delete the branch on github.com and locally.
 
 
+## Conditional Content
+`Conditional` folders are git ignored for project specific content.
+- Add references to `contentMeshes.json` to use them. Code will load with fallbacks if these assets are not present.
+- Content is broken up into Git repos, roughly by: 1. project / related content (e.g. nature biomes), 2. file size (low quality (low poly, small textures) vs high poly (high poly, large textures)).
+
+
 ## Coding
 
 - C++ has no reflection so can not do:

@@ -14,6 +14,9 @@ public:
 	static FMapStringFloat RotatorToDict(FRotator vector);
 	static FRotator DictToRotator(FMapStringFloat dict);
 
+	static FString FileNameToPath(FString fileName, FString key);
+	static std::tuple<FString, bool, FString> ReadFile(FString fileName, FString filePathKey);
 	static std::tuple<FString, bool, FString> ReadStringFromFile(FString FilePath);
 	static std::tuple<bool, FString> WriteStringToFile(FString FilePath, FString String);
+	static FRotator VectorToRotator(FVector vector);
 };
