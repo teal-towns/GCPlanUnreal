@@ -683,8 +683,8 @@ static unsigned HuffmanTree_makeTable(HuffmanTree* tree) {
   size = headsize;
   for(i = 0; i < headsize; ++i) {
     unsigned l = maxlens[i];
-    if(l > FIRSTBITS) size += (1u << (l - FIRSTBITS));
-    // if(l > FIRSTBITS) size += (1i64 << (l - FIRSTBITS));    // Luke - fixes compiler error
+    // if(l > FIRSTBITS) size += (1u << (l - FIRSTBITS));
+    if(l > FIRSTBITS) size += (1i64 << (l - FIRSTBITS));    // Luke - fixes compiler error
   }
   tree->table_len = (unsigned char*)lodepng_malloc(size * sizeof(*tree->table_len));
   tree->table_value = (unsigned short*)lodepng_malloc(size * sizeof(*tree->table_value));
@@ -703,8 +703,8 @@ static unsigned HuffmanTree_makeTable(HuffmanTree* tree) {
     if(l <= FIRSTBITS) continue;
     tree->table_len[i] = l;
     tree->table_value[i] = pointer;
-    pointer += (1u << (l - FIRSTBITS));
-    // pointer += (1i64 << (l - FIRSTBITS));   // Luke - fixes compiler error
+    // pointer += (1u << (l - FIRSTBITS));
+    pointer += (1i64 << (l - FIRSTBITS));   // Luke - fixes compiler error
   }
   lodepng_free(maxlens);
 
@@ -5891,8 +5891,8 @@ static size_t ilog2i(size_t i) {
   l = ilog2(i);
   /* approximate i*log2(i): l is integer logarithm, ((i - (1u << l)) << 1u)
   linearly approximates the missing fractional part multiplied by i */
-  return i * l + ((i - (1u << l)) << 1u);
-  // return i * l + ((i - (1i64 << l)) << 1u);   // Luke - fixes compiler error
+  // return i * l + ((i - (1u << l)) << 1u);
+  return i * l + ((i - (1i64 << l)) << 1u);   // Luke - fixes compiler error
 }
 
 static unsigned filter(unsigned char* out, const unsigned char* in, unsigned w, unsigned h,

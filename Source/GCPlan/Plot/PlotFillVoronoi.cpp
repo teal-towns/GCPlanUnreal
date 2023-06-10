@@ -5,7 +5,7 @@
 // #include "VectorTypes.h"
 #include "Math/Vector2D.h"
 
-// // https://forums.unrealengine.com/t/errors-when-including-third-party-library/737189/2
+// https://forums.unrealengine.com/t/errors-when-including-third-party-library/737189/2
 #pragma push_macro("check")   // store 'check' macro current definition
 #undef check  // undef to avoid conflicts
 THIRD_PARTY_INCLUDES_START
@@ -20,8 +20,6 @@ THIRD_PARTY_INCLUDES_END
 #include "../Common/Lodash.h"
 #include "../Common/MathPolygon.h"
 #include "../Landscape/HeightMap.h"
-// TODO - figure out how to include a file with just structs
-// #include "PlotStructs.h"
 
 PlotFillVoronoi::PlotFillVoronoi() {
 }
@@ -30,7 +28,6 @@ PlotFillVoronoi::~PlotFillVoronoi() {
 }
 
 std::tuple<TArray<TArray<FVector>>, FVector, TArray<FVector2D>> PlotFillVoronoi::Fill(TMap<FString, FPlot> plots, float averageDistance) {
-	bool useVoronoi = true;
 	TArray<TArray<FVector>> spacesVertices = {};
 	// Cache plot vertices in 2D format for in polygon checking later.
 	TArray<TArray<FVector2D>> plotsVertices2D = {};
@@ -71,6 +68,7 @@ std::tuple<TArray<TArray<FVector>>, FVector, TArray<FVector2D>> PlotFillVoronoi:
 		min.Y + (plotSizeY / 2));
 	// UE_LOG(LogTemp, Display, TEXT("PFV sizeX %f sizeY %f min %s max %s"), plotSizeX, plotSizeY, *min.ToString(), *max.ToString());
 
+	bool useVoronoi = true;
 	if (useVoronoi) {
 	TArray<FVector2D> pointsTemp = SpawnPoints(boundsRect, averageDistance);
 	// UE_LOG(LogTemp, Display, TEXT("PFV pointsTemp %d"), pointsTemp.Num());
@@ -127,6 +125,7 @@ std::tuple<TArray<TArray<FVector>>, FVector, TArray<FVector2D>> PlotFillVoronoi:
 		}
 	}
 	} else {
+	// if (true) {
 	TArray<TArray<FVector>> spacesVertices1 = SpawnSpaces(boundsRect, averageDistance);
 
 	FVector2D point;

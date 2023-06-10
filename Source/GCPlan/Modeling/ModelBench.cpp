@@ -27,8 +27,8 @@ void ModelBench::Create() {
 	AStaticMeshActor* actor;
 
 	// Parent container
-	AStaticMeshActor* bench = modelBase->CreateActor(name, location, rotation, scale, spawnParams);
-	USceneComponent* parent = bench->FindComponentByClass<USceneComponent>();
+	actor = modelBase->CreateActor(name, location, rotation, scale, spawnParams);
+	USceneComponent* parent = actor->FindComponentByClass<USceneComponent>();
 
 	FString meshPath = "/Script/Engine.StaticMesh'/Game/Modeling/Primitives/Cube.Cube'";
 	FString materialPath = "/Script/Engine.Material'/Game/Nature/Wood/wood-pale-material.wood-pale-material'";
@@ -39,7 +39,7 @@ void ModelBench::Create() {
 	modelBase->CreateActor(name + "_Seat", location, rotation, scale, spawnParams, parent, meshPath, materialPath);
 
 	// Legs
-	spawnParams.Owner = bench;
+	spawnParams.Owner = actor;
 	scale = FVector(0.1, 0.1, size.Z);
 	float buffer = 0.1;
 
