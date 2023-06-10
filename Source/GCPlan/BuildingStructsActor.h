@@ -107,6 +107,28 @@ struct FBuildingStats {
 };
 
 USTRUCT()
+struct FMeshTransform {
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString meshName;
+	UPROPERTY()
+	FVector location;
+	UPROPERTY()
+	FVector rotation;
+	UPROPERTY()
+	FVector scale;
+
+	FMeshTransform() {};
+	FMeshTransform(FString meshName_, FVector location_, FVector rotation_, FVector scale_) {
+		meshName = meshName_;
+		location = location_;
+		rotation = rotation_;
+		scale = scale_;
+	};
+};
+
+USTRUCT()
 struct FLandGameObject {
 	GENERATED_BODY()
 

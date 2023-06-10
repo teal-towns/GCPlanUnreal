@@ -51,7 +51,6 @@ void InstancedMesh::CleanUp() {
 }
 
 void InstancedMesh::InitMeshes() {
-	// TODO - init from JSON so meshes and materials are dynamic / per environment.
 	AddMesh("HexModule", "/Script/Engine.StaticMesh'/Game/Buildings/Hex/HexModule/HexModule.HexModule'",
 		"/Script/Engine.Material'/Game/Nature/Wood/wood-pale-material.wood-pale-material'");
 	AddMesh("RoadRoundabout", "/Script/Engine.StaticMesh'/Game/Landscape/Roundabout1.Roundabout1'",

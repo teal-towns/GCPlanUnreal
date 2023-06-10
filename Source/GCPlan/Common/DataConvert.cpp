@@ -52,6 +52,10 @@ FRotator DataConvert::DictToRotator(FMapStringFloat dict) {
 	return FRotator(dict.v["y"], dict.v["z"], dict.v["x"]);
 }
 
+FRotator DataConvert::VectorToRotator(FVector vector) {
+	return FRotator(vector.Y, vector.Z, vector.X);
+}
+
 // TArray<float> DataConvert::VectorToArray(FVector vector) {
 // 	return TArray<float> { vector.X, vector.Y, vector.Z };
 // }
@@ -83,6 +87,26 @@ FRotator DataConvert::DictToRotator(FMapStringFloat dict) {
 // FRotator DataConvert::ArrayToRotator(TArray<float> array1) {
 // 	return FRotator(array1[0], array1[1], array1[2]);
 // }
+
+FString DataConvert::FileNameToPath(FString fileName, FString key) {
+	FString filePath = "";
+	if (fileName.Len() > 0) {
+		if (key == "conditional") {
+			filePath = "Source/Conditional/" + fileName;
+		}
+		FString projectPath = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir());
+		filePath = projectPath + filePath;
+	}
+	return filePath;
+}
+
+std::tuple<FString, bool, FString> DataConvert::ReadFile(FString fileName, FString filePathKey) {
+	FString filePath = FileNameToPath(fileName, filePathKey);
+	if (filePath.Len() < 1) {
+		return { "", false, "" };
+	}
+	return ReadStringFromFile(filePath);
+}
 
 std::tuple<FString, bool, FString> DataConvert::ReadStringFromFile(FString FilePath) {
 	bool valid = true;
