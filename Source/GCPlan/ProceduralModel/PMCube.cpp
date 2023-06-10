@@ -41,11 +41,11 @@ UStaticMesh* PMCube::Create(FString name, FVector size, FVector vertices, TArray
 	UObject* parentObject = (UObject*)actor;
 	UProceduralMeshComponent* ProceduralMesh = PMBase::CreateMesh(parentObject, parent, "Cube1");
 
-	float x, y, z;
+	float x;
 	TArray<FVector> Vertices = {};
 	TArray<FVector2D> UV0 = {};
 	TArray<int> Triangles = {};
-	int vertexIndex, vertexPastIndex, vertexBottomLeftIndex, vertexBottomRightIndex,
+	int vertexIndex, vertexBottomLeftIndex, vertexBottomRightIndex,
 		vertexTopLeftIndex, vertexTopRightIndex;
 
 	// Cube has 6 sides.

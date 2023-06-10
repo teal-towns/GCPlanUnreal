@@ -42,7 +42,7 @@ UStaticMesh* PMCylinder::Create(FString name, FVector size, FVector vertices, TA
 	float zSizePerVertex = size.Z / (vertices.Z - 1);
 	FVector centerToEdge = FVector(1,0,0).GetClampedToMaxSize(radius);
 	FVector xyLine;
-	int vertexIndex, vertexPastIndex, vertexBottomLeftIndex, vertexBottomRightIndex,
+	int vertexIndex, vertexBottomLeftIndex, vertexBottomRightIndex,
 		vertexTopLeftIndex, vertexTopRightIndex;
 	FVector center = FVector(0,0,0);
 	TArray<FVector> Vertices = {};
