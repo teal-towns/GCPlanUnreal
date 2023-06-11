@@ -8,6 +8,7 @@
 #include "../ModelingStructsActor.h"
 
 #include "ModelBench.h"
+#include "ModelDesk.h"
 
 ModelBase* ModelBase::pinstance_{nullptr};
 std::mutex ModelBase::mutex_;
@@ -60,11 +61,21 @@ FModelingBase ModelBase::GetInputs(FString defaultName, FVector defaultSize) {
 }
 
 void ModelBase::Create() { 
+	FVector defLocation = FVector(0, 0, 0);
+
 	if (_modelingBase.tagsString.Len() > 0) {
 		_modelingBase.tagsString.ParseIntoArray(_modelingBase.tags, TEXT(","), true);
 	}
 	if (_modelingBase.subCategory == ModelingSubCategory::BENCH) {
 		ModelBench::Create();
+	} else if (_modelingBase.subCategory == ModelingSubCategory::DESK) {
+		ModelDesk::Create();
+	} else if (_modelingBase.subCategory == ModelingSubCategory::MONITOR) {
+		ModelMonitor::Create(defLocation);
+	} else if (_modelingBase.subCategory == ModelingSubCategory::KEYBOARD) {
+		ModelKeyboard::Create(defLocation);
+	} else if (_modelingBase.subCategory == ModelingSubCategory::MOUSE) {
+		ModelMouse::Create(defLocation);
 	}
 	// TODO
 }

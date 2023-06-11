@@ -1,0 +1,7 @@
+﻿  Site.cpp
+C:\LUKE\GCPlanUnreal\Source\ThirdParty\cppdelaunay\delaunay\Site.cpp(164,19): warning C4244: 'initializing': conversion from 'Delaunay::Number' to 'int', possible loss of data
+  Vertex.cpp
+  Voronoi.cpp
+C:\LUKE\GCPlanUnreal\Source\ThirdParty\cppdelaunay\delaunay\Voronoi.cpp(221,17): warning C4244: 'initializing': conversion from 'int' to 'Delaunay::Number', possible loss of data
+  kruskal.cpp
+  libcppdelaunay.vcxproj -> C:\LUKE\GCPlanUnreal\Source\ThirdParty\cppdelaunay\libcppdelaunay\Release\libcppdelaunay.lib

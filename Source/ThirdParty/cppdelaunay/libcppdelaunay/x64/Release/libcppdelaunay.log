@@ -1,0 +1,17 @@
+﻿  Site.cpp
+C:\LUKE\GCPlanUnreal\Source\ThirdParty\cppdelaunay\delaunay\SiteList.h(30,22): warning C4267: 'return': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\LUKE\GCPlanUnreal\Source\ThirdParty\cppdelaunay\delaunay\Site.cpp(164,19): warning C4244: 'initializing': conversion from 'Delaunay::Number' to 'int', possible loss of data
+C:\LUKE\GCPlanUnreal\Source\ThirdParty\cppdelaunay\delaunay\Site.cpp(231,9): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  Vertex.cpp
+C:\LUKE\GCPlanUnreal\Source\ThirdParty\cppdelaunay\delaunay\SiteList.h(30,22): warning C4267: 'return': conversion from 'size_t' to 'unsigned int', possible loss of data
+  Voronoi.cpp
+C:\LUKE\GCPlanUnreal\Source\ThirdParty\cppdelaunay\delaunay\SiteList.h(30,22): warning C4267: 'return': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\LUKE\GCPlanUnreal\Source\ThirdParty\cppdelaunay\delaunay\Voronoi.cpp(42,9): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\LUKE\GCPlanUnreal\Source\ThirdParty\cppdelaunay\delaunay\Voronoi.cpp(134,9): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\LUKE\GCPlanUnreal\Source\ThirdParty\cppdelaunay\delaunay\Voronoi.cpp(211,19): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
+C:\LUKE\GCPlanUnreal\Source\ThirdParty\cppdelaunay\delaunay\Voronoi.cpp(221,17): warning C4244: 'initializing': conversion from 'int' to 'Delaunay::Number', possible loss of data
+  kruskal.cpp
+C:\LUKE\GCPlanUnreal\Source\ThirdParty\cppdelaunay\delaunay\kruskal.cpp(42,14): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  libcppdelaunay.vcxproj -> C:\LUKE\GCPlanUnreal\Source\ThirdParty\cppdelaunay\libcppdelaunay\x64\Release\libcppdelaunay.lib
+  Update libccpdelaunay.a
+          1 file(s) copied.
