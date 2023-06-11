@@ -88,7 +88,7 @@ void SplineRoad::AddRoads(TMap<FString, FRoadPath> roadsPaths) {
 	}
 }
 
-void SplineRoad::DrawRoads(bool addPlants) {
+void SplineRoad::DrawRoads(bool addPlants, bool carveLand) {
 	float flatteningMeters = 10;
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	LoadContent* loadContent = LoadContent::GetInstance();
@@ -116,6 +116,7 @@ void SplineRoad::DrawRoads(bool addPlants) {
 	TArray<FString> meshNamesBush = loadContent->GetMeshNamesByTypes({ "bush" });
 	TArray<FString> meshNamesTree = loadContent->GetMeshNamesByTypes({ "tree" });
 	bool saveHeightMap = false;
+	TMap<FString, FImagePixelValue> newHeightImageValues = {};
 
 	for (auto& Elem1 : _RoadsByType) {
 		FString type = Elem1.Key;
@@ -192,13 +193,15 @@ void SplineRoad::DrawRoads(bool addPlants) {
 					// Move up a bit to cover roads.
 					FVector pos = vertices[vv];
 					pos.Z += 0.25;
+
 					instancedMesh->CreateInstance("RoadRoundabout", pos, FRotator(0,0,0), FVector(2,2,1));
 					roundaboutUNames.Add(uNameRoundabout);
 				}
 
 				// Carve land (heightmap)
-				if (type == "road" && vv > 0) {
-					heightMap->CarveLine(vertices[(vv - 1)], vertices[vv], widthMeters);
+				if (carveLand && type == "road" && vv > 0) {
+					newHeightImageValues = heightMap->CarveLine(vertices[(vv - 1)], vertices[vv], widthMeters,
+						newHeightImageValues);
 					saveHeightMap = true;
 				}
 			}
@@ -224,7 +227,8 @@ void SplineRoad::DrawRoads(bool addPlants) {
 	}
 
 	if (saveHeightMap) {
-		heightMap->SaveImage();
+		// heightMap->SaveImage();
+		heightMap->SetImageValues(newHeightImageValues);
 	}
 }
 

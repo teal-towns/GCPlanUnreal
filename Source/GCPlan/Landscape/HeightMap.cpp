@@ -95,8 +95,19 @@ uint16 HeightMap::GetImageValue(int pixelX, int pixelY) {
 	return imageValue;
 }
 
+bool HeightMap::SetImageValues(TMap<FString, FImagePixelValue> newValues, bool save) {
+	for (auto& Elem : newValues) {
+		SetImageValue(Elem.Value.x, Elem.Value.y, Elem.Value.value);
+	}
+	if (save) {
+		SaveImage();
+	}
+	return true;
+}
+
 // https://github.com/lvandeve/lodepng/issues/74
 bool HeightMap::SetImageValue(int pixelX, int pixelY, uint16 imageValue) {
+	// uint16 beforeValue = GetImageValue(pixelX, pixelY);
 	// uint8 bytes[sizeof(imageValue)];
 	// memcpy(bytes, &imageValue, sizeof(imageValue));
 	uint8 byte1 = (imageValue >> 8) & 0xFF;
@@ -104,6 +115,8 @@ bool HeightMap::SetImageValue(int pixelX, int pixelY, uint16 imageValue) {
 	// Big Endian (most significant first, least significnant 2nd byte).
 	_image[2 * _width * pixelY + 2 * pixelX + 0] = byte1;
 	_image[2 * _width * pixelY + 2 * pixelX + 1] = byte2;
+	// uint16 afterValue = GetImageValue(pixelX, pixelY);
+	// UE_LOG(LogTemp, Display, TEXT("SetImageValue before %d val %d after %d"), beforeValue, imageValue, afterValue);
 	return true;
 }
 
@@ -113,6 +126,14 @@ float HeightMap::GetHeightFromPixelValue(int imageValue, int bits, int maxPixelV
 	}
 	float heightMeters = Lodash::RangeValue(imageValue, 0, maxPixelValue, minMeters, maxMeters);
 	return heightMeters;
+}
+
+uint16 HeightMap::ImageValuesPerMeter(int bits, int maxPixelValue, float minMeters, float maxMeters) {
+	if (maxPixelValue < 0) {
+		maxPixelValue = pow(2, bits) - 1;
+	}
+	uint16 values = round(maxPixelValue / (maxMeters - minMeters));
+	return values;
 }
 
 // https://stackoverflow.com/questions/2076475/reading-an-image-file-in-c-c
@@ -209,27 +230,32 @@ bool HeightMap::SaveImage(FString filePath) {
 	return true;
 }
 
-bool HeightMap::CarveLine(FVector start, FVector end, float widthMeters) {
+TMap<FString, FImagePixelValue> HeightMap::CarveLine(FVector start, FVector end, float widthMeters,
+	TMap<FString, FImagePixelValue> newValues, int pixelRange, float heightBufferMeters) {
 	float metersPerPixel = (float)_mapWidth / (float)_width;
 	float stepDistance = metersPerPixel;
 	FVector pathLine = end - start;
 	float totalDistance = pathLine.Size();
 	int stepCount = ceil(totalDistance / stepDistance);
 
-	int pixelRange = ceil(widthMeters / metersPerPixel);
-	int pixelRangeHalf = ceil(pixelRange / 2);
+	uint16 pixelsBuffer = 0;
+	if (heightBufferMeters != 0) {
+		uint16 values = ImageValuesPerMeter();
+		pixelsBuffer = round(heightBufferMeters * values);
+	}
 
 	FVector currentPoint = start;
 	FVector2D pixel;
 	uint16 imageValue;
+	FString key;
 	int xMin, xMax, yMin, yMax;
 	for (int ii = 0; ii < stepCount; ii++) {
 		pixel = GetPixelFromPoint(currentPoint);
-		imageValue = GetImageValue(pixel.X, pixel.Y);
-		xMin = pixel.X - pixelRangeHalf;
-		xMax = pixel.X + pixelRangeHalf;
-		yMin = pixel.Y - pixelRangeHalf;
-		yMax = pixel.Y + pixelRangeHalf;
+		imageValue = GetImageValue(pixel.X, pixel.Y) + pixelsBuffer;
+		xMin = pixel.X - pixelRange;
+		xMax = pixel.X + pixelRange;
+		yMin = pixel.Y - pixelRange;
+		yMax = pixel.Y + pixelRange;
 		if (xMin < 0) {
 			xMin = 0;
 		}
@@ -244,11 +270,17 @@ bool HeightMap::CarveLine(FVector start, FVector end, float widthMeters) {
 		}
 		for (int yy = yMin; yy <= yMax; yy++) {
 			for (int xx = xMin; xx <= xMax; xx++) {
-				SetImageValue(xx, yy, imageValue);
+				key = FString::FromInt(xx) + "_" + FString::FromInt(yy);
+				if (newValues.Contains(key)) {
+					newValues[key] = FImagePixelValue(xx, yy, imageValue);
+				} else {
+					newValues.Add(key, FImagePixelValue(xx, yy, imageValue));
+				}
+				// SetImageValue(xx, yy, imageValue);
 			}
 		}
 
 		currentPoint += pathLine.GetClampedToMaxSize(stepDistance);
 	}
-	return true;
+	return newValues;
 }
