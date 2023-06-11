@@ -58,7 +58,7 @@ void PlotBuild::DrawLands(TArray<FLand> lands) {
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
 	for (int ii = 0; ii < lands.Num(); ii++) {
-		UE_LOG(LogTemp, Display, TEXT("land_id %s num GO %d"), *lands[ii].land_id, lands[ii].game_objects.Num());
+		// UE_LOG(LogTemp, Display, TEXT("land_id %s num GO %d"), *lands[ii].land_id, lands[ii].game_objects.Num());
 		for (auto& Elem : lands[ii].game_objects) {
 			FLandGameObject GO = Elem.Value;
 			instancedMesh->CreateInstance("HexModuleBlock", DataConvert::DictToVector(GO.position),

@@ -48,10 +48,6 @@ HeightMap *HeightMap::GetInstance() {
 		_height = height1;
 	}
 	return pinstance_;
-	// if(heightMap_ == nullptr) {
- //        heightMap_ = new HeightMap();
- //    }
- //    return heightMap_;
 }
 
 void HeightMap::SetWorld(UWorld* world) {
@@ -61,10 +57,6 @@ void HeightMap::SetWorld(UWorld* world) {
 std::tuple<int, int, int> HeightMap::GetImageSize() {
 	return {_width, _height, _mapWidth};
 }
-
-// std::vector<unsigned char> HeightMap::GetImage() {
-// 	return _image;
-// }
 
 uint16 HeightMap::GetImageValue(int pixelX, int pixelY) {
 	if (pixelX >= _width) {
@@ -86,7 +78,8 @@ uint16 HeightMap::GetImageValue(int pixelX, int pixelY) {
 
 	int size = _image.size();
 
-	uint16 imageValue = 0, BigEiV, LitEiV;
+	uint16 imageValue = 0, BigEiV;
+	// uint16 LitEiV;
 	int imageIndex,imageIndexB;
 	uint8* bptr, byte1, byte2;
 	imageIndex = pixelY * _width + pixelX;
@@ -97,31 +90,21 @@ uint16 HeightMap::GetImageValue(int pixelX, int pixelY) {
 	// Big endian
 	BigEiV = (byte1 << 8) | byte2;
 	// Little endian
-	LitEiV = (byte2 << 8) | byte1;
+	// LitEiV = (byte2 << 8) | byte1;
 	imageValue = BigEiV;
-
-	// int size = sizeof(image);
-	// TODO - not quite working; the output for writing has x 1088 y 745 [6553] but we are getting 4627 (-293.96 meters).
-	// The image terrain in Unreal looks correct so I believe the image is properly written, it is just a reading problem here.
-	// TESTING
-	// pixelX = 1088;
-	// pixelY = 745;
-	// pixelX = 745;
-	// pixelY = 1088;
-	// UE_LOG(LogTemp, Display, TEXT("pixelX %d pixelY %d image length %d"), pixelX, pixelY, size);
-	// // 8 bit to 16 bit means we need to get and combine 2 bytes.
-	// // https://github.com/lvandeve/lodepng/issues/74
-	// // int imageIndex = pixelY * width + pixelX;
-	// // int imageValue = image[imageIndex];
-	// char byte1 = _image[(2 * _width * pixelY + 2 * pixelX + 0)];
-	// char byte2 = _image[(2 * _width * pixelY + 2 * pixelX + 1)];
-	// // Big endian
-	// uint16 imageValue = (byte1 << 8) | byte2;
-	// // Little endian
-	// // uint16 imageValue = (byte2 << 8) | byte1;
-	// UE_LOG(LogTemp, Display, TEXT("imageValue %d %d %d"), imageValue, byte1, byte2);
-	// UE_LOG(LogTemp, Display, TEXT("imageValue %d %d %d point x %f y %f"), imageValue, pixelX, pixelY, point.X, point.Y);
 	return imageValue;
+}
+
+// https://github.com/lvandeve/lodepng/issues/74
+bool HeightMap::SetImageValue(int pixelX, int pixelY, uint16 imageValue) {
+	// uint8 bytes[sizeof(imageValue)];
+	// memcpy(bytes, &imageValue, sizeof(imageValue));
+	uint8 byte1 = (imageValue >> 8) & 0xFF;
+	uint8 byte2 = imageValue & 0xFF;
+	// Big Endian (most significant first, least significnant 2nd byte).
+	_image[2 * _width * pixelY + 2 * pixelX + 0] = byte1;
+	_image[2 * _width * pixelY + 2 * pixelX + 1] = byte2;
+	return true;
 }
 
 float HeightMap::GetHeightFromPixelValue(int imageValue, int bits, int maxPixelValue, float minMeters, float maxMeters) {
@@ -141,16 +124,27 @@ float HeightMap::GetTerrainHeightAtPoint(FVector point, float minMeters, float m
 	if (false) {
 		heightMeters = GetZFromWorld(point);
 	} else {
-		float metersPerPixel = (float)_mapWidth / (float)_width;
-		// UE_LOG(LogTemp, Display, TEXT("metersPerPixel %f %d %d"), metersPerPixel, _width, _height);
-		auto [pixelX, pixelY] = GetPixelFromXY(point.X, point.Y, _width, _height, metersPerPixel);
-
-		uint16 imageValue = GetImageValue(pixelX, pixelY);
+		uint16 imageValue = GetImageValueAtPoint(point);
 		heightMeters = GetHeightFromPixelValue(imageValue, bits, -1, minMeters, maxMeters);
 	}
 	// auto [zScale, zOffset] = GetZScale();
 	// UE_LOG(LogTemp, Display, TEXT("heightMeters %f"), heightMeters);
 	return heightMeters;
+}
+
+uint16 HeightMap::GetImageValueAtPoint(FVector point) {
+	float metersPerPixel = (float)_mapWidth / (float)_width;
+	// UE_LOG(LogTemp, Display, TEXT("metersPerPixel %f %d %d"), metersPerPixel, _width, _height);
+	auto [pixelX, pixelY] = GetPixelFromXY(point.X, point.Y, _width, _height, metersPerPixel);
+
+	uint16 imageValue = GetImageValue(pixelX, pixelY);
+	return imageValue;
+}
+
+FVector2D HeightMap::GetPixelFromPoint(FVector point) {
+	float metersPerPixel = (float)_mapWidth / (float)_width;
+	auto [pixelX, pixelY] = GetPixelFromXY(point.X, point.Y, _width, _height, metersPerPixel);
+	return FVector2D(pixelX, pixelY);
 }
 
 // Get pixel from point. Assumes 0,0 is in center.
@@ -206,141 +200,55 @@ std::tuple<std::vector<unsigned char>, int, int> HeightMap::GetImage(FString fil
 	return {image, width, height};
 }
 
-// https://forums.unrealengine.com/t/load-png-image-from-disk/680334
-// https://isaratech.com/ue4-reading-the-pixels-from-a-utexture2d/
-// std::tuple<FColor*, int, int> HeightMap::GetImageTexture() {
-// 	FString FullPath = "Source/Conditional/Images/image-heightmap.png";
-// 	FString projectPath = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir());
-// 	FullPath = projectPath + FullPath;
-// 	// FString contentPath = FPaths::ProjectContentDir();
-// 	// FString fullContentPath = FPaths::ConvertRelativePathToFull(contentPath);
-// 	// FString FullPath = fullContentPath + File;
-// 	UTexture2D* texture = nullptr;
-// 	if (FullPath.Len() > 0) {
-// 		FullPath.ReplaceInline(TEXT("\\"), TEXT("/"), ESearchCase::CaseSensitive);
-// 		FullPath.ReplaceInline(TEXT("//"), TEXT("/"), ESearchCase::CaseSensitive);
-// 		FullPath.RemoveFromStart(TEXT("/"));
-// 		FullPath.RemoveFromEnd(TEXT("/"));
-// 		FPlatformMisc::NormalizePath(FullPath);
-// 		texture = FImageUtils::ImportFileAsTexture2D(FullPath);
-// 	}
-// 	// return texture;
+bool HeightMap::SaveImage(FString filePath) {
+	FString projectPath = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir());
+	filePath = projectPath + filePath;
+	std::string VectorString(TCHAR_TO_UTF8(*filePath));
+	const char* filename = VectorString.c_str();
+	unsigned error = lodepng::encode(filename, _image, _width, _height, LCT_GREY, 16);
+	return true;
+}
 
-// 	// TextureCompressionSettings OldCompressionSettings = texture->CompressionSettings;
-// 	// TextureMipGenSettings OldMipGenSettings = texture->MipGenSettings;
-// 	// bool OldSRGB = texture->SRGB;
+bool HeightMap::CarveLine(FVector start, FVector end, float widthMeters) {
+	float metersPerPixel = (float)_mapWidth / (float)_width;
+	float stepDistance = metersPerPixel;
+	FVector pathLine = end - start;
+	float totalDistance = pathLine.Size();
+	int stepCount = ceil(totalDistance / stepDistance);
 
-// 	// texture->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
-// 	// texture->MipGenSettings = TextureMipGenSettings::TMGS_NoMipmaps;
-// 	// texture->SRGB = false;
-// 	// texture->UpdateResource();
+	int pixelRange = ceil(widthMeters / metersPerPixel);
+	int pixelRangeHalf = ceil(pixelRange / 2);
 
-// 	const FColor* ImageData = static_cast<const FColor*>( texture->PlatformData->Mips[0].BulkData.LockReadOnly());
-// 	int width = texture->SizeX;
-// 	int height = texture->SizeY;
-// 	UE_LOG(LogTemp, Display, TEXT("image texture width %d height %d pixel %d"), width, height, ImageData[(745 * width + 1088)]);
-// 	// for(int32 X = 0; X < texture->SizeX; X++)
-// 	// {
-// 	//	 for (int32 Y = 0; Y < texture->SizeY; Y++)
-// 	//	 {
-// 	//		 FColor PixelColor = ImageData[Y * texture->SizeX + X];
-// 	//	 }
-// 	// }
+	FVector currentPoint = start;
+	FVector2D pixel;
+	uint16 imageValue;
+	int xMin, xMax, yMin, yMax;
+	for (int ii = 0; ii < stepCount; ii++) {
+		pixel = GetPixelFromPoint(currentPoint);
+		imageValue = GetImageValue(pixel.X, pixel.Y);
+		xMin = pixel.X - pixelRangeHalf;
+		xMax = pixel.X + pixelRangeHalf;
+		yMin = pixel.Y - pixelRangeHalf;
+		yMax = pixel.Y + pixelRangeHalf;
+		if (xMin < 0) {
+			xMin = 0;
+		}
+		if (xMax >= _width) {
+			xMax = _width - 1;
+		}
+		if (yMin < 0) {
+			yMin = 0;
+		}
+		if (yMax >= _height) {
+			yMax = _height - 1;
+		}
+		for (int yy = yMin; yy <= yMax; yy++) {
+			for (int xx = xMin; xx <= xMax; xx++) {
+				SetImageValue(xx, yy, imageValue);
+			}
+		}
 
-// 	texture->PlatformData->Mips[0].BulkData.Unlock();
-
-// 	// Texture->CompressionSettings = OldCompressionSettings;
-// 	// Texture->MipGenSettings = OldMipGenSettings;
-// 	// Texture->SRGB = OldSRGB;
-// 	// Texture->UpdateResource();
-// 	return {ImageData, width, height};
-// }
-
-// https://forums.unrealengine.com/t/creating-a-lanscape-using-c-or-the-python-api/504997/4
-// https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwiv7qy015P_AhX0In0KHd_kBpkQFnoECAwQAQ&url=https%253A%252F%252Fwww.diva-portal.org%252Fsmash%252Fget%252Fdiva2%253A1440337%252FFULLTEXT01.pdf
-// https://hippowombat.tumblr.com/post/180615213251/blueprint-powered-landscape-edits-in-ue4-420
-// https://www.reddit.com/r/unrealengine/comments/hore2q/landscape_runtime_editing/
-// void HeightMap::SetHeightMap(ALandscape* Landscape) {
-// 	FString FullPath = "Source/Conditional/Images/image-heightmap-flat.png";
-// 	FString projectPath = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir());
-// 	FullPath = projectPath + FullPath;
-// 	UTexture2D* texture = FImageUtils::ImportFileAsTexture2D(FullPath);
-
-// 	int components = Landscape->LandscapeComponents.Num();
-// 	UE_LOG(LogTemp, Display, TEXT("components %d"), components);
-// 	// Landscape->LandscapeComponents[0]->GetHeightmap();
-// 	// TODO
-// 	// Landscape->LandscapeComponents[0]->SetHeightmap(texture);
-
-// 	int MaxX = 2017;
-// 	int MaxY = 2017;
-// 	// TArray<uint16> HeightData = {};
-// 	// for (int yy = 0; yy < MaxY; yy++) {
-// 	// 	for (int xx = 0; xx < MaxX; xx++) {
-// 	// 		uint16 val = 6553;
-// 	// 		val = yy * 10;
-// 	// 		HeightData.Add(val);
-// 	// 	}
-// 	// }
-
-
-// // ComponentSizeQuads = InNumSubsections * InSubsectionSizeQuads;
-// // const int32 ComponentSizeVerts = NumSubsections * (SubsectionSizeQuads + 1);
-// // const int32 WeightmapSize = (SubsectionSizeQuads + 1) * NumSubsections;
-// 	// (63 * 2 + 1) * 2
-
-// 	// int32 ComponentCountX = 16;
-// 	// int32 ComponentCountY = 16;
-// 	// int32 SectionSize = 63;
-// 	// int32 SectionsPerComponent = 2;
-// 	// int32 QuadsPerComponent = SectionSize * SectionsPerComponent;
-// 	// int32 SizeX = ComponentCountX * QuadsPerComponent + 1;
-// 	// int32 SizeY = ComponentCountY * QuadsPerComponent + 1;
-
-// 	// TArray<uint16> HeightData;
-// 	// HeightData.SetNum(SizeX * SizeY);
-// 	// for (int32 i = 0; i < HeightData.Num(); i++) {
-// 	// 	HeightData[i] = 6553;
-// 	// }
-
-// 	// TMap<FGuid, TArray<uint16>> HeightDataPerLayers;
-// 	// TMap<FGuid, TArray<FLandscapeImportLayerInfo>> MaterialLayerDataPerLayers;
-// 	// TArray<FLandscapeImportLayerInfo> MaterialImportLayers;
-// 	// MaterialImportLayers.Reserve(0);
-
-// 	// HeightDataPerLayers.Add(FGuid(), MoveTemp(HeightData));
-// 	// // ComputeHeightData will also modify/expand material layers data, which is why we create MaterialLayerDataPerLayers after calling ComputeHeightData
-// 	// MaterialLayerDataPerLayers.Add(FGuid(), MoveTemp(MaterialImportLayers));
-
-// 	// Landscape->Import(FGuid::NewGuid(), 0, 0, SizeX - 1, SizeY - 1, SectionsPerComponent, QuadsPerComponent,
-// 	// 	HeightDataPerLayers, nullptr, MaterialLayerDataPerLayers, ELandscapeImportAlphamapType::Additive);
-
-// 	// Not working? No heightmap change in terrain..
-// 	ULandscapeInfo* LandscapeInfo = Landscape->GetLandscapeInfo();
-// 	// FHeightmapAccessor<false> HeightmapAccessor(LandscapeInfo);
-// 	// HeightmapAccessor.SetData(0, 0, MaxX, MaxY, HeightData.GetData());
-
-// 	// LandscapeEditorUtils::SetHeightmapData(Landscape, HeightData);
-// 	LandscapeInfo->UpdateLayerInfoMap(Landscape);
-// 	Landscape->RegisterAllComponents();
-// 	// Need to explicitly call PostEditChange on the LandscapeMaterial property or the landscape proxy won't update its material
-// 	FPropertyChangedEvent MaterialPropertyChangedEvent(FindFieldChecked< FProperty >(Landscape->GetClass(), FName("LandscapeMaterial")));
-// 	Landscape->PostEditChangeProperty(MaterialPropertyChangedEvent);
-// 	Landscape->PostEditChange();
-// 	// UE_LOG(LogTemp, Display, TEXT("HeightmapAccessor should have changed data"));
-
-// 	// for (int ii = 0; ii < Landscape->LandscapeLayers.Num(); ii++) {
-// 	// 	UE_LOG(LogTemp, Display, TEXT("LandscapeLayer %d %s"), ii, Landscape->LandscapeLayers[ii].Guid);
-// 	// }
-// }
-
-// std::tuple<float, float> HeightMap::GetZScale(float minMeters, float maxMeters) {
-// 	// To allow editing in both directions a landscape’s origin is in the middle of the height range.
-// 	// So if your imported heightmap’s black point is -300 and the white point is 3580,
-// 	// you should place your landscapes at a height of (3580 + 300) / 2 + -300 = 1600.
-// 	// https://docs.unrealengine.com/5.2/en-US/landscape-technical-guide-in-unreal-engine/
-// 	float zPixelRange = (maxMeters - minMeters);
-// 	float zScale = zPixelRange * 1 / 512 * 100;
-// 	float zOffset = (zPixelRange / 2 + minMeters) * 100;
-// 	return {zScale, zOffset};
-// }
+		currentPoint += pathLine.GetClampedToMaxSize(stepDistance);
+	}
+	return true;
+}

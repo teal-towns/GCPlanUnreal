@@ -81,3 +81,22 @@ std::tuple<TMap<FString, FPlot>, int> PlotDivide::SubdividePlots(TMap<FString, F
 	}
 	return { newPlots, countNew };
 }
+
+bool PlotDivide::AddRoads(TMap<FString, FPlot> Plots) {
+	SplineRoad* splineRoad = SplineRoad::GetInstance();
+	splineRoad->DestroyRoads();
+	TArray<TArray<FVector>> spacesVertices = {};
+	float verticesBuffer = -999;
+	for (auto& Elem : Plots) {
+		// Only do final plots.
+		if (Elem.Value.childPlotUNames.Num() < 1) {
+			spacesVertices.Add(Elem.Value.vertices);
+			if (verticesBuffer == -999) {
+				verticesBuffer = Elem.Value.verticesBuffer;
+			}
+		}
+	}
+	TMap<FString, FRoadPath> roads = BuildingRoad::BetweenSpaces(spacesVertices, verticesBuffer);
+	splineRoad->AddRoads(roads);
+	return true;
+}

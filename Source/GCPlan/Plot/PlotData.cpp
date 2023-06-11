@@ -73,14 +73,30 @@ TMap<FString, FPlot> PlotData::LoadAndSubdividePlots(bool removeFinalChildren) {
 		}
 	}
 
-	auto [plots1, countNew] = PlotDivide::SubdividePlots(_plots);
+	int countNew = CheckSubdividePlots();
+	// auto [plots1, countNew] = PlotDivide::SubdividePlots(_plots);
 	if (countNew > 0) {
-		_plots = plots1;
+		UE_LOG(LogTemp, Warning, TEXT("PlotData.LoadAndSubdividePlots saving %d new plots"), countNew);
+		// _plots = plots1;
 		FDataProjectJson* json = new FDataProjectJson(_plots);
 		DataFileProject::SaveProject(*json, unrealGlobal->_settings->projectJsonFiles["plot"]);
 	}
 
+	PlotDivide::AddRoads(_plots);
+
 	return _plots;
+}
+
+int PlotData::CheckSubdividePlots() {
+	int countNew = 0;
+	for (auto& Elem : _plots) {
+		if (Elem.Value.parentPlotUName == "" && Elem.Value.childPlotUNames.Num() < 1) {
+			auto [plots1, countNew1] = PlotDivide::SubdividePlots({ { Elem.Key, Elem.Value} });
+			_plots[Elem.Key] = plots1[Elem.Key];
+			countNew += 1;
+		}
+	}
+	return countNew;
 }
 
 FString PlotData::GetParentPattern(FString childUName) {

@@ -157,7 +157,7 @@ void ALandProjectActor::EditorGenerate() {
 	TArray<FLand> lands = PlotBuild::CreateLands(plots);
 	PlotBuild::DrawLands(lands);
 
-	MeshTerrain* meshTerrain = MeshTerrain::GetInstance();
+	// MeshTerrain* meshTerrain = MeshTerrain::GetInstance();
 	SplineRoad* splineRoad = SplineRoad::GetInstance();
 	// meshTerrain->DrawRoads();
 	splineRoad->DrawRoads(false);

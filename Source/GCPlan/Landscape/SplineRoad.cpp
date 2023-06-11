@@ -8,6 +8,7 @@
 
 #include "../Common/Lodash.h"
 #include "../Common/UnrealGlobal.h"
+#include "../Landscape/HeightMap.h"
 #include "../Layout/LayoutPlace.h"
 #include "../Layout/LayoutPolyLine.h"
 #include "../Mesh/InstancedMesh.h"
@@ -91,6 +92,7 @@ void SplineRoad::DrawRoads(bool addPlants) {
 	float flatteningMeters = 10;
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	LoadContent* loadContent = LoadContent::GetInstance();
+	HeightMap* heightMap = HeightMap::GetInstance();
 	float widthMeters;
 	FString UName, name, nameTemp, uNameRoundabout;
 	TArray<FVector> vertices;
@@ -113,6 +115,7 @@ void SplineRoad::DrawRoads(bool addPlants) {
 
 	TArray<FString> meshNamesBush = loadContent->GetMeshNamesByTypes({ "bush" });
 	TArray<FString> meshNamesTree = loadContent->GetMeshNamesByTypes({ "tree" });
+	bool saveHeightMap = false;
 
 	for (auto& Elem1 : _RoadsByType) {
 		FString type = Elem1.Key;
@@ -192,6 +195,12 @@ void SplineRoad::DrawRoads(bool addPlants) {
 					instancedMesh->CreateInstance("RoadRoundabout", pos, FRotator(0,0,0), FVector(2,2,1));
 					roundaboutUNames.Add(uNameRoundabout);
 				}
+
+				// Carve land (heightmap)
+				if (type == "road" && vv > 0) {
+					heightMap->CarveLine(vertices[(vv - 1)], vertices[vv], widthMeters);
+					saveHeightMap = true;
+				}
 			}
 
 			// Must update to get tangents calculated, so do mesh at end after have all points.
@@ -212,6 +221,10 @@ void SplineRoad::DrawRoads(bool addPlants) {
 					meshNamesTree, placeParamsNature);
 			}
 		}
+	}
+
+	if (saveHeightMap) {
+		heightMap->SaveImage();
 	}
 }
 

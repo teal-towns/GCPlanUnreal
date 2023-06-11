@@ -35,17 +35,6 @@ TMap<FString, FRoadPath> BuildingRoad::BetweenSpaces(TArray<TArray<FVector>> spa
 			if (!usedKeys.Contains(uName)) {
 				roads.Add(uName, FRoadPath(uName, uName, { vertex, vertexNext }, 10, "Road"));
 				usedKeys.Add(uName);
-				// TODO - add piece if want 3D model too.
-				// // Only add if creating new and does not already exist.
-				// if (!pieces.ContainsKey(uName) && createNew) {
-				// 	usedKeys.Add(uName);
-				// 	List<Vector3> verticesRoad = new List<Vector3>() { vertex, vertexNext };
-				// 	pieces.Add(uName, new PieceClass(uName, "path", edgeCenter, verticesRoad,
-				// 		rot, scale, category_: "lanes2", type_: "road",
-				// 		prefabName_: "Road1PartLOD1"));
-
-				// 	// TODO - add roundabouts?
-				// }
 			}
 		}
 	}
