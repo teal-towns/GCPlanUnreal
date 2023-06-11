@@ -37,7 +37,11 @@ UENUM()
 enum ModelingSubCategory {
 	BENCH,
 	CHAIR,
-	TABLE
+	TABLE,
+	DESK,
+	MONITOR,
+	KEYBOARD,
+	MOUSE
 };
 
 USTRUCT()

@@ -5,6 +5,8 @@
 // #include "VectorTypes.h"
 #include "Math/Vector2D.h"
 
+//#define USELIBRARY //smm230610//
+#ifdef USELIBRARY //smm230610//
 // https://forums.unrealengine.com/t/errors-when-including-third-party-library/737189/2
 #pragma push_macro("check")   // store 'check' macro current definition
 #undef check  // undef to avoid conflicts
@@ -15,6 +17,7 @@ THIRD_PARTY_INCLUDES_START
 #include "geom/Rectangle.h"
 THIRD_PARTY_INCLUDES_END
 #pragma pop_macro("check")  // restore definition
+#endif //smm230610//
 
 #include "../BuildingStructsActor.h"
 #include "../Common/Lodash.h"
@@ -68,6 +71,7 @@ std::tuple<TArray<TArray<FVector>>, FVector, TArray<FVector2D>> PlotFillVoronoi:
 		min.Y + (plotSizeY / 2));
 	// UE_LOG(LogTemp, Display, TEXT("PFV sizeX %f sizeY %f min %s max %s"), plotSizeX, plotSizeY, *min.ToString(), *max.ToString());
 
+#ifdef USELIBRARY //smm230610//
 	bool useVoronoi = true;
 	if (useVoronoi) {
 	TArray<FVector2D> pointsTemp = SpawnPoints(boundsRect, averageDistance);
@@ -125,7 +129,9 @@ std::tuple<TArray<TArray<FVector>>, FVector, TArray<FVector2D>> PlotFillVoronoi:
 		}
 	}
 	} else {
-	// if (true) {
+#else // USELIBRARY //smm230610//
+	if (true) { //smm230610//
+#endif //smm230610//
 	TArray<TArray<FVector>> spacesVertices1 = SpawnSpaces(boundsRect, averageDistance);
 
 	FVector2D point;
