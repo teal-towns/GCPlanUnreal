@@ -70,7 +70,8 @@ struct FModelingBase {
 UENUM()
 enum ProceduralModelCategory {
 	CUBE,
-	CYLINDER
+	CYLINDER,
+	PRISM
 };
 
 USTRUCT()
@@ -85,6 +86,14 @@ struct FProceduralModelBase {
 	FVector size;
 	UPROPERTY(EditAnywhere)
 	FVector vertices;
+	UPROPERTY(EditAnywhere)
+	int32 sidesSegmentCount;
+	UPROPERTY(EditAnywhere)
+	float topOffsetWidth;
+	UPROPERTY(EditAnywhere)
+	bool capTop;
+	UPROPERTY(EditAnywhere)
+	bool capBottom;
 	UPROPERTY(EditAnywhere)
 	FString tagsString;
 	UPROPERTY()

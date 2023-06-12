@@ -10,6 +10,7 @@
 
 #include "PMCube.h"
 #include "PMCylinder.h"
+#include "PMPrism.h"
 
 PMBase* PMBase::pinstance_{nullptr};
 std::mutex PMBase::mutex_;
@@ -40,7 +41,9 @@ void PMBase::SetInputs(FProceduralModelBase proceduralModelBase) {
 	_proceduralModelBase = proceduralModelBase;
 }
 
-FProceduralModelBase PMBase::GetInputs(FString defaultName, FVector defaultSize, FVector defaultVertices) {
+FProceduralModelBase PMBase::GetInputs(FString defaultName, FVector defaultSize, FVector defaultVertices,
+									   int32 defaultSidesSegmentCount, float defaultTopOffsetWidth)
+{
 	FProceduralModelBase proceduralModelBase = _proceduralModelBase;
 	if (proceduralModelBase.name.Len() < 1) {
 		proceduralModelBase.name = defaultName;
@@ -67,6 +70,14 @@ FProceduralModelBase PMBase::GetInputs(FString defaultName, FVector defaultSize,
 	if (proceduralModelBase.vertices.Z < minSize || proceduralModelBase.vertices.Z > -1 * minSize) {
 		proceduralModelBase.vertices.Z = defaultVertices.Z;
 	}
+	if (proceduralModelBase.sidesSegmentCount < 3)
+	{
+		proceduralModelBase.sidesSegmentCount = defaultSidesSegmentCount;
+	}
+	if (proceduralModelBase.topOffsetWidth < minSize || proceduralModelBase.topOffsetWidth > -1 * minSize)
+	{
+		proceduralModelBase.topOffsetWidth = defaultTopOffsetWidth;
+	}
 
 	return proceduralModelBase;
 }
@@ -79,6 +90,10 @@ void PMBase::Create() {
 		PMCylinder::CreateFromInputs();
 	} else if (_proceduralModelBase.category == ProceduralModelCategory::CUBE) {
 		PMCube::CreateFromInputs();
+	}
+	else if (_proceduralModelBase.category == ProceduralModelCategory::PRISM)
+	{
+		PMPrism::CreateFromInputs();
 	}
 }
 
@@ -128,10 +143,11 @@ UProceduralMeshComponent* PMBase::CreateMesh(UObject* parentObject, USceneCompon
 	return ProceduralMesh;
 }
 
-void PMBase::AddMeshSection(UProceduralMeshComponent* ProceduralMesh, TArray<FVector> Vertices,
-	TArray<FVector2D> UV0, TArray<int> Triangles) {
-	ProceduralMesh->CreateMeshSection(0, Vertices, Triangles, TArray<FVector>(), UV0,
-		TArray<FColor>(), TArray<FProcMeshTangent>(), true);
+void PMBase::AddMeshSection(UProceduralMeshComponent *ProceduralMesh, TArray<FVector> Vertices,
+							TArray<FVector2D> UV0, TArray<int> Triangles, TArray<FVector> Normals, TArray<FProcMeshTangent> Tangents)
+{
+	ProceduralMesh->CreateMeshSection(0, Vertices, Triangles, Normals, UV0,
+									  TArray<FColor>(), Tangents, true);
 }
 
 // https://forums.unrealengine.com/t/procedural-mesh-not-saving-all-of-its-sections-to-static-mesh/382319/17
