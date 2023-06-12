@@ -4,7 +4,7 @@
 
 #include "ModelBase.h"
 #include "../ModelingStructsActor.h"
-#include "../ProceduralModel/PMCylinder.h"
+#include "../ProceduralModel/PMPrism.h"
 
 ModelEVCharger::ModelEVCharger()
 {
@@ -134,9 +134,10 @@ void ModelEVCharger::Create()
     // Connector Body
     float connectorBodyWidth = connectorLength * 0.5;
     cableCurrentX = cableCurrentX - connectorBottomLength / sqrt(2);
+    UStaticMesh *mesh = PMPrism::Create(name + "_ConnectorBodyPrism", {}, 3, 1, 1, 0, true, true, true);
     location = FVector(cableCurrentX, 0, cableCurrentZ);
-    scale = FVector(connectorBodyWidth, connectorBottomRadius, connectorBodyWidth);
-    modelBase->CreateActor(name + "_ConnectorBody", location, FRotator(connectorBottomAngleDegree, 0, 0), scale, spawnParams, parent, meshPathCube);
+    scale = FVector(connectorBottomRadius, connectorBottomRadius, connectorBottomRadius);
+    modelBase->CreateActor(name + "_ConnectorBody", location, FRotator(45, 0, 90), scale, spawnParams, parent, meshPathCube, "", mesh);
 }
 
 std::tuple<TArray<FVector>, TArray<FRotator>> ModelEVCharger::BuildCircularCableLocations(float totalLength, float circularAngleDegree, FVector startLocation, float stepAngleDegree, float unitLength)

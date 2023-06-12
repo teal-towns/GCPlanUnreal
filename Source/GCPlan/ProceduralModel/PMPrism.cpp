@@ -2,6 +2,7 @@
 
 #include "Engine/StaticMeshActor.h"
 #include "ProceduralMeshComponent.h"
+#include "../Common/UnrealGlobal.h"
 
 #include "PMBase.h"
 
@@ -57,15 +58,16 @@ UStaticMesh *PMPrism::Create(FString name, TArray<FString> tags, int32 sidesSegm
 
 	int32 VertexIndex = 0;
 	int32 TriangleIndex = 0;
-	bool doubleSided = capTop && capBottom ? false : true; // Only create double sided if both ends are capped
+	bool doubleSided = true;
 	auto [Vertices, Triangles, Normals, Tangents, UV0s] = InitializeMesh(sidesSegmentCount, capTop, capBottom, doubleSided);
 
 	PMBase *pmBase = PMBase::GetInstance();
+	UnrealGlobal *unrealGlobal = UnrealGlobal::GetInstance();
+	float scale = unrealGlobal->GetScale();
 
 	FRotator rotation = FRotator(0, 0, 0);
 	FActorSpawnParameters spawnParams;
 	FVector location = FVector(0, 0, 0);
-	FVector scale = FVector(1, 1, 1);
 	AStaticMeshActor *actor;
 
 	// Parent container
@@ -78,7 +80,7 @@ UStaticMesh *PMPrism::Create(FString name, TArray<FString> tags, int32 sidesSegm
 	// Make a column
 	const float AngleBetweenQuads = (2.0f / static_cast<float>(sidesSegmentCount)) * PI;
 	const float VMapPerQuad = 1.0f / static_cast<float>(sidesSegmentCount);
-	const FVector Offset = FVector(0, 0, height);
+	const FVector Offset = FVector(0, 0, height * scale);
 
 	// Start by building up vertices that make up the column sides
 	for (int32 QuadIndex = 0; QuadIndex < sidesSegmentCount; QuadIndex++)
@@ -87,10 +89,10 @@ UStaticMesh *PMPrism::Create(FString name, TArray<FString> tags, int32 sidesSegm
 		const float NextAngle = static_cast<float>(QuadIndex + 1) * AngleBetweenQuads;
 
 		// Set up the vertices
-		const FVector P0 = FVector(FMath::Cos(Angle) * width, FMath::Sin(Angle) * width, 0.f);
-		const FVector P1 = FVector(FMath::Cos(NextAngle) * width, FMath::Sin(NextAngle) * width, 0.f);
-		const FVector P2 = FVector(FMath::Cos(NextAngle) * (width + topOffsetWidth), FMath::Sin(NextAngle) * (width + topOffsetWidth), 0.f) + Offset;
-		const FVector P3 = FVector(FMath::Cos(Angle) * (width + topOffsetWidth), FMath::Sin(Angle) * (width + topOffsetWidth), 0.f) + Offset;
+		const FVector P0 = FVector(FMath::Cos(Angle) * width, FMath::Sin(Angle) * width, 0.f) * scale;
+		const FVector P1 = FVector(FMath::Cos(NextAngle) * width, FMath::Sin(NextAngle) * width, 0.f) * scale;
+		const FVector P2 = FVector(FMath::Cos(NextAngle) * (width + topOffsetWidth), FMath::Sin(NextAngle) * (width + topOffsetWidth), 0.f) * scale + Offset;
+		const FVector P3 = FVector(FMath::Cos(Angle) * (width + topOffsetWidth), FMath::Sin(Angle) * (width + topOffsetWidth), 0.f) * scale + Offset;
 
 		// Set up the quad triangles
 		int32 VertIndex1 = VertexIndex++;
@@ -176,9 +178,9 @@ UStaticMesh *PMPrism::Create(FString name, TArray<FString> tags, int32 sidesSegm
 			VertIndex3 = VertexIndex++;
 			if (capBottom)
 			{
-				FVector BottomCapVertex0 = FVector(FMath::Cos(0.f) * width, FMath::Sin(0.f) * width, 0.f);
-				FVector BottomCapVertex1 = FVector(FMath::Cos(Angle) * width, FMath::Sin(Angle) * width, 0.f);
-				FVector BottomCapVertex2 = FVector(FMath::Cos(NextAngle) * width, FMath::Sin(NextAngle) * width, 0.f);
+				FVector BottomCapVertex0 = FVector(FMath::Cos(0.f) * width, FMath::Sin(0.f) * width, 0.f) * scale;
+				FVector BottomCapVertex1 = FVector(FMath::Cos(Angle) * width, FMath::Sin(Angle) * width, 0.f) * scale;
+				FVector BottomCapVertex2 = FVector(FMath::Cos(NextAngle) * width, FMath::Sin(NextAngle) * width, 0.f) * scale;
 
 				Vertices[VertIndex1] = BottomCapVertex0;
 				Vertices[VertIndex2] = BottomCapVertex1;
@@ -221,9 +223,9 @@ UStaticMesh *PMPrism::Create(FString name, TArray<FString> tags, int32 sidesSegm
 			}
 			if (capTop)
 			{
-				FVector TopCapVertex0 = FVector(FMath::Cos(0.f) * (width + topOffsetWidth), FMath::Sin(0.f) * (width + topOffsetWidth), 0.f);
-				FVector TopCapVertex1 = FVector(FMath::Cos(Angle) * (width + topOffsetWidth), FMath::Sin(Angle) * (width + topOffsetWidth), 0.f);
-				FVector TopCapVertex2 = FVector(FMath::Cos(NextAngle) * (width + topOffsetWidth), FMath::Sin(NextAngle) * (width + topOffsetWidth), 0.f);
+				FVector TopCapVertex0 = FVector(FMath::Cos(0.f) * (width + topOffsetWidth), FMath::Sin(0.f) * (width + topOffsetWidth), 0.f) * scale;
+				FVector TopCapVertex1 = FVector(FMath::Cos(Angle) * (width + topOffsetWidth), FMath::Sin(Angle) * (width + topOffsetWidth), 0.f) * scale;
+				FVector TopCapVertex2 = FVector(FMath::Cos(NextAngle) * (width + topOffsetWidth), FMath::Sin(NextAngle) * (width + topOffsetWidth), 0.f) * scale;
 				TopCapVertex0 = TopCapVertex0 + Offset;
 				TopCapVertex1 = TopCapVertex1 + Offset;
 				TopCapVertex2 = TopCapVertex2 + Offset;
