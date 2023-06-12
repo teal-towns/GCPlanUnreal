@@ -86,6 +86,14 @@ void ModelBase::Create() {
 	{
 		ModelEVCharger::Create();
 	}
+	else if (_modelingBase.subCategory == ModelingSubCategory::STREETLIGHT)
+	{
+		ModelStreetLight::Create();
+	}
+	else if (_modelingBase.subCategory == ModelingSubCategory::EVCHARGER)
+	{
+		ModelEVCharger::Create();
+	}
 	// TODO
 }
 
