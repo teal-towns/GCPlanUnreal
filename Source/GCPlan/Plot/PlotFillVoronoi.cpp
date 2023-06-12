@@ -1,3 +1,5 @@
+#define USELIBRARY
+
 #include "PlotFillVoronoi.h"
 
 #include "math.h"

@@ -4,8 +4,11 @@
 	"projectUName": "sazant",
 	"projectJsonFiles": {
 		"plot": "projectPlots.json",
-		"road": "projectRoads.json"
+		"road": "projectRoads.json",
+		"landNature": "projectSazanLandNaturePlots.json"
 	},
 	"urlWebsocket": "wss://plan.greencity.earth/ws",
-	"urlWebsocket1": "ws://localhost:8087/ws"
+	"urlWebsocket1": "ws://localhost:8087/ws",
+	"contentMeshesJsonFile": "contentMeshes.json",
+	"performanceQualityLevel": 1
 }
