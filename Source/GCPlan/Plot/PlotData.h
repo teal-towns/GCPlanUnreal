@@ -21,10 +21,11 @@ public:
 
 	void CleanUp();
 	void SavePlotsToFile();
-	void DeletePlot(FString uName);
+	void DeletePlot(FString uName, bool deleteChildren = true);
 	void SavePlotFromPolygon(FString uName, FPolygon polygon);
 	TMap<FString, FPlot> LoadPlots();
 	TMap<FString, FPlot> LoadAndSubdividePlots(bool removeFinalChildren = false);
 	int CheckSubdividePlots();
 	FString GetParentPattern(FString childUName);
+	void RemoveChildren(bool save = true);
 };

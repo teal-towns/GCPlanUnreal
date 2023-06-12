@@ -188,13 +188,14 @@ void SplineRoad::DrawRoads(bool addPlants, bool carveLand) {
 				}
 
 				// Add roundabout.
-				uNameRoundabout = "BuildingRoad_" + Lodash::ToFixed(vertices[vv].X, 1) + "_" + Lodash::ToFixed(vertices[vv].Y, 1);
+				// 0 digits to block overlap within 1 meter.
+				uNameRoundabout = "BuildingRoad_" + Lodash::ToFixed(vertices[vv].X, 0) + "_" + Lodash::ToFixed(vertices[vv].Y, 0);
 				if (!roundaboutUNames.Contains(uNameRoundabout)) {
 					// Move up a bit to cover roads.
 					FVector pos = vertices[vv];
 					pos.Z += 0.25;
 
-					instancedMesh->CreateInstance("RoadRoundabout", pos, FRotator(0,0,0), FVector(2,2,1));
+					instancedMesh->CreateInstance("RoadRoundabout", pos, FRotator(0,Lodash::RandomRangeFloat(0,360),0), FVector(2,2,1.5));
 					roundaboutUNames.Add(uNameRoundabout);
 				}
 
@@ -208,18 +209,35 @@ void SplineRoad::DrawRoads(bool addPlants, bool carveLand) {
 
 			// Must update to get tangents calculated, so do mesh at end after have all points.
 			spline->UpdateSpline();
+			FVector tangentStart, tangentEnd, pathLine;
 			for (int ii = 1; ii < pointCount; ii++) {
-				AddSplineMesh(UName, ii, parentObject, parent, widthMeters, spline);
+				tangentStart = FVector(0,0,0);
+				tangentEnd = FVector(0,0,0);
+				// TODO - this did not seem to do anything; need to understand tangents better?
+				// // Fix tangents at (next to) start and end by flattening them (z = 0)
+				// if (ii == 2) {
+				// 	pathLine = vertices[1] - vertices[0];
+				// 	tangentStart = FVector(pathLine.X, pathLine.Y, 0);
+				// } else if (ii == pointCount - 2) {
+				// 	pathLine = vertices[(verticesCount - 1)] - vertices[(verticesCount - 2)];
+				// 	tangentEnd = FVector(pathLine.X, pathLine.Y, 0);
+				// }
+				AddSplineMesh(UName, ii, parentObject, parent, widthMeters, spline,
+					tangentStart, tangentEnd);
 			}
 
 			if (addPlants) {
 				// Place nature / trees on sides of roads.
 				placeParamsNature.spacing = 5;
 				placeParamsNature.spacingCrossAxis = 2;
+				placeParamsNature.scaleMin = 0.75;
+				placeParamsNature.scaleMax = 2;
 				LayoutPolyLine::PlaceOnLineSides(vertices, widthMeters + placingOffset * 2,
 					meshNamesBush, placeParamsNature);
 				placeParamsNature.spacing = 20;
 				placeParamsNature.spacingCrossAxis = 999;
+				placeParamsNature.scaleMin = 0.1;
+				placeParamsNature.scaleMax = 0.5;
 				LayoutPolyLine::PlaceOnLineSides(vertices, widthMeters + placingOffset * 2,
 					meshNamesTree, placeParamsNature);
 			}
@@ -232,8 +250,9 @@ void SplineRoad::DrawRoads(bool addPlants, bool carveLand) {
 	}
 }
 
-void SplineRoad::AddSplineMesh(FString UName, int pointCount, UObject* parentObject, USceneComponent* parent, float widthMeters,
-	USplineComponent* spline) {
+void SplineRoad::AddSplineMesh(FString UName, int pointCount, UObject* parentObject,
+	USceneComponent* parent, float widthMeters, USplineComponent* spline,
+	FVector tangentStart, FVector tangentEnd) {
 	// After have at least 2 points, add mesh between this point and past point.
 	if (pointCount > 0) {
 		FVector pointLocationStart, pointTangentStart, pointLocationEnd, pointTangentEnd;
@@ -242,6 +261,14 @@ void SplineRoad::AddSplineMesh(FString UName, int pointCount, UObject* parentObj
 		spline->GetLocalLocationAndTangentAtSplinePoint((pointCount - 1), pointLocationStart, pointTangentStart);
 		spline->GetLocalLocationAndTangentAtSplinePoint((pointCount), pointLocationEnd, pointTangentEnd);
 		// UE_LOG(LogTemp, Display, TEXT("mesh tangents start %s end %s locStart %s locEnd %s"), *pointTangentStart.ToString(), *pointTangentEnd.ToString(), *pointLocationStart.ToString(), *pointLocationEnd.ToString());
+		if (tangentStart != FVector(0,0,0)) {
+			UE_LOG(LogTemp, Display, TEXT("tangentStart %s orig %s"), *tangentStart.ToString(), *pointTangentStart.ToString());
+			pointTangentStart = tangentStart;
+		}
+		if (tangentEnd != FVector(0,0,0)) {
+			UE_LOG(LogTemp, Display, TEXT("tangentEnd %s orig %s"), *tangentEnd.ToString(), *pointTangentEnd.ToString());
+			pointTangentEnd = tangentEnd;
+		}
 		SplineMesh->SetStartAndEnd(pointLocationStart, pointTangentStart, pointLocationEnd, pointTangentEnd);
 	}
 }

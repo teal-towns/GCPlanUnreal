@@ -57,5 +57,5 @@ public:
 	static std::tuple<std::vector<unsigned char>, int, int> GetImage(FString filePath = "Source/Conditional/Images/image-heightmap.png");
 	bool SaveImage(FString filePath = "Source/Conditional/Images/image-heightmap-adjusted.png");
 	TMap<FString, FImagePixelValue> CarveLine(FVector start, FVector end, float widthMeters,
-		TMap<FString, FImagePixelValue> newValues, int pixelRange = 2, float heightBufferMeters = -2.5);
+		TMap<FString, FImagePixelValue> newValues, int pixelRange = 2, float heightBufferMeters = -3);
 };

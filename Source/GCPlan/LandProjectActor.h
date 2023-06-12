@@ -10,6 +10,19 @@
 
 #include "LandProjectActor.generated.h"
 
+UENUM()
+enum EditorActionsLP {
+	PLOTSREMOVECHILDREN
+};
+
+USTRUCT()
+struct FEditorParamsLP {
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	TEnumAsByte<EditorActionsLP> Action;
+};
+
 UCLASS()
 class GCPLAN_API ALandProjectActor : public AActor
 {
@@ -30,6 +43,11 @@ public:
 	void EditorGenerate();
 	UFUNCTION(CallInEditor)
 	void EditorClear();
+	UPROPERTY(EditAnywhere)
+	FEditorParamsLP EditorParams;
+	UFUNCTION(CallInEditor)
+	void EditorTakeAction();
+
 	void Init();
 	void InitSocketOn();
 	void Login();

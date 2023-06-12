@@ -46,7 +46,7 @@ std::tuple<TMap<FString, FPlot>, int> PlotDivide::SubdividePlots(TMap<FString, F
 			plotDistance = Elem.Value.averagePlotDistance;
 
 			auto [spacesVertices, posCenter, boundsRect] = PlotFillVoronoi::Fill(PlotsTemp, plotDistance);
-			UE_LOG(LogTemp, Display, TEXT("LPA spacesVertices.Num %d %s %s"), spacesVertices.Num(), *boundsRect[0].ToString(), *boundsRect[1].ToString());
+			// UE_LOG(LogTemp, Display, TEXT("PlotDivide.SubdividePlots spacesVertices.Num %d %s %s"), spacesVertices.Num(), *boundsRect[0].ToString(), *boundsRect[1].ToString());
 
 			// Buffer vertices and remove any spaces that are not valid.
 			if (plotTemp.verticesBuffer != 0) {

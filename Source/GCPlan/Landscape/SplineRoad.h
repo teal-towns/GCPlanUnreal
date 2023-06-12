@@ -21,8 +21,9 @@ private:
 	TMap<FString, AActor*> _RoadsActors = {};
 
 	USplineMeshComponent* InitMesh(FString UName, UObject* parentObject, USceneComponent* parent, float widthMeters);
-	void AddSplineMesh(FString UName, int pointCount, UObject* parentObject, USceneComponent* parent, float widthMeters,
-		USplineComponent* spline);
+	void AddSplineMesh(FString UName, int pointCount, UObject* parentObject, USceneComponent* parent,
+		float widthMeters, USplineComponent* spline, FVector tangentStart = FVector(0,0,0),
+		FVector tangentEnd = FVector(0,0,0));
 
 public:
 	SplineRoad();

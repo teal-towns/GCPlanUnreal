@@ -42,14 +42,14 @@ void LandNature::PlaceNature(TMap<FString, FPlot> plots) {
 	placeParams.snapToGround = true;
 	// Skip plots.
 	for (auto& Elem : plots) {
-		// // Only add final plots (not parent plots).
-		// if (Elem.Value.childPlotUNames.Num() < 1) {
-		// 	placeParams.skipPolygons.Add(Elem.Value.vertices);
-		// }
-		// Only add parent plots.
-		if (Elem.Value.parentPlotUName == "") {
+		// Only add final plots (not parent plots).
+		if (Elem.Value.childPlotUNames.Num() < 1) {
 			placeParams.skipPolygons.Add(Elem.Value.vertices);
 		}
+		// Only add parent plots.
+		// if (Elem.Value.parentPlotUName == "") {
+		// 	placeParams.skipPolygons.Add(Elem.Value.vertices);
+		// }
 	}
 
 	placeParams.offsetAverage = 30;

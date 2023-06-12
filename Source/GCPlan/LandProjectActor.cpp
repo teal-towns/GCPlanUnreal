@@ -131,6 +131,18 @@ void ALandProjectActor::GetProject(FString UName) {
 	unrealGlobal->SocketActor->Emit("projectGetByUName", Data);
 }
 
+void ALandProjectActor::EditorTakeAction() {
+	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+	unrealGlobal->InitAll(GetWorld());
+
+	if (EditorParams.Action == EditorActionsLP::PLOTSREMOVECHILDREN) {
+		PlotData* plotData = PlotData::GetInstance();
+		plotData->LoadPlots();
+		plotData->RemoveChildren();
+		UE_LOG(LogTemp, Display, TEXT("Plots children cleared"));
+	}
+}
+
 void ALandProjectActor::EditorClear() {
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	unrealGlobal->InitAll(GetWorld());
@@ -160,11 +172,11 @@ void ALandProjectActor::EditorGenerate() {
 	// MeshTerrain* meshTerrain = MeshTerrain::GetInstance();
 	SplineRoad* splineRoad = SplineRoad::GetInstance();
 	// meshTerrain->DrawRoads();
-	splineRoad->DrawRoads(false);
+	splineRoad->DrawRoads();
 
 	// Place nature on land.
-	if (false) {
-	LandNature::PlaceNature(plots);
+	if (unrealGlobal->_settings->performanceQualityLevel >= 8) {
+		LandNature::PlaceNature(plots);
 	}
 
 

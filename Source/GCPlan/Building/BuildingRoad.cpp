@@ -31,9 +31,10 @@ TMap<FString, FRoadPath> BuildingRoad::BetweenSpaces(TArray<TArray<FVector>> spa
 			vertexNext.Z = heightMap->GetTerrainHeightAtPoint(vertexNext);
 
 			FVector edgeCenter = vertex + (vertexNext - vertex) * 0.5;
-			FString uName = "BuildingRoad_" + Lodash::ToFixed(edgeCenter.X, 1) + "_" + Lodash::ToFixed(edgeCenter.Y, 1);
+			// 0 digits to block overlap within 1 meter.
+			FString uName = "BuildingRoad_" + Lodash::ToFixed(edgeCenter.X, 0) + "_" + Lodash::ToFixed(edgeCenter.Y, 0);
 			if (!usedKeys.Contains(uName)) {
-				roads.Add(uName, FRoadPath(uName, uName, { vertex, vertexNext }, 10, "Road"));
+				roads.Add(uName, FRoadPath(uName, uName, { vertex, vertexNext }, 10, "road"));
 				usedKeys.Add(uName);
 			}
 		}
