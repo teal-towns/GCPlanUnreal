@@ -42,8 +42,7 @@ void PMBase::SetInputs(FProceduralModelBase proceduralModelBase) {
 }
 
 FProceduralModelBase PMBase::GetInputs(FString defaultName, FVector defaultSize, FVector defaultVertices,
-									   int32 defaultSidesSegmentCount, float defaultTopOffsetWidth)
-{
+									   int32 defaultSidesSegmentCount, float defaultTopOffsetWidth) {
 	FProceduralModelBase proceduralModelBase = _proceduralModelBase;
 	if (proceduralModelBase.name.Len() < 1) {
 		proceduralModelBase.name = defaultName;

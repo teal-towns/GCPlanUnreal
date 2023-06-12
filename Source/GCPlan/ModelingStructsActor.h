@@ -34,8 +34,7 @@ enum ModelingCategory {
 };
 
 UENUM()
-enum ModelingSubCategory
-{
+enum ModelingSubCategory {
 	BENCH,
 	CHAIR,
 	TABLE,

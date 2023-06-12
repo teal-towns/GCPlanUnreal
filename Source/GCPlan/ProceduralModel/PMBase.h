@@ -28,7 +28,7 @@ public:
 	static void AddMesh(AStaticMeshActor* actor, UStaticMesh* mesh, FString materialPath = "");
 	static UProceduralMeshComponent* CreateMesh(UObject* parentObject, USceneComponent* parent,
 		FString name);
-	static void AddMeshSection(UProceduralMeshComponent *ProceduralMesh, TArray<FVector> Vertices,
+	static void AddMeshSection(UProceduralMeshComponent* ProceduralMesh, TArray<FVector> Vertices,
 							   TArray<FVector2D> UV0, TArray<int> Triangles, TArray<FVector> Normals = TArray<FVector>(), TArray<FProcMeshTangent> Tangents = TArray<FProcMeshTangent>());
 	static UStaticMesh* ToStaticMesh(UProceduralMeshComponent* ProceduralMesh);
 
