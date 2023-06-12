@@ -34,14 +34,16 @@ enum ModelingCategory {
 };
 
 UENUM()
-enum ModelingSubCategory {
+enum ModelingSubCategory
+{
 	BENCH,
 	CHAIR,
 	TABLE,
 	DESK,
 	MONITOR,
 	KEYBOARD,
-	MOUSE
+	MOUSE,
+	STREETLIGHT
 };
 
 USTRUCT()
