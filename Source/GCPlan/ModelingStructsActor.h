@@ -90,9 +90,9 @@ struct FProceduralModelBase {
 	UPROPERTY(EditAnywhere)
 	float topOffsetWidth;
 	UPROPERTY(EditAnywhere)
-	bool capTop;
+	bool closeTop; // Closes the top face of the prism
 	UPROPERTY(EditAnywhere)
-	bool capBottom;
+	bool closeBottom; // Closes the bottom face of the prism
 	UPROPERTY(EditAnywhere)
 	FString tagsString;
 	UPROPERTY()
