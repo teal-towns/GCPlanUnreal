@@ -31,9 +31,22 @@ UnrealGlobal *UnrealGlobal::GetInstance() {
 }
 
 void UnrealGlobal::InitAll(UWorld* World1, TArray<FString> skipKeys) {
+	SetWorld(World1);
 	// CleanUp({ "socket"} );
-	InitCommon(World1);
+
+	// Init some first where order matters (latter ones depend on these).
+	auto [dataSettings, valid] = LoadSettings();
+	if (valid) {
+		_settings = dataSettings;
+	}
+	ModelBase* modelBase = ModelBase::GetInstance();
+    modelBase->SetWorld(World1);
+    PMBase* pmBase = PMBase::GetInstance();
+    pmBase->SetWorld(World1);
 	InitMeshes(World1);
+
+	InitCommon(World1);
+
 	if (!skipKeys.Contains("web")) {
 		InitWeb(World1);
 	}
@@ -41,17 +54,6 @@ void UnrealGlobal::InitAll(UWorld* World1, TArray<FString> skipKeys) {
 
 void UnrealGlobal::InitCommon(UWorld* World1) {
 	SetWorld(World1);
-
-	auto [dataSettings, valid] = LoadSettings();
-	if (valid) {
-		_settings = dataSettings;
-	}
-
-	ModelBase* modelBase = ModelBase::GetInstance();
-    modelBase->SetWorld(World1);
-
-    PMBase* pmBase = PMBase::GetInstance();
-    pmBase->SetWorld(World1);
 
     HeightMap* heightMap = HeightMap::GetInstance();
     heightMap->SetWorld(World1);
@@ -112,6 +114,9 @@ bool UnrealGlobal::IsIniteds(TArray<FString> Keys) {
 void UnrealGlobal::CleanUp(TArray<FString> skipKeys) {
 	InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
 	instancedMesh->CleanUp();
+
+	SplineRoad* splineRoad = SplineRoad::GetInstance();
+	splineRoad->CleanUp();
 
 	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
     verticesEdit->CleanUp();
@@ -200,11 +205,13 @@ std::tuple<FDataSettings*, bool> UnrealGlobal::LoadSettings(FString fileName) {
 		FString projectPath = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir());
 		filePath = projectPath + filePath;
 
-		auto [jsonString, valid, msg] = DataConvert::ReadStringFromFile(filePath);
+		DataConvert* dataConvert = DataConvert::GetInstance();
+		auto [jsonString, valid, msg] = dataConvert->ReadStringFromFile(filePath);
 		if (valid) {
 			if (!FJsonObjectConverter::JsonObjectStringToUStruct(jsonString, data, 0, 0)) {
 				UE_LOG(LogTemp, Error, TEXT("UnrealGlobal.LoadSettings json parse error"));
 			} else {
+				dataConvert->SetProjectPath(data->projectPath);
 				return { data, true };
 			}
 		}

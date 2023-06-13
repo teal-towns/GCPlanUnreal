@@ -54,8 +54,8 @@ public:
 	uint16 GetImageValueAtPoint(FVector point);
 	FVector2D GetPixelFromPoint(FVector point);
 	static std::tuple<int, int> GetPixelFromXY(int pointX, int pointY, int imageWidth, int imageHeight, float metersPerPixel);
-	static std::tuple<std::vector<unsigned char>, int, int> GetImage(FString filePath = "Source/Conditional/Images/image-heightmap.png");
-	bool SaveImage(FString filePath = "Source/Conditional/Images/image-heightmap-adjusted.png");
+	static std::tuple<std::vector<unsigned char>, int, int> GetImage(FString filePath = "Source/Conditional/image-heightmap.png");
+	bool SaveImage(FString filePath = "Source/Conditional/image-heightmap-adjusted.png");
 	TMap<FString, FImagePixelValue> CarveLine(FVector start, FVector end, float widthMeters,
 		TMap<FString, FImagePixelValue> newValues, int pixelRange = 2, float heightBufferMeters = -3);
 };

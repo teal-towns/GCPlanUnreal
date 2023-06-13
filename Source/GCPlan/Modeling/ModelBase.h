@@ -24,6 +24,8 @@ public:
 
 	void SetInputs(FModelingBase);
 	FModelingBase GetInputs(FString defaultName, FVector defaultSize);
+	void DestroyActors();
+	void CleanUp();
 
 private:
 	static ModelBase *pinstance_;
@@ -31,4 +33,5 @@ private:
 
 	UWorld* World;
 	FModelingBase _modelingBase;
+	TMap<FString, AStaticMeshActor*> _spawnedActors = {};
 };

@@ -10,7 +10,6 @@
 
 InstancedMesh* InstancedMesh::pinstance_{nullptr};
 std::mutex InstancedMesh::mutex_;
-AStaticMeshActor* InstancedMesh::_instancedMeshesActor;
 
 InstancedMesh::InstancedMesh() {
 }
@@ -22,18 +21,6 @@ InstancedMesh *InstancedMesh::GetInstance() {
 	std::lock_guard<std::mutex> lock(mutex_);
 	if (pinstance_ == nullptr) {
 		pinstance_ = new InstancedMesh();
-
-		// In case of recompile in editor, will lose reference so need to check scene too.
-		FString name = "InstancedMeshes";
-		// UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
-		// AActor* actor = unrealGlobal->GetActorByName(name, AStaticMeshActor::StaticClass());
-		// if (actor) {
-		// 	_instancedMeshesActor = actor;
-		// } else {
-			PMBase* pmBase = PMBase::GetInstance();
-			FActorSpawnParameters spawnParams;
-			_instancedMeshesActor = pmBase->CreateActor(name, FVector(0,0,0), FRotator(0,0,0), spawnParams);
-		// }
 	}
 	return pinstance_;
 }
@@ -45,16 +32,29 @@ void InstancedMesh::SetWorld(UWorld* World1) {
 void InstancedMesh::CleanUp() {
 	for (auto& Elem : _instancedMeshActors) {
 		ClearInstances(Elem.Key);
+		Elem.Value->Destroy();
 	}
 	_instancedMeshActors = {};
+	if (_instancedMeshesActor) {
+		_instancedMeshesActor->Destroy();
+		_instancedMeshesActor = nullptr;
+	}
 	pinstance_ = nullptr;
 }
 
 void InstancedMesh::InitMeshes() {
-	AddMesh("HexModule", "/Script/Engine.StaticMesh'/Game/Buildings/Hex/HexModule/HexModule.HexModule'",
-		"/Script/Engine.Material'/Game/Nature/Wood/wood-pale-material.wood-pale-material'");
-	AddMesh("HexModuleBlock", "/Script/Engine.StaticMesh'/Game/Buildings/Hex/HexModule/HexModule_LOD2.HexModule_LOD2'",
-		"/Script/Engine.Material'/Game/Nature/Wood/wood-pale-material.wood-pale-material'");
+	if (!_instancedMeshesActor) {
+		FString name = "InstancedMeshes";
+		PMBase* pmBase = PMBase::GetInstance();
+		FActorSpawnParameters spawnParams;
+		_instancedMeshesActor = pmBase->CreateActor(name, FVector(0,0,0), FRotator(0,0,0), spawnParams);
+	}
+
+	// AddMesh("HexModule", "/Script/Engine.StaticMesh'/Game/Buildings/Hex/HexModule/HexModule.HexModule'",
+	// 	"/Script/Engine.Material'/Game/Nature/Wood/wood-pale-material.wood-pale-material'");
+	// AddMesh("HexModuleBlock", "/Script/Engine.StaticMesh'/Game/Buildings/Hex/HexModule/HexModule_LOD2.HexModule_LOD2'",
+	// 	"/Script/Engine.Material'/Game/Nature/Wood/wood-pale-material.wood-pale-material'");
+
 	AddMesh("RoadRoundabout", "/Script/Engine.StaticMesh'/Game/Landscape/Roundabout1.Roundabout1'",
 		"/Script/Engine.Material'/Game/Landscape/Asphalt_M.Asphalt_M'");
 

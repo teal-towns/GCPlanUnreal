@@ -37,24 +37,25 @@ struct FDataSettings {
 	UPROPERTY()
 	FString projectUName;
 	UPROPERTY()
-	TMap<FString, FString> projectJsonFiles;
-	UPROPERTY()
 	FString urlWebsocket;
 	UPROPERTY()
-	FString contentMeshesJsonFile;
-	UPROPERTY()
-	int performanceQuantityLevel;
-	UPROPERTY()
 	int performanceQualityLevel;
+	UPROPERTY()
+	FString projectPath;
+	UPROPERTY()
+	TMap<FString, FString> jsonFiles;
 
 	FDataSettings() {};
 	FDataSettings(FString loginEmail_, FString loginPassword_, FString projectUName_,
-		TMap<FString, FString> projectJsonFiles_, FString urlWebsocket_) {
+		FString urlWebsocket_, int performanceQualityLevel_,
+		FString projectPath_, TMap<FString, FString> jsonFiles_) {
 		loginEmail = loginEmail_;
 		loginPassword = loginPassword_;
 		projectUName = projectUName_;
-		projectJsonFiles = projectJsonFiles_;
 		urlWebsocket = urlWebsocket_;
+		performanceQualityLevel = performanceQualityLevel_;
+		projectPath = projectPath_;
+		jsonFiles = jsonFiles_;
 	};
 };
 
@@ -150,9 +151,12 @@ struct FDataContentMesh {
 
 	UPROPERTY()
 	TMap<FString, FContentMeshModel> models;
+	UPROPERTY()
+	TMap<FString, FString> materials;
 
 	FDataContentMesh() {};
-	FDataContentMesh(TMap<FString, FContentMeshModel> models_) {
+	FDataContentMesh(TMap<FString, FContentMeshModel> models_, TMap<FString, FString> materials_) {
 		models = models_;
+		materials = materials_;
 	};
 };

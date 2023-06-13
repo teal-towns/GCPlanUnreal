@@ -1,14 +1,14 @@
 {
 	"loginEmail": "luke.madera@gmail.com",
-	"loginPassword": "PASSWORD",
+	"loginPassword": "",
 	"projectUName": "sazant",
-	"projectJsonFiles": {
-		"plot": "projectPlots.json",
-		"road": "projectRoads.json",
-		"landNature": "projectSazanLandNaturePlots.json"
-	},
 	"urlWebsocket": "wss://plan.greencity.earth/ws",
 	"urlWebsocket1": "ws://localhost:8087/ws",
-	"contentMeshesJsonFile": "contentMeshes.json",
-	"performanceQualityLevel": 1
+	"performanceQualityLevel": 1,
+	"projectPath": "ProjectA",
+	"jsonFiles": {
+		"contentMeshes": "contentMeshes.json",
+		"plot": "plots.json",
+		"landNature": "landNaturePlots.json"
+	}
 }

@@ -35,6 +35,17 @@ UWorld* ModelBase::GetWorld() {
 	return World;
 }
 
+void ModelBase::DestroyActors() {
+	for (auto& Elem : _spawnedActors) {
+		Elem.Value->Destroy();
+	}
+	_spawnedActors.Empty();
+}
+
+void ModelBase::CleanUp() {
+	DestroyActors();
+}
+
 void ModelBase::SetInputs(FModelingBase modelingBase) {
 	_modelingBase = modelingBase;
 }
@@ -93,6 +104,7 @@ AStaticMeshActor* ModelBase::CreateActor(FString name, FVector location, FRotato
 	spawnParams.Name = FName(name);
 	AStaticMeshActor* actor = (AStaticMeshActor*)World->SpawnActor<AStaticMeshActor>(
 		AStaticMeshActor::StaticClass(), location * unrealGlobal->GetScale(), rotation, spawnParams);
+	_spawnedActors.Add(name, actor);
 	unrealGlobal->SetActorFolder(actor);
 	actor->SetActorLabel(name);
 	if (scale.X != 1 || scale.Y != 1 || scale.Z != 1) {

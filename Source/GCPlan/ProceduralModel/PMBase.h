@@ -21,6 +21,8 @@ public:
 	void SetInputs(FProceduralModelBase);
 	FProceduralModelBase GetInputs(FString defaultName, FVector defaultSize, FVector defaultVertices);
 	void Create();
+	void DestroyActors();
+	void CleanUp();
 
 	AStaticMeshActor* CreateActor(FString name, FVector location,
 		FRotator rotation, FActorSpawnParameters spawnParams,
@@ -38,4 +40,5 @@ private:
 
 	UWorld* World;
 	FProceduralModelBase _proceduralModelBase;
+	TMap<FString, AStaticMeshActor*> _spawnedActors = {};
 };

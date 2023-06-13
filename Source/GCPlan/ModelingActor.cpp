@@ -21,7 +21,7 @@ void AModelingActor::BeginPlay()
 
 void AModelingActor::Init() {
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
-	unrealGlobal->InitCommon(GetWorld());
+	unrealGlobal->InitAll(GetWorld(), { "web" });
 	// ModelBase* modelBase = ModelBase::GetInstance();
 	// modelBase->SetWorld(GetWorld());
 
@@ -34,4 +34,10 @@ void AModelingActor::GenerateModel() {
 	ModelBase* modelBase = ModelBase::GetInstance();
 	modelBase->SetInputs(ModelingBase);
 	modelBase->Create();
+}
+
+void AModelingActor::DestroyActors() {
+	Init();
+	ModelBase* modelBase = ModelBase::GetInstance();
+	modelBase->DestroyActors();
 }

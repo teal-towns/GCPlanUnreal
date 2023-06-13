@@ -23,6 +23,8 @@ public:
 
 	UFUNCTION(CallInEditor)
 	void GenerateModel();
+	UFUNCTION(CallInEditor)
+	void DestroyActors();
 	UPROPERTY(EditAnywhere)
 	FProceduralModelBase ProceduralModelBase;
 
