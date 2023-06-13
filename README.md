@@ -1,5 +1,11 @@
 ## Setup
 
+- Copy the `Source/ConditionalExample` folder and adjust for your content.
+	- Create a new folder for your project / assets and add this path to `settings.json`
+	- Add content (meshes and materials) to `Content/Conditional` and update `contentMeshes.json` to reference them.
+	- Landscape: add `image-terrain.jpg` and a 16-bit grayscale `image-heightmap.png` the root of the `Source/Conditional` folder (this currently has to be manually set in the project editor - TODO: fix this so it is auto-updated via code and can live in the conditional project folder so changing `settings.json` will be all that is necessary).
+		- To get the Landscape in Unreal Editor to actually reflect the changes, you must re-assign the (same) material to ALL proxy partions (select them all and change all at once).
+
 ### Mac
 - Build from Unreal Editor with the hotkey (button is missing..). Default is Command + Option + Shift + P which is annoying - go to viewport (top left 3 bars icon) -> Advanced Settings then search for `compile` and find the Keyboard Shortcuts section `Recompile Game Code` entry and set it to something simpler like Cmd+B.
 - VSCode has `'CoreMinimal.h' file not found` error so was not able to build from VSCode

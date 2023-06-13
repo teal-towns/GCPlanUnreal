@@ -28,8 +28,9 @@ void PlotData::CleanUp() {
 
 void PlotData::SavePlotsToFile() {
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+	DataFileProject* dataFileProject = DataFileProject::GetInstance();
 	FDataProjectJson* json = new FDataProjectJson(_plots);
-	DataFileProject::SaveProject(*json, unrealGlobal->_settings->projectJsonFiles["plot"]);
+	dataFileProject->SaveProject(*json, unrealGlobal->_settings->jsonFiles["plot"]);
 }
 
 void PlotData::DeletePlot(FString uName, bool deleteChildren) {
@@ -62,7 +63,8 @@ void PlotData::SavePlotFromPolygon(FString uName, FPolygon polygon) {
 TMap<FString, FPlot> PlotData::LoadPlots() {
 	_plots.Empty();
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
-	auto [data, valid] = DataFileProject::LoadProject(unrealGlobal->_settings->projectJsonFiles["plot"]);
+	DataFileProject* dataFileProject = DataFileProject::GetInstance();
+	auto [data, valid] = dataFileProject->LoadProject(unrealGlobal->_settings->jsonFiles["plot"]);
 	if (valid) {
 		_plots = data.plots;
 	}
@@ -72,7 +74,8 @@ TMap<FString, FPlot> PlotData::LoadPlots() {
 TMap<FString, FPlot> PlotData::LoadAndSubdividePlots(bool removeFinalChildren) {
 	_plots.Empty();
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
-	auto [data, valid] = DataFileProject::LoadProject(unrealGlobal->_settings->projectJsonFiles["plot"]);
+	DataFileProject* dataFileProject = DataFileProject::GetInstance();
+	auto [data, valid] = dataFileProject->LoadProject(unrealGlobal->_settings->jsonFiles["plot"]);
 	if (valid) {
 		// if (removeFinalChildren) {
 		// 	for (auto& Elem : data.plots) {

@@ -11,6 +11,7 @@ private:
 	static std::mutex mutex_;
 
 	TMap<FString, FContentMeshModel> _meshModels = {};
+	TMap<FString, FString> _materialPaths = {};
 
 public:
 	LoadContent();
@@ -26,4 +27,5 @@ public:
 	std::tuple<FDataContentMesh, bool> LoadFile(FString fileName);
 	void LoadMeshes(FString defaultMeshPath = "/Script/Engine.StaticMesh'/Game/Modeling/Primitives/Cube.Cube'");
 	TArray<FString> GetMeshNamesByTypes(TArray<FString> types);
+	FString Material(FString key);
 };

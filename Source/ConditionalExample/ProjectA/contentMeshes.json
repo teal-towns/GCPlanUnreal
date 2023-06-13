@@ -1,0 +1,21 @@
+{
+	"models": {
+		"HexModule": { "size": [9,9,3.5], "type": "building", "path": "/Script/Engine.StaticMesh'/Game/Conditional/Buildings/Hex/HexModule/HexModule.HexModule'",
+			"materialPath": "/Script/Engine.Material'/Game/Conditional/Nature1/Wood/wood-pale-material.wood-pale-material'" },
+		"HexModuleBlock": { "size": [9,9,3.5], "type": "building", "path": "/Script/Engine.StaticMesh'/Game/Conditional/Buildings/Hex/HexModule/HexModule_LOD2.HexModule_LOD2'",
+			"materialPath": "/Script/Engine.Material'/Game/Conditional/Nature1/Wood/wood-pale-material.wood-pale-material'" },
+		"PineL": { "size": [29,25,64], "type": "tree", "path": "/Script/Engine.StaticMesh'/Game/Conditional/Nature1/Trees/Pine/Pine-L.Pine-L'" },
+		"PineM": { "size": [16,14,35], "type": "tree", "path": "/Script/Engine.StaticMesh'/Game/Conditional/Nature1/Trees/Pine/Pine-M.Pine-M'" },
+		"PineS": { "size": [12,12,19], "type": "tree", "path": "/Script/Engine.StaticMesh'/Game/Conditional/Nature1/Trees/Pine/Pine-S.Pine-S'" },
+		"Rhododendron": { "size": [1.9,1.9,1.9], "type": "bush", "path": "/Script/Engine.StaticMesh'/Game/Conditional/Nature1/Bushes/Rhododendron/Rhododendron.Rhododendron'" },
+		"Hazel": { "size": [3.6,3.8,1.5], "type": "bush", "path": "/Script/Engine.StaticMesh'/Game/Conditional/Nature1/Bushes/Hazel/Hazel.Hazel'" }
+	},
+	"materials": {
+		"wood": "/Script/Engine.Material'/Game/Conditional/Nature1/Wood/wood-pale-material.wood-pale-material'",
+		"black": "/Script/Engine.Material'/Game/Material/Black_M.Black_M'",
+		"white": "/Script/Engine.Material'/Game/Material/White_M.White_M'",
+		"grey": "/Script/Engine.Material'/Game/Material/Grey_M.Grey_M'",
+		"blue": "/Script/Engine.Material'/Game/Material/Blue_M.Blue_M'",
+		"red": "/Script/Engine.Material'/Game/Material/Red_M.Red_M'"
+	}
+}

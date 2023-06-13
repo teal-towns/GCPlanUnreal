@@ -30,7 +30,8 @@ void LoadContent::CleanUp() {
 
 std::tuple<FDataContentMesh, bool> LoadContent::LoadFile(FString fileName) {
 	FDataContentMesh* data = new FDataContentMesh();
-	auto [jsonString, valid, msg] = DataConvert::ReadFile(fileName, "conditional");
+	DataConvert* dataConvert = DataConvert::GetInstance();
+	auto [jsonString, valid, msg] = dataConvert->ReadFile(fileName, "conditional");
 	if (valid) {
 		if (!FJsonObjectConverter::JsonObjectStringToUStruct(jsonString, data, 0, 0)) {
 			UE_LOG(LogTemp, Error, TEXT("LoadContent.LoadFile json parse error"));
@@ -43,8 +44,9 @@ std::tuple<FDataContentMesh, bool> LoadContent::LoadFile(FString fileName) {
 
 void LoadContent::LoadMeshes(FString defaultMeshPath) {
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
-	auto [data, valid] = LoadFile(unrealGlobal->Settings()->contentMeshesJsonFile);
+	auto [data, valid] = LoadFile(unrealGlobal->Settings()->jsonFiles["contentMeshes"]);
 	if (valid) {
+		_materialPaths = data.materials;
 		InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
 		UStaticMesh* mesh;
 		FString meshPath, name, materialPath;
@@ -72,4 +74,11 @@ TArray<FString> LoadContent::GetMeshNamesByTypes(TArray<FString> types) {
 		}
 	}
 	return names;
+}
+
+FString LoadContent::Material(FString key) {
+	if (_materialPaths.Contains(key)) {
+		return _materialPaths[key];
+	}
+	return "";
 }

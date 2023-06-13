@@ -36,6 +36,17 @@ UWorld* PMBase::GetWorld() {
 	return World;
 }
 
+void PMBase::DestroyActors() {
+	for (auto& Elem : _spawnedActors) {
+		Elem.Value->Destroy();
+	}
+	_spawnedActors.Empty();
+}
+
+void PMBase::CleanUp() {
+	DestroyActors();
+}
+
 void PMBase::SetInputs(FProceduralModelBase proceduralModelBase) {
 	_proceduralModelBase = proceduralModelBase;
 }
@@ -97,6 +108,7 @@ AStaticMeshActor* PMBase::CreateActor(FString name, FVector location, FRotator r
 	// 	rotation, spawnParams);
 	AStaticMeshActor* actor = (AStaticMeshActor*)World->SpawnActor<AStaticMeshActor>(
 		AStaticMeshActor::StaticClass(), location * unrealGlobal->GetScale(), rotation, spawnParams);
+	_spawnedActors.Add(name, actor);
 	unrealGlobal->SetActorFolder(actor);
 	actor->SetActorLabel(name);
 	if (parent) {

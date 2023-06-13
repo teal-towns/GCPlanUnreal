@@ -34,7 +34,7 @@ private:
 	static InstancedMesh *pinstance_;
 	static std::mutex mutex_;
 
-	static AStaticMeshActor* _instancedMeshesActor;
+	AStaticMeshActor* _instancedMeshesActor = nullptr;
 
 	// TMap<FString, AStaticMeshActor*> _instancedMeshActors = {};
 	TMap<FString, AActor*> _instancedMeshActors = {};

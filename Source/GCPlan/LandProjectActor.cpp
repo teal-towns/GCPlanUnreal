@@ -147,10 +147,12 @@ void ALandProjectActor::EditorClear() {
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	unrealGlobal->InitAll(GetWorld());
 
+	SplineRoad* splineRoad = SplineRoad::GetInstance();
+	splineRoad->CleanUp();
+
+	// Must be last (after any others that call instanced mesh).
 	InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
 	instancedMesh->CleanUp();
-	SplineRoad* splineRoad = SplineRoad::GetInstance();
-	splineRoad->DestroyRoads();
 }
 
 void ALandProjectActor::EditorGenerate() {

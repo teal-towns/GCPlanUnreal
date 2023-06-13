@@ -17,7 +17,7 @@ private:
 	UWorld* World;
 
 	TMap<FString, TMap<FString, FRoadPath>> _RoadsByType = {};
-	static AStaticMeshActor* _roadsActor;
+	AStaticMeshActor* _roadsActor = nullptr;
 	TMap<FString, AActor*> _RoadsActors = {};
 
 	USplineMeshComponent* InitMesh(FString UName, UObject* parentObject, USceneComponent* parent, float widthMeters);
@@ -35,8 +35,9 @@ public:
 
 	static SplineRoad *GetInstance();
 	void SetWorld(UWorld*);
+	void DestroyRoads();
+	void CleanUp();
 
 	void AddRoads(TMap<FString, FRoadPath> roads);
 	void DrawRoads(bool addPlants = true, bool carveLand = true);
-	void DestroyRoads();
 };

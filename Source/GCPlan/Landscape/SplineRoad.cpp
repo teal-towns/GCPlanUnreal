@@ -17,7 +17,6 @@
 
 SplineRoad* SplineRoad::pinstance_{nullptr};
 std::mutex SplineRoad::mutex_;
-AStaticMeshActor* SplineRoad::_roadsActor;
 
 SplineRoad::SplineRoad() {
 }
@@ -29,24 +28,19 @@ SplineRoad *SplineRoad::GetInstance() {
 	std::lock_guard<std::mutex> lock(mutex_);
 	if (pinstance_ == nullptr) {
 		pinstance_ = new SplineRoad();
-
-		// In case of recompile in editor, will lose reference so need to check scene too.
-		FString name = "SplineRoads";
-		// UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
-		// AActor* actor = unrealGlobal->GetActorByName(name, AStaticMeshActor::StaticClass());
-		// if (actor) {
-		// 	_roadsActor = actor;
-		// } else {
-			PMBase* pmBase = PMBase::GetInstance();
-			FActorSpawnParameters spawnParams;
-			_roadsActor = pmBase->CreateActor(name, FVector(0,0,0), FRotator(0,0,0), spawnParams);
-		// }
 	}
 	return pinstance_;
 }
 
 void SplineRoad::SetWorld(UWorld* World1) {
 	World = World1;
+
+	if (!_roadsActor) {
+		FString name = "SplineRoads";
+		PMBase* pmBase = PMBase::GetInstance();
+		FActorSpawnParameters spawnParams;
+		_roadsActor = pmBase->CreateActor(name, FVector(0,0,0), FRotator(0,0,0), spawnParams);
+	}
 }
 
 void SplineRoad::DestroyRoads() {
@@ -73,6 +67,15 @@ void SplineRoad::DestroyRoads() {
 
 	InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
 	instancedMesh->ClearInstances("RoadRoundabout");
+}
+
+void SplineRoad::CleanUp() {
+	DestroyRoads();
+	if (_roadsActor) {
+		_roadsActor->Destroy();
+	}
+	_roadsActor = nullptr;
+	pinstance_ = nullptr;
 }
 
 void SplineRoad::AddRoads(TMap<FString, FRoadPath> roadsPaths) {
