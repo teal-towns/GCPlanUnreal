@@ -18,17 +18,17 @@ UStaticMesh *PMPrism::CreateFromInputs()
 {
 	PMBase *pmBase = PMBase::GetInstance();
 	FProceduralModelBase inputs = pmBase->GetInputs("Prism1", FVector(1, 1, 1), FVector(2, 2, 2), 4, 0.0);
-	return Create(inputs.name, inputs.tags, inputs.sidesSegmentCount, inputs.size.Z, inputs.size.X, inputs.topOffsetWidth, inputs.capTop, inputs.capBottom);
+	return Create(inputs.name, inputs.tags, inputs.sidesSegmentCount, inputs.size.Z, inputs.size.X, inputs.topOffsetWidth, inputs.closeTop, inputs.closeBottom);
 }
 
-std::tuple<TArray<FVector>, TArray<int32>, TArray<FVector>, TArray<FProcMeshTangent>, TArray<FVector2D>> PMPrism::InitializeMesh(int32 sidesSegmentCount, bool capTop, bool capBottom, bool doubleSided)
+std::tuple<TArray<FVector>, TArray<int32>, TArray<FVector>, TArray<FProcMeshTangent>, TArray<FVector2D>> PMPrism::InitializeMesh(int32 sidesSegmentCount, bool closeTop, bool closeBottom, bool doubleSided)
 {
 	int32 VertexCount = sidesSegmentCount * 4;		 // 4 vertices per face
 	int32 TriangleCount = sidesSegmentCount * 2 * 3; // 2 triangles per face * 3 vertices per triangle
 
 	// Count vertices for caps if set
-	VertexCount += (sidesSegmentCount - 2) * 3 * (int(capTop) + int(capBottom));
-	TriangleCount += (sidesSegmentCount - 2) * 3 * (int(capTop) + int(capBottom));
+	VertexCount += (sidesSegmentCount - 2) * 3 * (int(closeTop) + int(closeBottom));
+	TriangleCount += (sidesSegmentCount - 2) * 3 * (int(closeTop) + int(closeBottom));
 
 	// Count extra vertices if double sided
 	if (doubleSided)
@@ -53,13 +53,13 @@ std::tuple<TArray<FVector>, TArray<int32>, TArray<FVector>, TArray<FProcMeshTang
 }
 
 UStaticMesh *PMPrism::Create(FString name, TArray<FString> tags, int32 sidesSegmentCount, float height,
-							 float width, float topOffsetWidth, bool capTop, bool capBottom, bool destroyActor)
+							 float width, float topOffsetWidth, bool closeTop, bool closeBottom, bool destroyActor)
 {
 
 	int32 VertexIndex = 0;
 	int32 TriangleIndex = 0;
 	bool doubleSided = true;
-	auto [Vertices, Triangles, Normals, Tangents, UV0s] = InitializeMesh(sidesSegmentCount, capTop, capBottom, doubleSided);
+	auto [Vertices, Triangles, Normals, Tangents, UV0s] = InitializeMesh(sidesSegmentCount, closeTop, closeBottom, doubleSided);
 
 	PMBase *pmBase = PMBase::GetInstance();
 	UnrealGlobal *unrealGlobal = UnrealGlobal::GetInstance();
@@ -171,12 +171,12 @@ UStaticMesh *PMPrism::Create(FString name, TArray<FString> tags, int32 sidesSegm
 		// -------------------------------------------------------
 		// Caps are closed here by triangles that start at 0, then use the points along the circle for the other two corners.
 		// A method uses a vertex in the center of the circle uses more polygons.
-		if (QuadIndex != 0 && QuadIndex != sidesSegmentCount - 1 && (capBottom || capTop))
+		if (QuadIndex != 0 && QuadIndex != sidesSegmentCount - 1 && (closeBottom || closeTop))
 		{
 			VertIndex1 = VertexIndex++;
 			VertIndex2 = VertexIndex++;
 			VertIndex3 = VertexIndex++;
-			if (capBottom)
+			if (closeBottom)
 			{
 				FVector BottomCapVertex0 = FVector(FMath::Cos(0.f) * width, FMath::Sin(0.f) * width, 0.f) * scale;
 				FVector BottomCapVertex1 = FVector(FMath::Cos(Angle) * width, FMath::Sin(Angle) * width, 0.f) * scale;
@@ -221,7 +221,7 @@ UStaticMesh *PMPrism::Create(FString name, TArray<FString> tags, int32 sidesSegm
 					Tangents[VertIndex1] = Tangents[VertIndex2] = Tangents[VertIndex3] = FProcMeshTangent(SurfaceTangentCap, false);
 				}
 			}
-			if (capTop)
+			if (closeTop)
 			{
 				FVector TopCapVertex0 = FVector(FMath::Cos(0.f) * (width + topOffsetWidth), FMath::Sin(0.f) * (width + topOffsetWidth), 0.f) * scale;
 				FVector TopCapVertex1 = FVector(FMath::Cos(Angle) * (width + topOffsetWidth), FMath::Sin(Angle) * (width + topOffsetWidth), 0.f) * scale;
