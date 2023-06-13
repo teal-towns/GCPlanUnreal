@@ -19,7 +19,7 @@ public:
 	void SetWorld(UWorld*);
 	UWorld* GetWorld();
 	void SetInputs(FProceduralModelBase);
-	FProceduralModelBase GetInputs(FString defaultName, FVector defaultSize, FVector defaultVertices);
+	FProceduralModelBase GetInputs(FString defaultName, FVector defaultSize, FVector defaultVertices, int32 defaultSidesSegmentCount = 4, float defaultTopOffsetWidth = 0.0);
 	void Create();
 	void DestroyActors();
 	void CleanUp();
@@ -31,7 +31,7 @@ public:
 	static UProceduralMeshComponent* CreateMesh(UObject* parentObject, USceneComponent* parent,
 		FString name);
 	static void AddMeshSection(UProceduralMeshComponent* ProceduralMesh, TArray<FVector> Vertices,
-		TArray<FVector2D> UV0, TArray<int> Triangles);
+							   TArray<FVector2D> UV0, TArray<int> Triangles, TArray<FVector> Normals = TArray<FVector>(), TArray<FProcMeshTangent> Tangents = TArray<FProcMeshTangent>());
 	static UStaticMesh* ToStaticMesh(UProceduralMeshComponent* ProceduralMesh);
 
 private:

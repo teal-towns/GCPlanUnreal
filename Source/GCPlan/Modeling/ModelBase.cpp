@@ -6,9 +6,10 @@
 #include "../Common/Lodash.h"
 #include "../Common/UnrealGlobal.h"
 #include "../ModelingStructsActor.h"
-
 #include "ModelBench.h"
 #include "ModelDesk.h"
+#include "ModelStreetLight.h"
+#include "ModelEVCharger.h"
 
 ModelBase* ModelBase::pinstance_{nullptr};
 std::mutex ModelBase::mutex_;
@@ -88,6 +89,15 @@ void ModelBase::Create() {
 	} else if (_modelingBase.subCategory == ModelingSubCategory::MOUSE) {
 		ModelMouse::Create(defLocation);
 	}
+	else if (_modelingBase.subCategory == ModelingSubCategory::STREETLIGHT)
+	{
+		ModelStreetLight::Create();
+	}
+	else if (_modelingBase.subCategory == ModelingSubCategory::EVCHARGER)
+	{
+		ModelEVCharger::Create();
+	}
+	// TODO
 }
 
 AStaticMeshActor* ModelBase::CreateActor(FString name, FVector location, FRotator rotation,
