@@ -24,8 +24,6 @@ void DrawVertices::LoadVertices() {
 	SplineRoad* splineRoad = SplineRoad::GetInstance();
 	splineRoad->DestroyRoads();
 
-	// PlotData* plotData = PlotData::GetInstance();
-	// TMap<FString, FPlot> plots = plotData->LoadAndSubdividePlots();
 	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
 	verticesEdit->LoadFromFiles();
 	verticesEdit->CheckSubdividePolygons("plot");

@@ -12,7 +12,6 @@
 #include "../Layout/LayoutPolyLine.h"
 #include "../Mesh/InstancedMesh.h"
 #include "../Mesh/LoadContent.h"
-#include "../Plot/PlotData.h"
 
 PlotBuild::PlotBuild() {
 }

@@ -7,8 +7,6 @@
 	"performanceQualityLevel": 1,
 	"projectPath": "ProjectA",
 	"jsonFiles": {
-		"contentMeshes": "contentMeshes.json",
-		"plot": "plots.json",
-		"landNature": "landNaturePlots.json"
+		"contentMeshes": "contentMeshes.json"
 	}
 }

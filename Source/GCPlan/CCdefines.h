@@ -13,8 +13,8 @@
 #ifndef CCDEFINES_H
 #define CCDEFINES_H
 
-//#undef WINDOWSNOTMAC // MAC not Windows
 #define WINDOWSNOTMAC // Windows not MAC
+#undef WINDOWSNOTMAC // MAC not Windows
 
 #ifdef WINDOWSNOTMAC // Windows not MAC
 #undef USELIBRARY // Windows

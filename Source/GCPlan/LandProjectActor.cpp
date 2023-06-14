@@ -25,7 +25,6 @@
 #include "Mesh/LoadContent.h"
 // #include "Modeling/ModelBase.h"
 #include "Plot/PlotBuild.h"
-#include "Plot/PlotData.h"
 #include "Plot/PlotDivide.h"
 // #include "ProceduralModel/PMBase.h"
 
@@ -104,26 +103,6 @@ void ALandProjectActor::Init() {
 		VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
 		verticesEdit->LoadFromFiles();
 		verticesEdit->CheckSubdividePolygons("plot");
-
-		// PlotData* plotData = PlotData::GetInstance();
-		// TMap<FString, FPlot> plots = plotData->LoadAndSubdividePlots();
-
-		// VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
-		// verticesEdit->ImportPolygons(ABuildingStructsActor::PlotsToPolygons(plots));
-		// UE_LOG(LogTemp, Display, TEXT("init %d"), plots.Num());
-		// verticesEdit->AddOnSavePolygon("LandProjectActor", [this, verticesEdit, unrealGlobal, plotData](FString uName, FPolygon polygon) {
-		// 	UE_LOG(LogTemp, Display, TEXT("on save polygon uName %s type %s"), *uName, *polygon.type);
-		// 	// TMap<FString, FPolygon> polygons = verticesEdit->ExportPolygonsByType(type);
-		// 	if (polygon.type == "plot") {
-		// 		plotData->SavePlotFromPolygon(uName);
-		// 	}
-		// });
-		// verticesEdit->AddOnDeletePolygon("LandProjectActor", [this, verticesEdit, unrealGlobal, plotData](FString uName, FString type) {
-		// 	UE_LOG(LogTemp, Display, TEXT("on delete polygon uName %s type %s"), *uName, *type);
-		// 	if (type == "plot") {
-		// 		plotData->DeletePlot(uName);
-		// 	}
-		// });
 	}
 }
 
