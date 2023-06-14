@@ -1,11 +1,11 @@
 #include "PlotFillVoronoi.h"
+#include "../CCdefines.h" // define statements to handle MAC and Windows compilers
 
 #include "math.h"
 #include "Math/Vector.h"
 // #include "VectorTypes.h"
 #include "Math/Vector2D.h"
 
-//#define USELIBRARY //smm230610//
 #ifdef USELIBRARY //smm230610//
 // https://forums.unrealengine.com/t/errors-when-including-third-party-library/737189/2
 #pragma push_macro("check")   // store 'check' macro current definition

@@ -1,4 +1,3 @@
-#define USEMAC		// Luke - fixes compile error
 /*
 LodePNG version 20230410
 
@@ -28,8 +27,8 @@ freely, subject to the following restrictions:
 The manual and changelog are in the header file "lodepng.h"
 Rename this file to lodepng.cpp to use it for C++, or to lodepng.c to use it for C.
 */
-
 #include "lodepng.h"
+#include "../CCdefines.h" // define statements to handle MAC and Windows compilers
 
 #ifdef LODEPNG_COMPILE_DISK
 #include <limits.h> /* LONG_MAX */
@@ -684,12 +683,11 @@ static unsigned HuffmanTree_makeTable(HuffmanTree* tree) {
   size = headsize;
   for(i = 0; i < headsize; ++i) {
     unsigned l = maxlens[i];
-#ifdef USEMAC
-    if(l > FIRSTBITS) size += (1u << (l - FIRSTBITS));
-#else
-    if(l > FIRSTBITS) size += (1i64 << (l - FIRSTBITS));    // Luke - fixes compiler error
-#endif
-    
+#ifdef WINDOWSNOTMAC // Windows not MAC
+    if (l > FIRSTBITS) size += (size_t)((size_t)1u << (l - FIRSTBITS)); // Windows
+#else // WINDOWSNOTMAC // Windows not MAC
+    if (l > FIRSTBITS) size += (1u << (l - FIRSTBITS)); // MAC
+#endif // WINDOWSNOTMAC // Windows not MAC
   }
   tree->table_len = (unsigned char*)lodepng_malloc(size * sizeof(*tree->table_len));
   tree->table_value = (unsigned short*)lodepng_malloc(size * sizeof(*tree->table_value));
@@ -708,12 +706,11 @@ static unsigned HuffmanTree_makeTable(HuffmanTree* tree) {
     if(l <= FIRSTBITS) continue;
     tree->table_len[i] = l;
     tree->table_value[i] = pointer;
-#ifdef USEMAC
-    pointer += (1u << (l - FIRSTBITS));
-#else
-    pointer += (1i64 << (l - FIRSTBITS));   // Luke - fixes compiler error
-#endif
-
+#ifdef WINDOWSNOTMAC // Windows not MAC
+    pointer += (size_t)((size_t)1u << (l - FIRSTBITS)); // Windows
+#else // WINDOWSNOTMAC // Windows not MAC
+    pointer += (1u << (l - FIRSTBITS)); // MAC
+#endif // WINDOWSNOTMAC // Windows not MAC
   }
   lodepng_free(maxlens);
 
@@ -5900,11 +5897,11 @@ static size_t ilog2i(size_t i) {
   l = ilog2(i);
   /* approximate i*log2(i): l is integer logarithm, ((i - (1u << l)) << 1u)
   linearly approximates the missing fractional part multiplied by i */
-#ifdef USEMAC
-  return i * l + ((i - (1u << l)) << 1u);
-#else
-  return i * l + ((i - (1i64 << l)) << 1u);   // Luke - fixes compiler error
-#endif
+#ifdef WINDOWSNOTMAC // Windows not MAC
+  return (size_t)((size_t)i * (size_t)l + (((size_t)i - ((size_t)1u << l)) << 1u)); // Windows
+#else // WINDOWSNOTMAC // Windows not MAC
+  return i * l + ((i - (1u << l)) << 1u); // MAC
+#endif // WINDOWSNOTMAC // Windows not MAC
 }
 
 static unsigned filter(unsigned char* out, const unsigned char* in, unsigned w, unsigned h,
