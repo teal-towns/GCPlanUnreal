@@ -230,7 +230,7 @@ FBuildingBlueprint BuildingFlowerHomes::BuildColumn(FBuildingBlueprint blueprint
 		uniqueName = Lodash::GetInstanceId(name);
 		pos = FVector(posCurrentGround.X, posCurrentGround.Y, posZ);
 		FBuildingBlueprintJsonData jsonData = FBuildingBlueprintJsonData(
-			DataConvert::VectorsToDicts(openEdgePositions), floorNum, edgeType);
+			DataConvert::VectorsToStrings(openEdgePositions), floorNum, edgeType);
 		FString JsonString;
 		FJsonObjectConverter::UStructToJsonObjectString(jsonData, JsonString, 0, 0);
 		blueprint.land.game_objects.Add(uniqueName, FLandGameObject(name,

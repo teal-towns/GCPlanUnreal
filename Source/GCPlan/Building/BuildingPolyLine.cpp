@@ -444,7 +444,7 @@ std::tuple<FBuildingBlueprint, FBuildData> BuildingPolyLine::BuildPositionsSingl
 			pos = FVector(posCurrentGround.X, posCurrentGround.Y, posZ);
 
 			FBuildingBlueprintJsonData jsonData = FBuildingBlueprintJsonData(
-				DataConvert::VectorsToDicts(openEdgePositions), floorNumToUse, edgeType);
+				DataConvert::VectorsToStrings(openEdgePositions), floorNumToUse, edgeType);
 			FString JsonString;
 			FJsonObjectConverter::UStructToJsonObjectString(jsonData, JsonString, 0, 0);
 

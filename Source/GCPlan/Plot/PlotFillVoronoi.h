@@ -7,7 +7,7 @@ public:
 	PlotFillVoronoi();
 	~PlotFillVoronoi();
 
-	static std::tuple<TArray<TArray<FVector>>, FVector, TArray<FVector2D>> Fill(TMap<FString, FPlot>, float);
+	static std::tuple<TArray<TArray<FVector>>, FVector, TArray<FVector2D>> Fill(TArray<TArray<FVector>>, float);
 	static TArray<TArray<FVector>> SpawnSpaces(TArray<FVector2D> boundsRect,
 		float averageDistance, float offsetMaxFactor = 0.1f);
 	static TArray<FVector2D> SpawnPoints(TArray<FVector2D>, float, float offsetMaxFactor = 0.1f);

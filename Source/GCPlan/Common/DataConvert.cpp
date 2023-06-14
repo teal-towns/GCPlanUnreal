@@ -5,6 +5,7 @@
 #include "Misc/FileHelper.h"
 
 #include "../BuildingStructsActor.h"
+#include "../Common/Lodash.h"
 
 DataConvert* DataConvert::pinstance_{nullptr};
 std::mutex DataConvert::mutex_;
@@ -23,44 +24,84 @@ DataConvert *DataConvert::GetInstance() {
 	return pinstance_;
 }
 
-FMapStringFloat DataConvert::VectorToDict(FVector vector) {
-	return FMapStringFloat(TMap<FString, float> {
-		{ "x", (float)vector.X },
-		{ "y", (float)vector.Y },
-		{ "z", (float)vector.Z },
-	});
+// FMapStringFloat DataConvert::VectorToDict(FVector vector) {
+// 	return FMapStringFloat(TMap<FString, float> {
+// 		{ "x", (float)vector.X },
+// 		{ "y", (float)vector.Y },
+// 		{ "z", (float)vector.Z },
+// 	});
+// }
+
+// FVector DataConvert::DictToVector(FMapStringFloat dict) {
+// 	return FVector(dict.v["x"], dict.v["y"], dict.v["z"]);
+// }
+
+// TArray<FMapStringFloat> DataConvert::VectorsToDicts(TArray<FVector> vectors) {
+// 	TArray<FMapStringFloat> dicts = {};
+// 	for (int ii = 0; ii < vectors.Num(); ii++) {
+// 		dicts.Add(VectorToDict(vectors[ii]));
+// 	}
+// 	return dicts;
+// }
+
+// TArray<FVector> DataConvert::DictsToVectors(TArray<FMapStringFloat> dicts) {
+// 	TArray<FVector> vectors = {};
+// 	for (int ii = 0; ii < dicts.Num(); ii++) {
+// 		vectors.Add(DictToVector(dicts[ii]));
+// 	}
+// 	return vectors;
+// }
+
+// FMapStringFloat DataConvert::RotatorToDict(FRotator vector) {
+// 	return FMapStringFloat(TMap<FString, float> {
+// 		{ "x", (float)vector.Roll },
+// 		{ "y", (float)vector.Pitch },
+// 		{ "z", (float)vector.Yaw },
+// 	});
+// }
+
+// FRotator DataConvert::DictToRotator(FMapStringFloat dict) {
+// 	return FRotator(dict.v["y"], dict.v["z"], dict.v["x"]);
+// }
+
+FString DataConvert::VectorToString(FVector vector, int precision) {
+	return Lodash::ToFixed(vector.X, precision) + "," + Lodash::ToFixed(vector.Y, precision) + "," +
+		Lodash::ToFixed(vector.Z, precision);
 }
 
-FVector DataConvert::DictToVector(FMapStringFloat dict) {
-	return FVector(dict.v["x"], dict.v["y"], dict.v["z"]);
+FVector DataConvert::StringToVector(FString input) {
+	TArray<FString> vals;
+	input.ParseIntoArray(vals, TEXT(","), true);
+	return FVector(static_cast<double>(FCString::Atof(*vals[0])), static_cast<double>(FCString::Atof(*vals[1])),
+		static_cast<double>(FCString::Atof(*vals[2])));
 }
 
-TArray<FMapStringFloat> DataConvert::VectorsToDicts(TArray<FVector> vectors) {
-	TArray<FMapStringFloat> dicts = {};
+TArray<FString> DataConvert::VectorsToStrings(TArray<FVector> vectors) {
+	TArray<FString> outputs = {};
 	for (int ii = 0; ii < vectors.Num(); ii++) {
-		dicts.Add(VectorToDict(vectors[ii]));
+		outputs.Add(VectorToString(vectors[ii]));
 	}
-	return dicts;
+	return outputs;
 }
 
-TArray<FVector> DataConvert::DictsToVectors(TArray<FMapStringFloat> dicts) {
+TArray<FVector> DataConvert::StringsToVectors(TArray<FString> inputs) {
 	TArray<FVector> vectors = {};
-	for (int ii = 0; ii < dicts.Num(); ii++) {
-		vectors.Add(DictToVector(dicts[ii]));
+	for (int ii = 0; ii < inputs.Num(); ii++) {
+		vectors.Add(StringToVector(inputs[ii]));
 	}
 	return vectors;
 }
 
-FMapStringFloat DataConvert::RotatorToDict(FRotator vector) {
-	return FMapStringFloat(TMap<FString, float> {
-		{ "x", (float)vector.Roll },
-		{ "y", (float)vector.Pitch },
-		{ "z", (float)vector.Yaw },
-	});
+FString DataConvert::RotatorToString(FRotator vector, int precision) {
+	return Lodash::ToFixed(vector.Roll, precision) + "," + Lodash::ToFixed(vector.Pitch, precision) + "," +
+		Lodash::ToFixed(vector.Yaw, precision);
 }
 
-FRotator DataConvert::DictToRotator(FMapStringFloat dict) {
-	return FRotator(dict.v["y"], dict.v["z"], dict.v["x"]);
+FRotator DataConvert::StringToRotator(FString input) {
+	TArray<FString> vals;
+	input.ParseIntoArray(vals, TEXT(","), true);
+	return FRotator(static_cast<double>(FCString::Atof(*vals[1])), static_cast<double>(FCString::Atof(*vals[2])),
+		static_cast<double>(FCString::Atof(*vals[0])));
 }
 
 FRotator DataConvert::VectorToRotator(FVector vector) {
@@ -117,6 +158,23 @@ FString DataConvert::FileNameToPath(FString fileName, FString key) {
 		filePath = projectPath + filePath;
 	}
 	return filePath;
+}
+
+void DataConvert::CheckCreateDirectory(FString fileName) {
+	FString directoryPath = FileNameToPath(fileName);
+	if (!FPlatformFileManager::Get().GetPlatformFile().DirectoryExists(*directoryPath)) {
+		FPlatformFileManager::Get().GetPlatformFile().CreateDirectory(*directoryPath);
+	}
+}
+
+TArray<FString> DataConvert::GetDirectoryFiles(FString fileName) {
+	TArray<FString> filePaths = {};
+	FString directoryPath = FileNameToPath(fileName);
+	IFileManager& FileManager = IFileManager::Get();
+	if (FileManager.DirectoryExists(*directoryPath)) {
+		FileManager.FindFiles(filePaths, *directoryPath, NULL);
+	}
+	return filePaths;
 }
 
 std::tuple<FString, bool, FString> DataConvert::ReadFile(FString fileName, FString filePathKey) {

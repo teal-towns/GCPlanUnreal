@@ -3,8 +3,12 @@
 - Copy the `Source/ConditionalExample` folder and adjust for your content.
 	- Create a new folder for your project / assets and add this path to `settings.json`
 	- Add content (meshes and materials) to `Content/Conditional` and update `contentMeshes.json` to reference them.
-	- Landscape: add `image-terrain.jpg` and a 16-bit grayscale `image-heightmap.png` the root of the `Source/Conditional` folder (this currently has to be manually set in the project editor - TODO: fix this so it is auto-updated via code and can live in the conditional project folder so changing `settings.json` will be all that is necessary).
-		- To get the Landscape in Unreal Editor to actually reflect the changes, you must re-assign the (same) material to ALL proxy partions (select them all and change all at once).
+	- Landscape (this currently has to be manually set in the project editor - TODO: fix this so it is auto-updated via code and can live in the conditional project folder so changing `settings.json` will be all that is necessary.)
+		- add `image-terrain.jpg` and a 16-bit grayscale `image-heightmap.png` to the root of the `Source/Conditional` folder
+		- add `image-terrain-[size].jpg` to the `Content/Conditional/Landscape` (sub)folder
+			- This should update the landscape, but if it does not, to get the Landscape in Unreal Editor to actually reflect the changes, you must re-assign the (same) material to ALL proxy partions (select them all and change all at once).
+		- Re-import the heightmap in the Unreal Editor Landscape mode: 1. Select the Landscape in the Scene Outliner, 2. Choose the Landscape Mode from the (top left) dropdown, 3. Manage -> Import -> check Heightmap File -> select file -> Import
+			- Note: if you get an error on file selection, try moving the heightmap file to its own directory on your computer first so there are no other files in the same directory as it since Unreal sometimes errors otherwise.
 
 ### Mac
 - Build from Unreal Editor with the hotkey (button is missing..). Default is Command + Option + Shift + P which is annoying - go to viewport (top left 3 bars icon) -> Advanced Settings then search for `compile` and find the Keyboard Shortcuts section `Recompile Game Code` entry and set it to something simpler like Cmd+B.
@@ -41,7 +45,7 @@
 - `git status -s` to see file changes. It is not uncommon for files you did not touch to be edited in the process; in general revert those changes with `git checkout -- [filename]` optionally with wildcards for pattern matching: https://stackoverflow.com/questions/15160978/is-there-a-way-to-use-wildcards-with-git-checkout
 	- Ensure no large file changes that are not vital: `git status --porcelain | awk "{print $2}" | xargs ls -hl` (then search for `G ` and `M ` for gigabytes and megabytes files)
 	- Check & do above steps (for any mesh, texture or materials additions or changes).
-- After confirmed the work is good, `git commit -am 'SUMMARY-OF-CHANGES'` then `git push origin [branch]` then go to github.com and open a Pull Request and request a review / tell a team member.
+- After confirmed the work is good, `git commit -am 'SUMMARY-OF-CHANGES'` (then `git checkout main` `git pull origin main` `git checkout [branch]` `git rebase main` to pull in any current changes since you started work) then `git push origin [branch]` then go to github.com and open a Pull Request and request a review / tell a team member.
 	- Once code is reviewed, changed (if needed) and approved, merge the Pull Request on Github, do a `git pull origin main` locally to get your changes and delete the branch on github.com and locally.
 
 

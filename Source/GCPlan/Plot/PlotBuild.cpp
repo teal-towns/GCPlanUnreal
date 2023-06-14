@@ -6,12 +6,12 @@
 #include "../Common/DataConvert.h"
 #include "../Common/MathPolygon.h"
 #include "../Common/UnrealGlobal.h"
+#include "../Landscape/VerticesEdit.h"
 #include "../Layout/LayoutPlace.h"
 #include "../Layout/LayoutPolygon.h"
 #include "../Layout/LayoutPolyLine.h"
 #include "../Mesh/InstancedMesh.h"
 #include "../Mesh/LoadContent.h"
-#include "../Plot/PlotData.h"
 
 PlotBuild::PlotBuild() {
 }
@@ -19,34 +19,33 @@ PlotBuild::PlotBuild() {
 PlotBuild::~PlotBuild() {
 }
 
-TArray<FLand> PlotBuild::CreateLands(TMap<FString, FPlot> plots, float unitDiameter) {
-	PlotData* plotData = PlotData::GetInstance();
+TArray<FLand> PlotBuild::CreateLands(TMap<FString, FPolygon> polygons, float unitDiameter) {
+	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
 	TArray<FLand> lands = {};
 	FBuildingBlueprint blueprint;
-	FString pattern;
-	FPlot plotTemp;
-	for (auto& Elem : plots) {
-		plotTemp = Elem.Value;
-		// Only build if a final plot (no children).
-		if (Elem.Value.childPlotUNames.Num() == 0) {
-			pattern = Elem.Value.buildPattern;
+	TArray<FString> tags;
+	FPolygon polygonTemp;
+	for (auto& Elem : polygons) {
+		polygonTemp = Elem.Value;
+		// Only build if a final one (no children).
+		if (Elem.Value.childUNames.Num() == 0) {
+			tags = Elem.Value.tags;
 			// If empty, use parent.
-			pattern = plotData->GetParentPattern(Elem.Key);
-			// TODO - add linked instructions per build pattern (one for each plot) and use those.
-			if (pattern == "flowerHomes") {
-				float verticesBuffer = plotTemp.verticesBuffer;
+			tags = verticesEdit->GetParentTags("plot", Elem.Key);
+			if (tags.Contains("flowerHomes")) {
+				float verticesBuffer = polygonTemp.verticesBuffer;
 				// For plants instead of roads, do NOT go all the way (onto road).
 				verticesBuffer = -5;
-				auto [blueprint1, homePlotPaths] = BuildingFlowerHomes::Create(plotTemp.vertices, verticesBuffer, 0.15, 2000, "outer");
+				auto [blueprint1, homePlotPaths] = BuildingFlowerHomes::Create(polygonTemp.vertices, verticesBuffer, 0.15, 2000, "outer");
 				blueprint = blueprint1;
 				// meshTerrain->AddRoads(homePlotPaths);
 				FlowerHomePlants(homePlotPaths);
 			} else {
 				TArray<int> heightFloorsOrder = { 2, 10, 4, 7 };
-				blueprint = BuildingRing::Create(plotTemp.vertices, heightFloorsOrder);
+				blueprint = BuildingRing::Create(polygonTemp.vertices, heightFloorsOrder);
 				// TODO - un hardcode
 				int crossUnitsCount = 3;
-				RingPlantsCenter(plotTemp.vertices, unitDiameter, crossUnitsCount);
+				RingPlantsCenter(polygonTemp.vertices, unitDiameter, crossUnitsCount);
 			}
 			lands.Add(blueprint.land);
 		}
@@ -61,8 +60,9 @@ void PlotBuild::DrawLands(TArray<FLand> lands) {
 		// UE_LOG(LogTemp, Display, TEXT("land_id %s num GO %d"), *lands[ii].land_id, lands[ii].game_objects.Num());
 		for (auto& Elem : lands[ii].game_objects) {
 			FLandGameObject GO = Elem.Value;
-			instancedMesh->CreateInstance("HexModuleBlock", DataConvert::DictToVector(GO.position),
-				DataConvert::DictToRotator(GO.rotation), DataConvert::DictToVector(GO.scale));
+			// instancedMesh->CreateInstance("HexModuleBlock", DataConvert::StringToVector(GO.position),
+			// 	DataConvert::StringToRotator(GO.rotation), DataConvert::StringToVector(GO.scale));
+			instancedMesh->CreateInstance("HexModuleBlock", GO.position, GO.rotation, GO.scale);
 		}
 	}
 }

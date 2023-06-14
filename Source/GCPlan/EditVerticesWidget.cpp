@@ -6,7 +6,10 @@ void UEditVerticesWidget::Init() {
 	// https://forums.unrealengine.com/t/add-onclick-action-c/384233
 	PlusButton->OnClicked.AddDynamic(this, &UEditVerticesWidget::PressPlus);
 	TrashButton->OnClicked.AddDynamic(this, &UEditVerticesWidget::PressTrash);
-	TypeSelect->OnSelectionChanged.AddDynamic(this, &UEditVerticesWidget::SelectType);
+	ShapeSelect->OnSelectionChanged.AddDynamic(this, &UEditVerticesWidget::SelectShape);
+	TypeText->OnTextChanged.AddDynamic(this, &UEditVerticesWidget::ChangeType);
+	TagsText->OnTextChanged.AddDynamic(this, &UEditVerticesWidget::ChangeTagsString);
+	FilterTypeText->OnTextChanged.AddDynamic(this, &UEditVerticesWidget::ChangeFilterType);
 	// SetPlusActive(true);
 }
 
@@ -28,12 +31,54 @@ void UEditVerticesWidget::PressTrash() {
 	verticesEdit->Trash();
 }
 
-void UEditVerticesWidget::SelectType(FString sItem, ESelectInfo::Type seltype) {
+void UEditVerticesWidget::SelectShape(FString sItem, ESelectInfo::Type seltype) {
+	// Hardcoded must match UI.
 	TMap<int, FString> optionsMap = {
-		{ 0, "plot" },
-		{ 1, "building" },
-		{ 2, "road" }
+		{ 0, "polygon" },
+		{ 1, "path" },
+		{ 2, "point" }
 	};
 	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
-	verticesEdit->SetType(optionsMap[TypeSelect->GetSelectedIndex()]);
+	verticesEdit->SetShape(optionsMap[ShapeSelect->GetSelectedIndex()]);
+}
+
+void UEditVerticesWidget::ChangeType(const FText& text) {
+	GetWorld()->GetTimerManager().ClearTimer(TypeTimer);
+	_delegateType.BindUFunction(this, "ChangeTypeActual", text);
+	GetWorld()->GetTimerManager().SetTimer(TypeTimer, _delegateType, _debounceSeconds, false);
+}
+
+void UEditVerticesWidget::ChangeTagsString(const FText& text) {
+	GetWorld()->GetTimerManager().ClearTimer(TagsTimer);
+	_delegateTags.BindUFunction(this, "ChangeTagsStringActual", text);
+	GetWorld()->GetTimerManager().SetTimer(TagsTimer, _delegateTags, _debounceSeconds, false);
+	// VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
+	// TArray<FString> tags;
+	// text.ToString().ParseIntoArray(tags, TEXT(","), true);
+	// verticesEdit->SetTags(tags);
+}
+
+void UEditVerticesWidget::ChangeFilterType(const FText& text) {
+	GetWorld()->GetTimerManager().ClearTimer(FilterTypeTimer);
+	_delegateFilterType.BindUFunction(this, "ChangeFilterTypeActual", text);
+	GetWorld()->GetTimerManager().SetTimer(FilterTypeTimer, _delegateFilterType, _debounceSeconds, false);
+}
+
+void UEditVerticesWidget::ChangeTypeActual(const FText& text) {
+	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
+	verticesEdit->SetType(text.ToString());
+}
+
+void UEditVerticesWidget::ChangeTagsStringActual(const FText& text) {
+	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
+	TArray<FString> tags;
+	text.ToString().ParseIntoArray(tags, TEXT(","), true);
+	verticesEdit->SetTags(tags);
+}
+
+void UEditVerticesWidget::ChangeFilterTypeActual(const FText& text) {
+	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
+	TArray<FString> types;
+	text.ToString().ParseIntoArray(types, TEXT(","), true);
+	verticesEdit->SetFilterTypes(types);
 }

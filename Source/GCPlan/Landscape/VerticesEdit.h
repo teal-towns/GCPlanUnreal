@@ -14,7 +14,10 @@ private:
 	TMap<FString, FVerticesEditActor> _itemsActors = {};
 	// static AStaticMeshActor* _verticesEditParentActor;
 	FString _currentUName = "";
-	FString _currentType = "plot";
+	FString _currentType = "";
+	FString _currentShape = "";
+	TArray<FString> _currentTags = {};
+	TArray<FString> _currentFilterTypes = {};
 	FString _mode = "";
 	FVerticesEditSelectedObject* _selectedObject = nullptr;
 	// For trash.
@@ -27,22 +30,11 @@ private:
 	double _timeMouseDown = -1;
 	double _timeDragDelay = 0.25;
 
-	TMap<FString, FString> _meshMapEdge = {
-		{ "plot", "EdgeBlue" },
-		// { "building", "EdgeRed" },
-		{ "road", "EdgeBlack" }
-	};
 	FVector _displayScale = FVector(20,20,20);
 	FVector _displayScaleEdge = FVector(10,10,10);
 
 	TMap<FString, std::function<void(FString, FPolygon)>> _listenersSavePolygon = {};
 	TMap<FString, std::function<void(FString, FString)>> _listenersDeletePolygon = {};
-
-	// TMap<FString, std::function<void(FString, int)>> _listenersDeleteVertex = {};
-	// TMap<FString, std::function<void(FString, int, FVector)>> _listenersMoveVertex = {};
-	// TMap<FString, std::function<void(FString, int, FVector)>> _listenersAddVertex = {};
-	// TMap<FString, std::function<void(FString)>> _listenersDeleteShape = {};
-	// TMap<FString, std::function<void(FString, FVector)>> _listenersMoveShape = {};
 
 public:
 	VerticesEdit();
@@ -55,30 +47,42 @@ public:
 	static VerticesEdit *GetInstance();
 
 	void SetType(FString);
+	void SetShape(FString);
+	void SetTags(TArray<FString>);
+	void SetFilterTypes(TArray<FString>);
+	TMap<FString, FPolygon> FilterByTypes(TArray<FString> types);
 	void DestroyItems();
 	void CleanUp();
 	void Hide();
-	// void Show();
 	void SetMode(FString mode = "");
 	void Trash();
-	FPolygon GetOrCreateCurrent();
+	std::tuple<FPolygon, bool> GetOrCreateCurrent();
 	void CheckComputeCenter(FString uName);
+	FString GetEdgeMesh(FString);
 	void AddVertex(FVector posAdd);
 	void AddVertexOnEdge(FString uName, FVector worldLocation);
 	void DeleteVertex(FString uName, int index);
 	void MoveVertex(FString uName, int index, FVector newLocation);
 	void HidePolygon(FString uName);
-	void DeletePolygon(FString uName);
+	void DeletePolygon(FString uName, bool deleteChildren = true, bool save = true);
 	void MovePolygon(FString uName, FVector moveOffset, bool saveAsFinal = false);
 
 	void DrawEdge(FString uName, FVector start, FVector end);
 	void RemoveAllEdges(FString uName);
 	void DrawAllEdges(FString uName);
 
+	void DrawAll();
+	void DrawItemsByTypes(TArray<FString> types);
 	void DrawItem(FString uName);
 	void ImportPolygons(TMap<FString, FPolygon> polygons);
 	TMap<FString, FPolygon> ExportPolygonsByType(FString type);
+	void LoadFromFiles();
+	void RemoveChildren(FString type, bool save = true);
+	TArray<FString> GetParentTags(FString type, FString childUName);
+	int CheckSubdividePolygons(FString type, bool save = true);
+	void SaveToFile(FString type);
 	void SavePolygon(FString uName);
+	FPolygon GetByUName(FString uName);
 
 	FVerticesEditSelectedObject* GetItemByLocation(FVector worldLocation);
 	void OnMouseDown(FVector);
@@ -91,15 +95,4 @@ public:
 	void RemoveOnSavePolygon(FString key);
 	void AddOnDeletePolygon(FString key, std::function<void(FString, FString)> callback);
 	void RemoveOnDeletePolygon(FString key);
-
-	// void AddOnDeleteVertex(FString key, std::function<void(FString, int)> callback);
-	// void RemoveOnDeleteVertex(FString key);
-	// void AddOnMoveVertex(FString key, std::function<void(FString, int, FVector)> callback);
-	// void RemoveOnMoveVertex(FString key);
-	// void AddOnAddVertex(FString key, std::function<void(FString, int, FVector)> callback);
-	// void RemoveOnAddVertex(FString key);
-	// void AddOnDeleteShape(FString key, std::function<void(FString)> callback);
-	// void RemoveOnDeleteShape(FString key);
-	// void AddOnMoveShape(FString key, std::function<void(FString, FVector)> callback);
-	// void RemoveOnMoveShape(FString key);
 };

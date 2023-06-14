@@ -14,8 +14,8 @@ PlotDivide::PlotDivide() {
 PlotDivide::~PlotDivide() {
 }
 
-std::tuple<TMap<FString, FPlot>, int> PlotDivide::SubdividePlots(TMap<FString, FPlot> Plots, float minRadiusSkip,
-	float minSquareMetersSkip, bool addRoads) {
+std::tuple<TMap<FString, FPolygon>, int> PlotDivide::SubdividePlots(TMap<FString, FPolygon> polygons,
+	float minRadiusSkip, float minSquareMetersSkip, bool addRoads) {
 	MeshTerrain* meshTerrain = MeshTerrain::GetInstance();
 	SplineRoad* splineRoad = SplineRoad::GetInstance();
 
@@ -25,71 +25,73 @@ std::tuple<TMap<FString, FPlot>, int> PlotDivide::SubdividePlots(TMap<FString, F
 		splineRoad->DestroyRoads();
 	}
 
-	TMap<FString, FPlot> newPlots = {};
-	FString uName, parentPlotUName;
+	TMap<FString, FPolygon> newPolygons = {};
+	FString uName, parentUName;
 	FVector center;
-	TMap<FString, FPlot> PlotsTemp;
-	FPlot plotTemp;
-	float plotDistance, newAveragePlotDistance, squareMeters;
+	TArray<FVector> vertices;
+	TArray<TArray<FVector>> verticesTemp;
+	FPolygon polygonTemp;
+	float averageChildDiameter, newAverageChildDiameter, squareMeters;
 	TArray<FVector> bounds;
 	TMap<FString, FRoadPath> roads;
 	TArray<FVector2D> vertices2D;
-	for (auto& Elem : Plots) {
-		plotTemp = Elem.Value;
-		parentPlotUName = Elem.Key;
-		if (plotTemp.squareMeters < 0) {
-			vertices2D = MathPolygon::PointsTo2D(plotTemp.vertices);
-			plotTemp.squareMeters = MathPolygon::PolygonArea(vertices2D);
+	for (auto& Elem : polygons) {
+		polygonTemp = Elem.Value;
+		parentUName = Elem.Key;
+		if (polygonTemp.squareMeters < 0) {
+			vertices2D = MathPolygon::PointsTo2D(polygonTemp.vertices);
+			polygonTemp.squareMeters = MathPolygon::PolygonArea(vertices2D);
 		}
-		if (plotTemp.squareMeters > minSquareMetersSkip) {
-			PlotsTemp = { { Elem.Key, Elem.Value } };
-			plotDistance = Elem.Value.averagePlotDistance;
+		if (polygonTemp.squareMeters > minSquareMetersSkip) {
+			verticesTemp = { Elem.Value.vertices };
+			averageChildDiameter = Elem.Value.averageChildDiameter;
 
-			auto [spacesVertices, posCenter, boundsRect] = PlotFillVoronoi::Fill(PlotsTemp, plotDistance);
+			auto [spacesVertices, posCenter, boundsRect] = PlotFillVoronoi::Fill(verticesTemp, averageChildDiameter);
 			// UE_LOG(LogTemp, Display, TEXT("PlotDivide.SubdividePlots spacesVertices.Num %d %s %s"), spacesVertices.Num(), *boundsRect[0].ToString(), *boundsRect[1].ToString());
 
 			// Buffer vertices and remove any spaces that are not valid.
-			if (plotTemp.verticesBuffer != 0) {
-				spacesVertices = PlotFillVoronoi::BufferAndRemoveVertices(spacesVertices, plotTemp.verticesBuffer,
+			if (polygonTemp.verticesBuffer != 0) {
+				spacesVertices = PlotFillVoronoi::BufferAndRemoveVertices(spacesVertices, polygonTemp.verticesBuffer,
 					minRadiusSkip);
 			}
 
 			if (spacesVertices.Num() > 0) {
 				bounds = MathPolygon::Bounds(spacesVertices[0]);
-				newAveragePlotDistance = bounds[1].X - bounds[0].X;
+				newAverageChildDiameter = bounds[1].X - bounds[0].X;
 				for (int ii = 0; ii < spacesVertices.Num(); ii++) {
 					uName = Lodash::GetInstanceId("Plot");
 					center = MathPolygon::GetPolygonCenter(spacesVertices[ii]);
 					vertices2D = MathPolygon::PointsTo2D(spacesVertices[ii]);
 					squareMeters = MathPolygon::PolygonArea(vertices2D);
-					newPlots.Add(uName, FPlot(uName, uName, spacesVertices[ii], center,
-						plotTemp.buildPattern, newAveragePlotDistance, squareMeters, parentPlotUName, {}));
-					// Add this as a child of the existing plot too.
-					Plots[parentPlotUName].childPlotUNames.Add(uName);
+					newPolygons.Add(uName, FPolygon(uName, uName, spacesVertices[ii], center,
+						polygonTemp.type, polygonTemp.shape, polygonTemp.tags, "", squareMeters, parentUName, {},
+						polygonTemp.verticesBuffer, newAverageChildDiameter));
+					// Add this as a child of the existing one too.
+					polygons[parentUName].childUNames.Add(uName);
 					countNew += 1;
 				}
 
 				if (addRoads) {
-					roads = BuildingRoad::BetweenSpaces(spacesVertices, plotTemp.verticesBuffer);
+					roads = BuildingRoad::BetweenSpaces(spacesVertices, polygonTemp.verticesBuffer);
 					// meshTerrain->AddRoads(roads);
 					splineRoad->AddRoads(roads);
 				}
 			}
 		}
-		// Return the parent plot too, as it may have been updated with children.
-		newPlots.Add(parentPlotUName, Plots[parentPlotUName]);
+		// Return the parent too, as it may have been updated with children.
+		newPolygons.Add(parentUName, polygons[parentUName]);
 	}
-	return { newPlots, countNew };
+	return { newPolygons, countNew };
 }
 
-bool PlotDivide::AddRoads(TMap<FString, FPlot> Plots) {
+bool PlotDivide::AddRoads(TMap<FString, FPolygon> polygons) {
 	SplineRoad* splineRoad = SplineRoad::GetInstance();
 	splineRoad->DestroyRoads();
 	TArray<TArray<FVector>> spacesVertices = {};
 	float verticesBuffer = -999;
-	for (auto& Elem : Plots) {
-		// Only do final plots.
-		if (Elem.Value.childPlotUNames.Num() < 1) {
+	for (auto& Elem : polygons) {
+		// Only do final ones.
+		if (Elem.Value.childUNames.Num() < 1) {
 			spacesVertices.Add(Elem.Value.vertices);
 			if (verticesBuffer == -999) {
 				verticesBuffer = Elem.Value.verticesBuffer;

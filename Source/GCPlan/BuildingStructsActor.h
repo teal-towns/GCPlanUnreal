@@ -18,51 +18,51 @@ protected:
 public:	
 	// virtual void Tick(float DeltaTime) override;
 
-	// static FPolygonSimplified PolygonToSimplified(FPolygon polygon);
-	// static FPolygon PolygonFromSimplified(FPolygonSimplified polygonSimplified);
-	// static TMap<FString, FPolygonSimplified> PolygonsToSimplified(TMap<FString, FPolygon> polygons);
-	// static TMap<FString, FPolygon> PolygonsFromSimplified(TMap<FString, FPolygonSimplified> polygonSimplified);
+	static FPolygonSimplified PolygonToSimplified(FPolygon polygon);
+	static FPolygon PolygonFromSimplified(FPolygonSimplified polygonSimplified);
+	static TMap<FString, FPolygonSimplified> PolygonsToSimplified(TMap<FString, FPolygon> polygons);
+	static TMap<FString, FPolygon> PolygonsFromSimplified(TMap<FString, FPolygonSimplified> polygonSimplified);
 
-	static FPlot PolygonToPlot(FPolygon obj);
-	static FPolygon PlotToPolygon(FPlot obj);
-	static TMap<FString, FPlot> PolygonsToPlots(TMap<FString, FPolygon> objs);
-	static TMap<FString, FPolygon> PlotsToPolygons(TMap<FString, FPlot> objs);
+	// static FPlot PolygonToPlot(FPolygon obj);
+	// static FPolygon PlotToPolygon(FPlot obj);
+	// static TMap<FString, FPlot> PolygonsToPlots(TMap<FString, FPolygon> objs);
+	// static TMap<FString, FPolygon> PlotsToPolygons(TMap<FString, FPlot> objs);
 
-	static FPlot UpdatePlotFromPolygon(FPolygon polygon, FPlot plot);
+	// static FPlot UpdatePlotFromPolygon(FPolygon polygon, FPlot plot);
 
-	static FPlotSimplified PlotToSimplified(FPlot plot);
-	static FPlot PlotFromSimplified(FPlotSimplified plotSimplified);
-	static TMap<FString, FPlotSimplified> PlotsToSimplified(TMap<FString, FPlot> plots);
-	static TMap<FString, FPlot> PlotsFromSimplified(TMap<FString, FPlotSimplified> plotSimplified);
+	// static FPlotSimplified PlotToSimplified(FPlot plot);
+	// static FPlot PlotFromSimplified(FPlotSimplified plotSimplified);
+	// static TMap<FString, FPlotSimplified> PlotsToSimplified(TMap<FString, FPlot> plots);
+	// static TMap<FString, FPlot> PlotsFromSimplified(TMap<FString, FPlotSimplified> plotSimplified);
 
 };
 
-USTRUCT()
-struct FMapStringFloat {
-	GENERATED_BODY()
+// USTRUCT()
+// struct FMapStringFloat {
+// 	GENERATED_BODY()
 
-	UPROPERTY()
-	TMap<FString, float> v;
+// 	UPROPERTY()
+// 	TMap<FString, float> v;
 
-	FMapStringFloat() {};
-	FMapStringFloat(TMap<FString, float> v_) {
-		v = v_;
-	};
-};
+// 	FMapStringFloat() {};
+// 	FMapStringFloat(TMap<FString, float> v_) {
+// 		v = v_;
+// 	};
+// };
 
 USTRUCT()
 struct FBuildingBlueprintJsonData {
 	GENERATED_BODY()
 
 	UPROPERTY()
-	TArray<FMapStringFloat> openEdgePositions;
+	TArray<FString> openEdgePositions;
 	UPROPERTY()
 	int floor;
 	UPROPERTY()
 	FString edgeType;
 
 	FBuildingBlueprintJsonData() {};
-	FBuildingBlueprintJsonData(TArray<FMapStringFloat> openEdgePositions_, int floor_, FString edgeType_) {
+	FBuildingBlueprintJsonData(TArray<FString> openEdgePositions_, int floor_, FString edgeType_) {
 		openEdgePositions = openEdgePositions_, floor = floor_, edgeType = edgeType_;
 	};
 };
@@ -134,12 +134,18 @@ struct FLandGameObject {
 
 	UPROPERTY()
 	FString clone_name;
+	// UPROPERTY()
+	// TMap<FString, float> position;
+	// UPROPERTY()
+	// TMap<FString, float> rotation;
+	// UPROPERTY()
+	// TMap<FString, float> scale;
 	UPROPERTY()
-	TMap<FString, float> position;
+	FVector position;
 	UPROPERTY()
-	TMap<FString, float> rotation;
+	FRotator rotation;
 	UPROPERTY()
-	TMap<FString, float> scale;
+	FVector scale;
 	UPROPERTY()
 	TArray<FString> child_renames;
 	UPROPERTY()
@@ -150,24 +156,29 @@ struct FLandGameObject {
 		FVector scale_, TArray<FString> child_renames_, FString jsonDataString_) {
 		clone_name = clone_name_, child_renames = child_renames_, jsonDataString = jsonDataString_;
 		// compile errors - can we use static functions in constructors, or no?
-		// position = DataConvert::VectorToDict(position_);
-		// rotation = DataConvert::RotatorToDict(rotation_);
-		// scale = DataConvert::VectorToDict(scale_);
-		position = TMap<FString, float> {
-			{ "x", (float)position_.X },
-			{ "y", (float)position_.Y },
-			{ "z", (float)position_.Z },
-		};
-		rotation = TMap<FString, float> {
-			{ "x", (float)rotation_.Roll },
-			{ "y", (float)rotation_.Pitch },
-			{ "z", (float)rotation_.Yaw },
-		};
-		scale = TMap<FString, float> {
-			{ "x", (float)scale_.X },
-			{ "y", (float)scale_.Y },
-			{ "z", (float)scale_.Z },
-		};
+		// position = DataConvert::VectorToString(position_);
+		// rotation = DataConvert::RotatorToString(rotation_);
+		// scale = DataConvert::VectorToString(scale_);
+
+		// position = TMap<FString, float> {
+		// 	{ "x", (float)position_.X },
+		// 	{ "y", (float)position_.Y },
+		// 	{ "z", (float)position_.Z },
+		// };
+		// rotation = TMap<FString, float> {
+		// 	{ "x", (float)rotation_.Roll },
+		// 	{ "y", (float)rotation_.Pitch },
+		// 	{ "z", (float)rotation_.Yaw },
+		// };
+		// scale = TMap<FString, float> {
+		// 	{ "x", (float)scale_.X },
+		// 	{ "y", (float)scale_.Y },
+		// 	{ "z", (float)scale_.Z },
+		// };
+
+		position = position_;
+		rotation = rotation_;
+		scale = scale_;
 	};
 };
 
@@ -202,8 +213,92 @@ struct FBuildingBlueprint {
 	};
 };
 
+// USTRUCT()
+// struct FPlot {
+// 	GENERATED_BODY()
+
+// 	UPROPERTY()
+// 	FString _id;
+// 	UPROPERTY()
+// 	FString uName;
+// 	// UPROPERTY()
+// 	// TArray<FVector> vertices;
+// 	// UPROPERTY()
+// 	// FVector posCenter;
+// 	UPROPERTY()
+// 	FString buildPattern;
+// 	// UPROPERTY()
+// 	// float averagePlotDistance;
+// 	// UPROPERTY()
+// 	// float squareMeters;
+// 	UPROPERTY()
+// 	FString parentPlotUName;
+// 	UPROPERTY()
+// 	TArray<FString> childPlotUNames;
+// 	UPROPERTY()
+// 	float verticesBuffer;
+
+// 	FPlot() {};
+// 	FPlot(FString id_, FString uName_,
+// 		FString buildPattern_ = "", float averagePlotDistance_ = 100,
+// 		FString parentPlotUName_ = "", TArray<FString> childPlotUNames_ = {}, float verticesBuffer_ = -25) {
+// 		_id = id_;
+// 		uName = uName_;
+// 		// vertices = vertices_;
+// 		// posCenter = posCenter_;
+// 		buildPattern = buildPattern_;
+// 		averagePlotDistance = averagePlotDistance_;
+// 		// squareMeters = squareMeters_;
+// 		parentPlotUName = parentPlotUName_;
+// 		childPlotUNames = childPlotUNames_;
+// 		verticesBuffer = verticesBuffer_;
+// 	};
+// };
+
+// USTRUCT()
+// struct FPlotSimplified {
+// 	GENERATED_BODY()
+
+// 	UPROPERTY()
+// 	FString _id;
+// 	UPROPERTY()
+// 	FString uName;
+// 	UPROPERTY()
+// 	TArray<FMapStringFloat> vertices;
+// 	UPROPERTY()
+// 	FMapStringFloat posCenter;
+// 	UPROPERTY()
+// 	FString buildPattern;
+// 	UPROPERTY()
+// 	float averagePlotDistance;
+// 	UPROPERTY()
+// 	float squareMeters;
+// 	UPROPERTY()
+// 	FString parentPlotUName;
+// 	UPROPERTY()
+// 	TArray<FString> childPlotUNames;
+// 	UPROPERTY()
+// 	float verticesBuffer;
+
+// 	FPlotSimplified() {};
+// 	FPlotSimplified(FString id_, FString uName_, TArray<FMapStringFloat> vertices_, FMapStringFloat posCenter_,
+// 		FString buildPattern_ = "", float averagePlotDistance_ = 100, float squareMeters_ = -1,
+// 		FString parentPlotUName_ = "", TArray<FString> childPlotUNames_ = {}, float verticesBuffer_ = -25) {
+// 		_id = id_;
+// 		uName = uName_;
+// 		vertices = vertices_;
+// 		posCenter = posCenter_;
+// 		buildPattern = buildPattern_;
+// 		averagePlotDistance = averagePlotDistance_;
+// 		squareMeters = squareMeters_;
+// 		parentPlotUName = parentPlotUName_;
+// 		childPlotUNames = childPlotUNames_;
+// 		verticesBuffer = verticesBuffer_;
+// 	};
+// };
+
 USTRUCT()
-struct FPlot {
+struct FRoad {
 	GENERATED_BODY()
 
 	UPROPERTY()
@@ -211,78 +306,16 @@ struct FPlot {
 	UPROPERTY()
 	FString uName;
 	UPROPERTY()
-	TArray<FVector> vertices;
+	float widthMeters;
 	UPROPERTY()
-	FVector posCenter;
-	UPROPERTY()
-	FString buildPattern;
-	UPROPERTY()
-	float averagePlotDistance;
-	UPROPERTY()
-	float squareMeters;
-	UPROPERTY()
-	FString parentPlotUName;
-	UPROPERTY()
-	TArray<FString> childPlotUNames;
-	UPROPERTY()
-	float verticesBuffer;
+	float laneCount;
 
-	FPlot() {};
-	FPlot(FString id_, FString uName_, TArray<FVector> vertices_, FVector posCenter_,
-		FString buildPattern_ = "", float averagePlotDistance_ = 100, float squareMeters_ = -1,
-		FString parentPlotUName_ = "", TArray<FString> childPlotUNames_ = {}, float verticesBuffer_ = -25) {
+	FRoad() {};
+	FRoad(FString id_, FString uName_, float widthMeters_, float laneCount_ = 1) {
 		_id = id_;
 		uName = uName_;
-		vertices = vertices_;
-		posCenter = posCenter_;
-		buildPattern = buildPattern_;
-		averagePlotDistance = averagePlotDistance_;
-		squareMeters = squareMeters_;
-		parentPlotUName = parentPlotUName_;
-		childPlotUNames = childPlotUNames_;
-		verticesBuffer = verticesBuffer_;
-	};
-};
-
-USTRUCT()
-struct FPlotSimplified {
-	GENERATED_BODY()
-
-	UPROPERTY()
-	FString _id;
-	UPROPERTY()
-	FString uName;
-	UPROPERTY()
-	TArray<FMapStringFloat> vertices;
-	UPROPERTY()
-	FMapStringFloat posCenter;
-	UPROPERTY()
-	FString buildPattern;
-	UPROPERTY()
-	float averagePlotDistance;
-	UPROPERTY()
-	float squareMeters;
-	UPROPERTY()
-	FString parentPlotUName;
-	UPROPERTY()
-	TArray<FString> childPlotUNames;
-	UPROPERTY()
-	float verticesBuffer;
-
-	FPlotSimplified() {};
-	FPlotSimplified(FString id_, FString uName_, TArray<FMapStringFloat> vertices_, FMapStringFloat posCenter_,
-		FString buildPattern_ = "", float averagePlotDistance_ = 100, float squareMeters_ = -1,
-		FString parentPlotUName_ = "", TArray<FString> childPlotUNames_ = {}, float verticesBuffer_ = -25) {
-		_id = id_;
-		uName = uName_;
-		vertices = vertices_;
-		posCenter = posCenter_;
-		buildPattern = buildPattern_;
-		averagePlotDistance = averagePlotDistance_;
-		squareMeters = squareMeters_;
-		parentPlotUName = parentPlotUName_;
-		childPlotUNames = childPlotUNames_;
-		verticesBuffer = verticesBuffer_;
+		widthMeters = widthMeters_;
+		laneCount = laneCount_;
 	};
 };
 
@@ -329,58 +362,102 @@ struct FPolygon {
 	UPROPERTY()
 	FString type;
 	UPROPERTY()
-	int closedLoop;
+	// polygon, path, point
+	FString shape;
+	// UPROPERTY()
+	// int closedLoop;
+	// UPROPERTY()
+	// int isPoint;
+	UPROPERTY()
+	TArray<FString> tags;
 	UPROPERTY()
 	FString jsonDataString;
+	UPROPERTY()
+	float squareMeters;
+	UPROPERTY()
+	FString parentUName;
+	UPROPERTY()
+	TArray<FString> childUNames;
+	UPROPERTY()
+	float verticesBuffer;
+	UPROPERTY()
+	float averageChildDiameter;
 
 	FPolygon() {};
 	FPolygon(FString id_, FString uName_, TArray<FVector> vertices_, FVector posCenter_,
-		FString type_ = "", int closedLoop_ = -1, FString jsonDataString_ = "") {
+		FString type_ = "", FString shape_ = "", TArray<FString> tags_ = {},
+		FString jsonDataString_ = "", float squareMeters_ = -1,
+		FString parentUName_ = "", TArray<FString> childUNames_ = {}, float verticesBuffer_ = -25,
+		float averageChildDiameter_ = 100) {
 		_id = id_;
 		uName = uName_;
 		vertices = vertices_;
 		posCenter = posCenter_;
 		type = type_;
-		if (closedLoop_ == -1) {
-			closedLoop = (type == "road") ? 0 : 1;
-		} else {
-			closedLoop = closedLoop_;
-		}
+		// closedLoop = closedLoop_;
+		// isPoint = isPoint_;
+		shape = shape_;
+		tags = tags_;
 		jsonDataString = jsonDataString_;
+		squareMeters = squareMeters_;
+		parentUName = parentUName_;
+		childUNames = childUNames_;
+		verticesBuffer = verticesBuffer_;
+		averageChildDiameter = averageChildDiameter_;
 	};
 };
 
-// USTRUCT()
-// struct FPolygonSimplified {
-// 	GENERATED_BODY()
+USTRUCT()
+struct FPolygonSimplified {
+	GENERATED_BODY()
 
-// 	UPROPERTY()
-// 	FString _id;
-// 	UPROPERTY()
-// 	FString uName;
-// 	UPROPERTY()
-// 	TArray<FMapStringFloat> vertices;
-// 	UPROPERTY()
-// 	FMapStringFloat posCenter;
-// 	UPROPERTY()
-// 	FString type;
-// 	UPROPERTY()
-// 	int closedLoop;
-// 	UPROPERTY()
-// 	FString jsonDataString;
+	UPROPERTY()
+	FString _id;
+	UPROPERTY()
+	FString uName;
+	UPROPERTY()
+	TArray<FString> vertices;
+	UPROPERTY()
+	FString posCenter;
+	UPROPERTY()
+	FString type;
+	UPROPERTY()
+	FString shape;
+	UPROPERTY()
+	TArray<FString> tags;
+	UPROPERTY()
+	FString jsonDataString;
+	UPROPERTY()
+	float squareMeters;
+	UPROPERTY()
+	FString parentUName;
+	UPROPERTY()
+	TArray<FString> childUNames;
+	UPROPERTY()
+	float verticesBuffer;
+	UPROPERTY()
+	float averageChildDiameter;
 
-// 	FPolygonSimplified() {};
-// 	FPolygonSimplified(FString id_, FString uName_, TArray<FMapStringFloat> vertices_, FMapStringFloat posCenter_,
-// 		FString type_ = "", int closedLoop_ = 1, FString jsonDataString_ = "") {
-// 		_id = id_;
-// 		uName = uName_;
-// 		vertices = vertices_;
-// 		posCenter = posCenter_;
-// 		type = type_;
-// 		closedLoop = closedLoop_;
-// 		jsonDataString = jsonDataString_;
-// 	};
-// };
+	FPolygonSimplified() {};
+	FPolygonSimplified(FString id_, FString uName_, TArray<FString> vertices_, FString posCenter_,
+		FString type_ = "", FString shape_ = "", TArray<FString> tags_ = {}, FString jsonDataString_ = "",
+		float squareMeters_ = -1, FString parentUName_ = "", TArray<FString> childUNames_ = {},
+		float verticesBuffer_ = -25, float averageChildDiameter_ = 100) {
+		_id = id_;
+		uName = uName_;
+		vertices = vertices_;
+		posCenter = posCenter_;
+		type = type_;
+		shape = shape_;
+		tags = tags_;
+		jsonDataString = jsonDataString_;
+		squareMeters = squareMeters_;
+		parentUName = parentUName_;
+		childUNames = childUNames_;
+		verticesBuffer = verticesBuffer_;
+		averageChildDiameter = averageChildDiameter_;
+	};
+};
 
 USTRUCT()
 struct FVerticesEditSelectedObject {

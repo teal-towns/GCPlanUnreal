@@ -18,9 +18,9 @@ void ADataStructsActor::BeginPlay()
 // }
 
 FDataProjectJsonSimplified ADataStructsActor::ProjectToSimplified(FDataProjectJson data) {
-	return FDataProjectJsonSimplified(ABuildingStructsActor::PlotsToSimplified(data.plots));
+	return FDataProjectJsonSimplified(ABuildingStructsActor::PolygonsToSimplified(data.polygons));
 }
 
 FDataProjectJson ADataStructsActor::ProjectFromSimplified(FDataProjectJsonSimplified dataSimplified) {
-	return FDataProjectJson(ABuildingStructsActor::PlotsFromSimplified(dataSimplified.plots));
+	return FDataProjectJson(ABuildingStructsActor::PolygonsFromSimplified(dataSimplified.polygons));
 }
