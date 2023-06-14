@@ -13,6 +13,7 @@
 #include "Building/BuildingFlowerHomes.h"
 #include "Common/MathPolygon.h"
 #include "Common/UnrealGlobal.h"
+#include "Draw/DrawVertices.h"
 // #include "Landscape/HeightMap.h"
 #include "Landscape/LandNature.h"
 #include "Landscape/MeshTerrain.h"
@@ -100,25 +101,29 @@ void ALandProjectActor::Init() {
 		this->InitSocketOn();
 		this->Login();
 
-		PlotData* plotData = PlotData::GetInstance();
-		TMap<FString, FPlot> plots = plotData->LoadAndSubdividePlots();
-
 		VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
-		verticesEdit->ImportPolygons(ABuildingStructsActor::PlotsToPolygons(plots));
-		UE_LOG(LogTemp, Display, TEXT("init %d"), plots.Num());
-		verticesEdit->AddOnSavePolygon("LandProjectActor", [this, verticesEdit, unrealGlobal, plotData](FString uName, FPolygon polygon) {
-			UE_LOG(LogTemp, Display, TEXT("on save polygon uName %s type %s"), *uName, *polygon.type);
-			// TMap<FString, FPolygon> polygons = verticesEdit->ExportPolygonsByType(type);
-			if (polygon.type == "plot") {
-				plotData->SavePlotFromPolygon(uName, polygon);
-			}
-		});
-		verticesEdit->AddOnDeletePolygon("LandProjectActor", [this, verticesEdit, unrealGlobal, plotData](FString uName, FString type) {
-			UE_LOG(LogTemp, Display, TEXT("on delete polygon uName %s type %s"), *uName, *type);
-			if (type == "plot") {
-				plotData->DeletePlot(uName);
-			}
-		});
+		verticesEdit->LoadFromFiles();
+		verticesEdit->CheckSubdividePolygons("plot");
+
+		// PlotData* plotData = PlotData::GetInstance();
+		// TMap<FString, FPlot> plots = plotData->LoadAndSubdividePlots();
+
+		// VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
+		// verticesEdit->ImportPolygons(ABuildingStructsActor::PlotsToPolygons(plots));
+		// UE_LOG(LogTemp, Display, TEXT("init %d"), plots.Num());
+		// verticesEdit->AddOnSavePolygon("LandProjectActor", [this, verticesEdit, unrealGlobal, plotData](FString uName, FPolygon polygon) {
+		// 	UE_LOG(LogTemp, Display, TEXT("on save polygon uName %s type %s"), *uName, *polygon.type);
+		// 	// TMap<FString, FPolygon> polygons = verticesEdit->ExportPolygonsByType(type);
+		// 	if (polygon.type == "plot") {
+		// 		plotData->SavePlotFromPolygon(uName);
+		// 	}
+		// });
+		// verticesEdit->AddOnDeletePolygon("LandProjectActor", [this, verticesEdit, unrealGlobal, plotData](FString uName, FString type) {
+		// 	UE_LOG(LogTemp, Display, TEXT("on delete polygon uName %s type %s"), *uName, *type);
+		// 	if (type == "plot") {
+		// 		plotData->DeletePlot(uName);
+		// 	}
+		// });
 	}
 }
 
@@ -136,9 +141,9 @@ void ALandProjectActor::EditorTakeAction() {
 	unrealGlobal->InitAll(GetWorld());
 
 	if (EditorParams.Action == EditorActionsLP::PLOTSREMOVECHILDREN) {
-		PlotData* plotData = PlotData::GetInstance();
-		plotData->LoadPlots();
-		plotData->RemoveChildren();
+		VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
+		verticesEdit->LoadFromFiles();
+		verticesEdit->RemoveChildren("plot");
 		UE_LOG(LogTemp, Display, TEXT("Plots children cleared"));
 	}
 }
@@ -162,41 +167,5 @@ void ALandProjectActor::EditorGenerate() {
 	// this->InitSocketOn();
 	// this->Login();
 
-	PlotData* plotData = PlotData::GetInstance();
-	TMap<FString, FPlot> plots = plotData->LoadAndSubdividePlots();
-
-	// VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
-	// verticesEdit->ImportPolygons(ABuildingStructsActor::PlotsToPolygons(plots));
-
-	TArray<FLand> lands = PlotBuild::CreateLands(plots);
-	PlotBuild::DrawLands(lands);
-
-	// MeshTerrain* meshTerrain = MeshTerrain::GetInstance();
-	SplineRoad* splineRoad = SplineRoad::GetInstance();
-	// meshTerrain->DrawRoads();
-	splineRoad->DrawRoads();
-
-	// Place nature on land.
-	if (unrealGlobal->_settings->performanceQualityLevel >= 8) {
-		LandNature::PlaceNature(plots);
-	}
-
-
-	// FVector posCurrentGround = FVector(200,-650,0);
-	// float z = heightMap->GetTerrainHeightAtPoint(posCurrentGround);
-	// TMap<FString, FPlot> Plots = {
-	// 	// { "plot1", { "id1", "plot1", { FVector(269.0, -767, 82), FVector(159, -85, 152), FVector(962, -85, 153), FVector(962, -586, 70) }, FVector(0,0,0) } },
-	// 	// { "plot2", { "id2", "plot2", { FVector(200.0, -700, 100), FVector(150, -500, 100), FVector(300, -500, 100), FVector(350, -500, 100) }, FVector(0,0,0) } },
-	// 	// { "plot3", { "id3", "plot3", { FVector(200.0, -800, z), FVector(50, -600, z), FVector(225, -500, z), FVector(350, -700, z) }, FVector(200,-650,z) } },
-	// 	// { "plot4", { "id4", "plot4", { FVector(200.0, -1000, z), FVector(0, -600, z), FVector(225, -400, z), FVector(500, -700, z) }, FVector(200,-650,z),
-	// 	// 	"flowerHomes", 150 } },
-	// 	{ "marinaRings", {"id5", "plot5",
-	// 		{ FVector(-409, -689, z), FVector(-201, -484, z), FVector(-95, -570, z), FVector(10, -554, z), FVector(-56, -384, z), FVector(-200, -200, z), FVector(-520, -580, z) },
-	// 		FVector(0,0,z), "ring", 80 }
-	// 	},
-	// 	{ "marinaVillage", {"id6", "plot6",
-	// 		{ FVector(114, -444, z), FVector(-182, -187, z), FVector(-284, 414, z), FVector(524, 421, z) },
-	// 		FVector(0,0,z), "flowerHomes", 150 }
-	// 	},
-	// };
+	DrawVertices::LoadVertices();
 }

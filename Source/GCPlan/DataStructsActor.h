@@ -88,12 +88,6 @@ struct FDataProject {
 	FString msg;
 	UPROPERTY()
 	TArray<FLand> lands;
-
-	// TODO
-    // public ProjectClass project;
-    // public List<PlotClass> plots;
-    // public List<SupercellClass> supercells;
-    // public List<PieceDBClass> pieces;
 };
 
 USTRUCT()
@@ -101,11 +95,11 @@ struct FDataProjectJsonSimplified {
 	GENERATED_BODY()
 
 	UPROPERTY()
-	TMap<FString, FPlotSimplified> plots;
+	TMap<FString, FPolygonSimplified> polygons;
 
 	FDataProjectJsonSimplified() {};
-	FDataProjectJsonSimplified(TMap<FString, FPlotSimplified> plots_) {
-		plots = plots_;
+	FDataProjectJsonSimplified(TMap<FString, FPolygonSimplified> polygons_) {
+		polygons = polygons_;
 	};
 };
 
@@ -114,13 +108,26 @@ struct FDataProjectJson {
 	GENERATED_BODY()
 
 	UPROPERTY()
-	TMap<FString, FPlot> plots;
+	TMap<FString, FPolygon> polygons;
 
 	FDataProjectJson() {};
-	FDataProjectJson(TMap<FString, FPlot> plots_) {
-		plots = plots_;
+	FDataProjectJson(TMap<FString, FPolygon> polygons_) {
+		polygons = polygons_;
 	};
 };
+
+// USTRUCT()
+// struct FDataPlot {
+// 	GENERATED_BODY()
+
+// 	UPROPERTY()
+// 	TMap<FString, FPlot> plots;
+
+// 	FDataPlot() {};
+// 	FDataPlot(TMap<FString, FPlot> plots_) {
+// 		plots = plots_;
+// 	};
+// }
 
 USTRUCT()
 struct FContentMeshModel {

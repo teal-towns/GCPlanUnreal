@@ -8,5 +8,5 @@ public:
 	LandNature();
 	~LandNature();
 
-	static void PlaceNature(TMap<FString, FPlot> plots);
+	static void PlaceNature();
 };

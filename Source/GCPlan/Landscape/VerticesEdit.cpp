@@ -1,17 +1,19 @@
 #include "VerticesEdit.h"
 
 #include "../BuildingStructsActor.h"
+#include "../Common/DataConvert.h"
 #include "../Common/Lodash.h"
 #include "../Common/MathPolygon.h"
 #include "../Common/MathVector.h"
 #include "../Common/UnrealGlobal.h"
+#include "../Data/DataFileProject.h"
 #include "../Landscape/HeightMap.h"
 #include "../Mesh/InstancedMesh.h"
+#include "../Plot/PlotDivide.h"
 #include "../ProceduralModel/PMBase.h"
 
 VerticesEdit* VerticesEdit::pinstance_{nullptr};
 std::mutex VerticesEdit::mutex_;
-// AStaticMeshActor* VerticesEdit::_verticesEditParentActor;
 
 VerticesEdit::VerticesEdit() {
 }
@@ -23,16 +25,40 @@ VerticesEdit *VerticesEdit::GetInstance() {
 	std::lock_guard<std::mutex> lock(mutex_);
 	if (pinstance_ == nullptr) {
 		pinstance_ = new VerticesEdit();
-
-		// PMBase* pmBase = PMBase::GetInstance();
-		// FActorSpawnParameters spawnParams;
-		// _verticesEditParentActor = pmBase->CreateActor("VerticesEdit", FVector(0,0,0), FRotator(0,0,0), spawnParams);
 	}
 	return pinstance_;
 }
 
 void VerticesEdit::SetType(FString type) {
 	_currentType = type;
+}
+
+void VerticesEdit::SetShape(FString shape) {
+	_currentShape = shape;
+}
+
+void VerticesEdit::SetTags(TArray<FString> tags) {
+	_currentTags = tags;
+}
+
+void VerticesEdit::SetFilterTypes(TArray<FString> filterTypes) {
+	_currentFilterTypes = filterTypes;
+	Hide();
+	if (filterTypes.Num() < 1) {
+		DrawAll();
+	} else {
+		DrawItemsByTypes(_currentFilterTypes);
+	}
+}
+
+TMap<FString, FPolygon> VerticesEdit::FilterByTypes(TArray<FString> types) {
+	TMap<FString, FPolygon> items = {};
+	for (auto& Elem : _items) {
+		if (types.Contains(Elem.Value.type)) {
+			items.Add(Elem.Key, Elem.Value);
+		}
+	}
+	return items;
 }
 
 void VerticesEdit::DestroyItems() {
@@ -51,17 +77,15 @@ void VerticesEdit::CleanUp() {
 	_lastWorldLocation = FVector(0,0,0);
 	_timeMouseDown = -1;
 	_mode = "";
+	_currentType = "";
+	_currentShape = "";
+	_currentTags = {};
+	_currentFilterTypes = {};
 
 	pinstance_ = nullptr;
 
 	_listenersSavePolygon.Empty();
 	_listenersDeletePolygon.Empty();
-
-	// _listenersDeleteVertex.Empty();
-	// _listenersMoveVertex.Empty();
-	// _listenersAddVertex.Empty();
-	// _listenersDeleteShape.Empty();
-	// _listenersMoveShape.Empty();
 }
 
 void VerticesEdit::Hide() {
@@ -69,12 +93,6 @@ void VerticesEdit::Hide() {
 	InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
 	instancedMesh->ClearInstancesBulk({"VertexWhite", "EdgeBlack", "EdgeBlue", "EdgeRed"});
 }
-
-// void VerticesEdit::Show() {
-// 	for (auto& Elem : _items) {
-// 		DrawItem(Elem.Value.uName);
-// 	}
-// }
 
 void VerticesEdit::SetMode(FString mode) {
 	// If done adding validate and either remove or re-render (close).
@@ -101,7 +119,6 @@ void VerticesEdit::Trash() {
 }
 
 void VerticesEdit::OnMouseDown(FVector worldLocation) {
-	// UE_LOG(LogTemp, Display, TEXT("mouse down %s"), *worldLocation.ToString());
 	_mouseDown = true;
 	_mouseDownStartLocation = worldLocation;
 	_timeMouseDown = FPlatformTime::Seconds();
@@ -113,9 +130,7 @@ void VerticesEdit::OnMouseDown(FVector worldLocation) {
 }
 
 void VerticesEdit::OnMouseUp(FVector worldLocation) {
-	// UE_LOG(LogTemp, Display, TEXT("mouse up %s"), *worldLocation.ToString());
-	if (_selectedObject) {
-		// UE_LOG(LogTemp, Display, TEXT("mouse up %s %s %d"), *_selectedObject->uName, *_selectedObject->objectType, _selectedObject->objectIndex);
+	if (_selectedObject && _mode != "add") {
 		if (_selectedObject->objectType == "edge") {
 			AddVertexOnEdge(_selectedObject->uName, worldLocation);
 		}
@@ -128,6 +143,10 @@ void VerticesEdit::OnMouseUp(FVector worldLocation) {
 		SavePolygon(_selectedObject->uName);
 	} else if (_mode == "add") {
 		AddVertex(worldLocation);
+		if (_currentShape == "point") {
+			SavePolygon(_currentUName);
+			_currentUName = "";
+		}
 	}
 	// Reset.
 	_mouseDown = false;
@@ -138,7 +157,7 @@ void VerticesEdit::OnMouseUp(FVector worldLocation) {
 }
 
 void VerticesEdit::OnMouseMove(FVector worldLocation) {
-	if (worldLocation != _lastWorldLocation) {
+	if (worldLocation != _lastWorldLocation && _mode != "add") {
 		_lastWorldLocation = worldLocation;
 		if (_dragging && _selectedObject) {
 			if (_selectedObject->objectType == "vertex") {
@@ -155,14 +174,10 @@ void VerticesEdit::OnMouseMove(FVector worldLocation) {
 }
 
 void VerticesEdit::StopDrag() {
-	// if (_dragging) {
-	// 	UE_LOG(LogTemp, Display, TEXT("StopDrag"));
-	// }
 	_dragging = false;
 }
 
 void VerticesEdit::StartDrag() {
-	// UE_LOG(LogTemp, Display, TEXT("StartDrag"));
 	_dragging = true;
 }
 
@@ -194,7 +209,7 @@ FVerticesEditSelectedObject* VerticesEdit::GetItemByLocation(FVector worldLocati
 				break;
 			}
 			// Edges
-			if (!found && vv < verticesCount - 1 || Elem.Value.closedLoop > 0) {
+			if (!found && vv < verticesCount - 1 || Elem.Value.shape == "polygon") {
 				indexNext = (vv < verticesCount - 1) ? vv + 1 : 0;
 				pointNext = Elem.Value.vertices[indexNext];
 				// Make rectangle (width along line in between vertices).
@@ -225,7 +240,6 @@ FVerticesEditSelectedObject* VerticesEdit::GetItemByLocation(FVector worldLocati
 		}
 	}
 	if (found) {
-		// UE_LOG(LogTemp, Display, TEXT("selectedObject %s %s %d"), *selectedObject->uName, *selectedObject->objectType, selectedObject->objectIndex); 
 		_selectedObject = selectedObject;
 		_lastSelectedObject = selectedObject;
 	}
@@ -245,36 +259,47 @@ void VerticesEdit::CheckComputeCenter(FString uName) {
 	}
 }
 
-FPolygon VerticesEdit::GetOrCreateCurrent() {
+std::tuple<FPolygon, bool> VerticesEdit::GetOrCreateCurrent() {
 	if (_currentUName != "" && _items.Contains(_currentUName)) {
-		return _items[_currentUName];
+		return { _items[_currentUName], true };
+	}
+	if (_currentType.Len() < 1 || _currentShape.Len() < 1) {
+		UE_LOG(LogTemp, Warning, TEXT("VerticesEdit.GetOrCreateCurrent missing type [%s] and / or shape [%s], skipping"),
+			*_currentType, *_currentShape);
+		return { FPolygon(), false };
 	}
 	_currentUName = Lodash::GetInstanceId("VerticesEdit_");
 	TArray<FVector> vertices = {};
-	_items.Add(_currentUName, FPolygon(_currentUName, _currentUName, vertices, FVector(0,0,0), _currentType));
+	_items.Add(_currentUName, FPolygon(_currentUName, _currentUName, vertices, FVector(0,0,0), _currentType,
+		_currentShape, _currentTags));
 	_itemsActors.Add(_currentUName, FVerticesEditActor(_currentUName));
-	return _items[_currentUName];
+	return { _items[_currentUName], true };
+}
+
+FString VerticesEdit::GetEdgeMesh(FString type) {
+	return "EdgeBlue";
 }
 
 void VerticesEdit::AddVertex(FVector posAdd) {
-	FPolygon item = GetOrCreateCurrent();
-	FString uName = item.uName;
-	_items[uName].vertices.Add(posAdd);
+	auto [item, valid] = GetOrCreateCurrent();
+	if (valid) {
+		FString uName = item.uName;
+		_items[uName].vertices.Add(posAdd);
 
-	InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
-	int index = instancedMesh->CreateInstance("VertexWhite", posAdd, FRotator(0,0,0), _displayScale);
-	_itemsActors[uName].verticesInstanceIndices.Add(index);
-	if (_items[uName].vertices.Num() > 1) {
-		int vertexIndex = _items[uName].vertices.Num() - 1;
-		DrawEdge(uName, _items[uName].vertices[(vertexIndex - 1)], _items[uName].vertices[vertexIndex]);
+		InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
+		int index = instancedMesh->CreateInstance("VertexWhite", posAdd, FRotator(0,0,0), _displayScale);
+		_itemsActors[uName].verticesInstanceIndices.Add(index);
+		if (_items[uName].vertices.Num() > 1) {
+			int vertexIndex = _items[uName].vertices.Num() - 1;
+			DrawEdge(uName, _items[uName].vertices[(vertexIndex - 1)], _items[uName].vertices[vertexIndex]);
+		}
+
+		CheckComputeCenter(uName);
 	}
-
-	CheckComputeCenter(uName);
 }
 
 void VerticesEdit::AddVertexOnEdge(FString uName, FVector worldLocation) {
 	auto [insertIndex, insertPos] = MathPolygon::FindNewVertexOnEdge(_items[uName].vertices, worldLocation);
-	// UE_LOG(LogTemp, Display, TEXT("add on edge %s %s %s"), *uName, insertIndex, *insertPos.ToString(), *worldLocation.ToString());
 	if (insertIndex > -1) {
 		HeightMap* heightMap = HeightMap::GetInstance();
 		insertPos.Z = heightMap->GetTerrainHeightAtPoint(FVector(insertPos.X, insertPos.Y, 0));
@@ -306,16 +331,9 @@ void VerticesEdit::MoveVertex(FString uName, int index, FVector newLocation) {
 
 		InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
 
-		// FString msg = "";
-		// for (int ii = 0; ii < _itemsActors[uName].verticesInstanceIndices.Num(); ii++) {
-		// 	msg += FString::FromInt(_itemsActors[uName].verticesInstanceIndices[ii]) + " ";
-		// }
-		// UE_LOG(LogTemp, Display, TEXT("MoveVertex instances %d %s"), index, *msg);
-
 		_itemsActors[uName].verticesInstanceIndices[index] = instancedMesh->SaveInstance("VertexWhite",
 			_itemsActors[uName].verticesInstanceIndices[index], newLocation,
 			FRotator(0,0,0), _displayScale);
-		// UE_LOG(LogTemp, Display, TEXT("MoveVertex new index val %d %s"), _itemsActors[uName].verticesInstanceIndices[index], *newLocation.ToString());
 
 		DrawAllEdges(uName);
 		CheckComputeCenter(uName);
@@ -331,19 +349,38 @@ void VerticesEdit::HidePolygon(FString uName) {
 		instancedMesh->RemoveInstances("VertexWhite", removeIndices);
 		// edges
 		removeIndices = _itemsActors[uName].edgesInstanceIndices;
-		instancedMesh->RemoveInstances(_meshMapEdge[_items[uName].type], removeIndices);
+		instancedMesh->RemoveInstances(GetEdgeMesh(_items[uName].type), removeIndices);
 		_itemsActors.Remove(uName);
 	}
 }
 
-void VerticesEdit::DeletePolygon(FString uName) {
+void VerticesEdit::DeletePolygon(FString uName, bool deleteChildren, bool save) {
+	FString parentUName;
 	FString type = _items[uName].type;
 	HidePolygon(uName);
+
+	// Remove from associated ones too.
+	parentUName = _items[uName].parentUName;
+	if (parentUName.Len() && _items.Contains(parentUName) &&
+		_items[parentUName].childUNames.Contains(uName)) {
+		_items[parentUName].childUNames.Remove(uName);
+	}
+	if (deleteChildren && _items[uName].childUNames.Num() > 0) {
+		for (int ii = 0; ii < _items[uName].childUNames.Num(); ii++) {
+			DeletePolygon(_items[uName].childUNames[ii], true);
+		}
+	}
+
 	_items.Remove(uName);
+
 	if (_selectedObject && _selectedObject->uName == uName) {
 		_selectedObject = nullptr;
 		_lastSelectedObject = nullptr;
 		_currentUName = "";
+	}
+
+	if (save) {
+		SaveToFile(type);
 	}
 
 	for (auto& Elem : _listenersDeletePolygon) {
@@ -391,19 +428,18 @@ void VerticesEdit::DrawEdge(FString uName, FVector start, FVector end) {
 	// TODO - this is incorrect
 	// float angleY = MathVector::SignedAngle(FVector(1,0,0), pathLine, FVector(0,1,0));
 	float angleY = 0;
-	// UE_LOG(LogTemp, Display, TEXT("DrawEdge edgeLength %f angleZ %f angleY %f"), edgeLength, angleZ, angleY);
 	FRotator rotation = FRotator(angleY, angleZ, 0);
-	int index = instancedMesh->CreateInstance(_meshMapEdge[type], location, rotation, scale);
+	int index = instancedMesh->CreateInstance(GetEdgeMesh(type), location, rotation, scale);
 	_itemsActors[uName].edgesInstanceIndices.Add(index);
 }
 
 void VerticesEdit::RemoveAllEdges(FString uName) {
-	if (_items.Contains(uName) && _meshMapEdge.Contains(_items[uName].type)) {
+	if (_items.Contains(uName) && GetEdgeMesh(_items[uName].type) != "") {
 		InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
-		instancedMesh->RemoveInstances(_meshMapEdge[_items[uName].type], _itemsActors[uName].edgesInstanceIndices);
+		instancedMesh->RemoveInstances(GetEdgeMesh(_items[uName].type), _itemsActors[uName].edgesInstanceIndices);
 		_itemsActors[uName].edgesInstanceIndices.Empty();
 	} else {
-		UE_LOG(LogTemp, Warning, TEXT("VerticesEdit.RemoveAllEdges missing _items uName or _meshMapEdge type %s"), *uName);
+		UE_LOG(LogTemp, Warning, TEXT("VerticesEdit.RemoveAllEdges missing _items uName or type %s"), *uName);
 	}
 }
 
@@ -418,7 +454,7 @@ void VerticesEdit::DrawAllEdges(FString uName) {
 	float edgeLength, angleZ, angleY;
 	int verticesCount = _items[uName].vertices.Num();
 	for (int ii = 0; ii < verticesCount; ii++) {
-		if (ii == verticesCount - 1 && !_items[uName].closedLoop) {
+		if (ii == verticesCount - 1 && _items[uName].shape != "polygon") {
 			break;
 		}
 		indexNext = ii < verticesCount - 1 ? ii + 1 : 0;
@@ -433,10 +469,23 @@ void VerticesEdit::DrawAllEdges(FString uName) {
 		// TODO - this is incorrect
 		// angleY = MathVector::SignedAngle(FVector(1,0,0), pathLine, FVector(0,1,0));
 		angleY = 0;
-		// UE_LOG(LogTemp, Display, TEXT("DrawEdge edgeLength %f angleZ %f angleY %f"), edgeLength, angleZ, angleY);
 		rotation = FRotator(angleY, angleZ, 0);
-		index = instancedMesh->CreateInstance(_meshMapEdge[type], location, rotation, scale);
+		index = instancedMesh->CreateInstance(GetEdgeMesh(type), location, rotation, scale);
 		_itemsActors[uName].edgesInstanceIndices.Add(index);
+	}
+}
+
+void VerticesEdit::DrawAll() {
+	for (auto& Elem : _items) {
+		DrawItem(Elem.Key);
+	}
+}
+
+void VerticesEdit::DrawItemsByTypes(TArray<FString> types) {
+	for (auto& Elem : _items) {
+		if (types.Contains(Elem.Value.type)) {
+			DrawItem(Elem.Key);
+		}
 	}
 }
 
@@ -465,10 +514,12 @@ void VerticesEdit::ImportPolygons(TMap<FString, FPolygon> polygons) {
 	FString uName;
 	for (auto& Elem : polygons) {
 		uName = Elem.Key;
-		if (!_meshMapEdge.Contains(Elem.Value.type)) {
+		if (GetEdgeMesh(Elem.Value.type) == "") {
 			UE_LOG(LogTemp, Warning, TEXT("VerticesEdit.ImportPolygons invalid type %s uName %s"), *Elem.Value.type, *uName);
 		} else {
-			_items.Add(uName, FPolygon(uName, uName, Elem.Value.vertices, Elem.Value.posCenter, Elem.Value.type));
+			_items.Add(uName, FPolygon(uName, uName, Elem.Value.vertices, Elem.Value.posCenter, Elem.Value.type,
+				Elem.Value.shape, Elem.Value.tags, Elem.Value.jsonDataString, Elem.Value.squareMeters,
+				Elem.Value.parentUName, Elem.Value.childUNames, Elem.Value.verticesBuffer, Elem.Value.averageChildDiameter));
 			DrawItem(uName);
 		}
 	}
@@ -484,11 +535,106 @@ TMap<FString, FPolygon> VerticesEdit::ExportPolygonsByType(FString type) {
 	return polygons;
 }
 
+void VerticesEdit::LoadFromFiles() {
+	FString pathPrefix = "VerticesEdit";
+	DataConvert* dataConvert = DataConvert::GetInstance();
+	DataFileProject* dataFileProject = DataFileProject::GetInstance();
+	TArray<FString> fileNames = dataConvert->GetDirectoryFiles(pathPrefix);
+	FString uName;
+	for (int ii = 0; ii < fileNames.Num(); ii++) {
+		auto [data, valid] = dataFileProject->LoadProject(pathPrefix + "/" + fileNames[ii]);
+		if (valid) {
+			for (auto& Elem : data.polygons) {
+				uName = Elem.Key;
+				_items.Add(uName, FPolygon(uName, uName, Elem.Value.vertices, Elem.Value.posCenter, Elem.Value.type,
+					Elem.Value.shape, Elem.Value.tags, Elem.Value.jsonDataString, Elem.Value.squareMeters,
+					Elem.Value.parentUName, Elem.Value.childUNames, Elem.Value.verticesBuffer, Elem.Value.averageChildDiameter));
+				DrawItem(uName);
+			}
+		}
+	}
+}
+
+void VerticesEdit::RemoveChildren(FString type, bool save) {
+	TArray<FString> keysToRemove = {};
+	for (auto& Elem : _items) {
+		if (Elem.Value.type == type) {
+			if (Elem.Value.parentUName == "") {
+				// Empty out children.
+				_items[Elem.Key].childUNames.Empty();
+			} else {
+				keysToRemove.Add(Elem.Key);
+			}
+		}
+	}
+	int count = keysToRemove.Num();
+	for (int ii = (count - 1); ii >= 0; ii--) {
+		_items.Remove(keysToRemove[ii]);
+	}
+	if (save) {
+		SaveToFile(type);
+	}
+}
+
+TArray<FString> VerticesEdit::GetParentTags(FString type, FString childUName) {
+	TArray<FString> tags = {};
+	if (_items.Contains(childUName)) {
+		FString uName = _items[childUName].parentUName;
+		while (uName != "" && _items.Contains(uName)) {
+			if (_items[uName].tags.Num() > 0) {
+				return _items[uName].tags;
+			}
+		}
+	}
+	return tags;
+}
+
+int VerticesEdit::CheckSubdividePolygons(FString type, bool save) {
+	int countNew = 0;
+	TMap<FString, FPolygon> newItems = {};
+	for (auto& Elem : _items) {
+		if (Elem.Value.type == type && Elem.Value.parentUName == "" && Elem.Value.childUNames.Num() < 1) {
+			auto [polygons1, countNew1] = PlotDivide::SubdividePlots({ { Elem.Key, Elem.Value} });
+			_items[Elem.Key] = polygons1[Elem.Key];
+			for (auto& Elem1 : polygons1) {
+				// Can not update polygons directly since it we are looping through them.
+				newItems.Add(Elem1.Key, Elem1.Value);
+				countNew += 1;
+			}
+		}
+	}
+	for (auto& Elem : newItems) {
+		_items.Add(Elem.Key, Elem.Value);
+	}
+	if (save && countNew > 0) {
+		SaveToFile(type);
+	}
+	return countNew;
+}
+
+void VerticesEdit::SaveToFile(FString type) {
+	DataFileProject* dataFileProject = DataFileProject::GetInstance();
+	DataConvert* dataConvert = DataConvert::GetInstance();
+	TMap<FString, FPolygon> items = FilterByTypes({ type });
+	FDataProjectJson* json = new FDataProjectJson(items);
+	dataConvert->CheckCreateDirectory("VerticesEdit");
+	FString fileName = "VerticesEdit/" + type + ".json";
+	dataFileProject->SaveProject(*json, fileName);
+}
+
 void VerticesEdit::SavePolygon(FString uName) {
-	// FString type = _items[uName].type;
+	SaveToFile(_items[uName].type);
+
 	for (auto& Elem : _listenersSavePolygon) {
 		Elem.Value(uName, _items[uName]);
 	}
+}
+
+FPolygon VerticesEdit::GetByUName(FString uName) {
+	if (_items.Contains(uName)) {
+		return _items[uName];
+	}
+	return FPolygon();
 }
 
 void VerticesEdit::AddOnSavePolygon(FString key, std::function<void(FString, FPolygon)> callback) {
@@ -514,65 +660,3 @@ void VerticesEdit::RemoveOnDeletePolygon(FString key) {
 		_listenersDeletePolygon.Remove(key);
 	}
 }
-
-
-
-// void VerticesEdit::AddOnDeleteVertex(FString key, std::function<void(FString, int)> callback) {
-// 	if (!_listenersDeleteVertex.Contains(key)) {
-// 		_listenersDeleteVertex.Add(key, callback);
-// 	}
-// }
-
-// void VerticesEdit::RemoveOnDeleteVertex(FString key) {
-// 	if (_listenersDeleteVertex.Contains(key)) {
-// 		_listenersDeleteVertex.Remove(key);
-// 	}
-// }
-
-// void VerticesEdit::AddOnMoveVertex(FString key, std::function<void(FString, int, FVector)> callback) {
-// 	if (!_listenersMoveVertex.Contains(key)) {
-// 		_listenersMoveVertex.Add(key, callback);
-// 	}
-// }
-
-// void VerticesEdit::RemoveOnMoveVertex(FString key) {
-// 	if (_listenersMoveVertex.Contains(key)) {
-// 		_listenersMoveVertex.Remove(key);
-// 	}
-// }
-
-// void VerticesEdit::AddOnAddVertex(FString key, std::function<void(FString, int, FVector)> callback) {
-// 	if (!_listenersAddVertex.Contains(key)) {
-// 		_listenersAddVertex.Add(key, callback);
-// 	}
-// }
-
-// void VerticesEdit::RemoveOnAddVertex(FString key) {
-// 	if (_listenersAddVertex.Contains(key)) {
-// 		_listenersAddVertex.Remove(key);
-// 	}
-// }
-
-// void VerticesEdit::AddOnDeleteShape(FString key, std::function<void(FString)> callback) {
-// 	if (!_listenersDeleteShape.Contains(key)) {
-// 		_listenersDeleteShape.Add(key, callback);
-// 	}
-// }
-
-// void VerticesEdit::RemoveOnDeleteShape(FString key) {
-// 	if (_listenersDeleteShape.Contains(key)) {
-// 		_listenersDeleteShape.Remove(key);
-// 	}
-// }
-
-// void VerticesEdit::AddOnMoveShape(FString key, std::function<void(FString, FVector)> callback) {
-// 	if (!_listenersMoveShape.Contains(key)) {
-// 		_listenersMoveShape.Add(key, callback);
-// 	}
-// }
-
-// void VerticesEdit::RemoveOnMoveShape(FString key) {
-// 	if (_listenersMoveShape.Contains(key)) {
-// 		_listenersMoveShape.Remove(key);
-// 	}
-// }

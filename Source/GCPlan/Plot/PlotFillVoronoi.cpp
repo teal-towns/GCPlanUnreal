@@ -32,22 +32,24 @@ PlotFillVoronoi::PlotFillVoronoi() {
 PlotFillVoronoi::~PlotFillVoronoi() {
 }
 
-std::tuple<TArray<TArray<FVector>>, FVector, TArray<FVector2D>> PlotFillVoronoi::Fill(TMap<FString, FPlot> plots, float averageDistance) {
+std::tuple<TArray<TArray<FVector>>, FVector, TArray<FVector2D>> PlotFillVoronoi::Fill(TArray<TArray<FVector>> verticesList, float averageDistance) {
 	TArray<TArray<FVector>> spacesVertices = {};
-	// Cache plot vertices in 2D format for in polygon checking later.
-	TArray<TArray<FVector2D>> plotsVertices2D = {};
-	// Index will match plot.
+	// Cache vertices in 2D format for in polygon checking later.
+	TArray<TArray<FVector2D>> vertices2D = {};
+	// Index will match vertices.
 	TArray<float> zVals = {};
 
 	// Convert bounds to min and max rectangle.
 	FVector2D min = FVector2D(0,0);
 	FVector2D max = FVector2D(0,0);
-	for (auto& Elem : plots) {
-		FPlot plot = Elem.Value;
-		TArray<FVector2D> vertices2D = {};
-		for (int vv = 0; vv < plot.vertices.Num(); vv++) {
-			FVector2D bounds = FVector2D(plot.vertices[vv].X, plot.vertices[vv].Y);
-			vertices2D.Add(bounds);
+	TArray<FVector> vertices;
+	TArray<FVector2D> vertices2DTemp;
+	for (int ii = 0; ii < verticesList.Num(); ii++) {
+		vertices = verticesList[ii];
+		vertices2DTemp = {};
+		for (int vv = 0; vv < vertices.Num(); vv++) {
+			FVector2D bounds = FVector2D(vertices[vv].X, vertices[vv].Y);
+			vertices2DTemp.Add(bounds);
 			if (min.X == 0 || bounds.X < min.X) {
 				min.X = bounds.X;
 			}
@@ -61,17 +63,17 @@ std::tuple<TArray<TArray<FVector>>, FVector, TArray<FVector2D>> PlotFillVoronoi:
 				max.Y = bounds.Y;
 			}
 		}
-		plotsVertices2D.Add(vertices2D);
+		vertices2D.Add(vertices2DTemp);
 		// Just pick one - could get center to be more accurate?
-		zVals.Add(plot.vertices[0].Z);
+		zVals.Add(vertices[0].Z);
 	}
 	TArray<FVector2D> boundsRect = { min, max };
 
-	float plotSizeX = round(max.X - min.X);
-	float plotSizeY = round(max.Y - min.Y);
-	FVector posCenter = FVector(min.X + (plotSizeX / 2), 0,
-		min.Y + (plotSizeY / 2));
-	// UE_LOG(LogTemp, Display, TEXT("PFV sizeX %f sizeY %f min %s max %s"), plotSizeX, plotSizeY, *min.ToString(), *max.ToString());
+	float polygonSizeX = round(max.X - min.X);
+	float polygonSizeY = round(max.Y - min.Y);
+	FVector posCenter = FVector(min.X + (polygonSizeX / 2), 0,
+		min.Y + (polygonSizeY / 2));
+	// UE_LOG(LogTemp, Display, TEXT("PFV sizeX %f sizeY %f min %s max %s"), polygonSizeX, polygonSizeY, *min.ToString(), *max.ToString());
 
 #ifdef USELIBRARY //smm230610//
 	bool useVoronoi = true;
@@ -84,9 +86,9 @@ std::tuple<TArray<TArray<FVector>>, FVector, TArray<FVector2D>> PlotFillVoronoi:
 		points.push_back(Delaunay::Point::create(pointsTemp[ii].X, pointsTemp[ii].Y));
 		// UE_LOG(LogTemp, Display, TEXT("PFV point %s"), *pointsTemp[ii].ToString());
 	}
-	Delaunay::Rectangle plotBounds = Delaunay::Rectangle(min.X, min.Y, plotSizeX, plotSizeY);
+	Delaunay::Rectangle polygonBounds = Delaunay::Rectangle(min.X, min.Y, polygonSizeX, polygonSizeY);
 	const std::vector<unsigned> colors = {};
-	Delaunay::Voronoi voronoi = Delaunay::Voronoi(points, &colors, plotBounds);
+	Delaunay::Voronoi voronoi = Delaunay::Voronoi(points, &colors, polygonBounds);
 	std::vector<std::vector<Delaunay::Point*>> regions1 = voronoi.regions();
 	TArray<TArray<FVector2D>> regions = {};
 	for (int ii = 0; ii < regions1.size(); ii++) {
@@ -97,7 +99,7 @@ std::tuple<TArray<TArray<FVector>>, FVector, TArray<FVector2D>> PlotFillVoronoi:
 	}
 	// UE_LOG(LogTemp, Display, TEXT("PFV regions %d"), regions.Num());
 
-	// Go through all regions and remove any vertices that are not in the plots.
+	// Go through all regions and remove any vertices that are not in the polygons.
 	FVector2D point;
 	int totalRegions = regions.Num();
 	TArray<FVector> verticesD;
@@ -113,11 +115,11 @@ std::tuple<TArray<TArray<FVector>>, FVector, TArray<FVector2D>> PlotFillVoronoi:
 			for (int rr = 0; rr < regions[ii].Num(); rr++) {
 				regionVertices2D.Add(FVector2D(regions[ii][rr].X, regions[ii][rr].Y));
 			}
-			// int plotIndex = -1;
-			// Check first point and see if in a plot.
-			for (int pp = 0; pp < plotsVertices2D.Num(); pp++) {
+			// int polygonIndex = -1;
+			// Check first point and see if in a polygon.
+			for (int pp = 0; pp < vertices2D.Num(); pp++) {
 				auto [valid1, newRegionVertices2D] =
-					CheckAdjustVertices(regionVertices2D, plotsVertices2D[pp]);
+					CheckAdjustVertices(regionVertices2D, vertices2D[pp]);
 				if (valid1) {
 					verticesTemp = {};
 					for (int vt = 0; vt < newRegionVertices2D.Num(); vt++) {
@@ -141,19 +143,18 @@ std::tuple<TArray<TArray<FVector>>, FVector, TArray<FVector2D>> PlotFillVoronoi:
 	TArray<FVector> verticesD;
 	bool valid, atLeastOneInside, done;
 	TArray<FVector> verticesTemp;
-	TArray<FVector2D> vertices2D;
 	for (int ii = totalSpaces - 1; ii >= 0; ii--) {
 		valid = false;
 		atLeastOneInside = false;
 		done = false;
-		vertices2D = {};
+		vertices2DTemp = {};
 		for (int rr = 0; rr < spacesVertices1[ii].Num(); rr++) {
-			vertices2D.Add(FVector2D(spacesVertices1[ii][rr].X, spacesVertices1[ii][rr].Y));
+			vertices2DTemp.Add(FVector2D(spacesVertices1[ii][rr].X, spacesVertices1[ii][rr].Y));
 		}
-		// Check first point and see if in a plot.
-		for (int pp = 0; pp < plotsVertices2D.Num(); pp++) {
+		// Check first point and see if in a polygon.
+		for (int pp = 0; pp < vertices2D.Num(); pp++) {
 			auto [valid1, newVertices2D] =
-				CheckAdjustVertices(vertices2D, plotsVertices2D[pp]);
+				CheckAdjustVertices(vertices2DTemp, vertices2D[pp]);
 			if (valid1) {
 				verticesTemp = {};
 				for (int vt = 0; vt < newVertices2D.Num(); vt++) {
@@ -252,7 +253,7 @@ TArray<FVector2D> PlotFillVoronoi::SpawnPoints(TArray<FVector2D> boundsRect, flo
 	return points;
 }
 
-std::tuple<bool, TArray<FVector2D>> PlotFillVoronoi::CheckAdjustVertices(TArray<FVector2D> regionVertices2D, TArray<FVector2D> plotVertices2D,
+std::tuple<bool, TArray<FVector2D>> PlotFillVoronoi::CheckAdjustVertices(TArray<FVector2D> regionVertices2D, TArray<FVector2D> vertices2D,
 	float minRatioIn) {
 	bool valid = true;
 	TArray<FVector2D> newRegionVertices2D = {};
@@ -261,21 +262,21 @@ std::tuple<bool, TArray<FVector2D>> PlotFillVoronoi::CheckAdjustVertices(TArray<
 	int countOut = 0;
 	for (int jj = 0; jj < regionVertices2D.Num(); jj++) {
 		FVector2D point = regionVertices2D[jj];
-		if (!MathPolygon::IsPointInPolygon(point, plotVertices2D)) {
+		if (!MathPolygon::IsPointInPolygon(point, vertices2D)) {
 			countOut += 1;
 			if (countOut > maxOut) {
 				valid = false;
 				break;
 			}
-			// Move point into plot.
-			// Draw line from point to region center and find the plot edge line it intersects with.
-			// Then move point onto that plot edge line.
-			for (int kk = 0; kk < plotVertices2D.Num(); kk++) {
-				int indexNext = kk < plotVertices2D.Num() - 1 ? kk + 1 : 0;
+			// Move point into polygon.
+			// Draw line from point to region center and find the polygon edge line it intersects with.
+			// Then move point onto that polygon edge line.
+			for (int kk = 0; kk < vertices2D.Num(); kk++) {
+				int indexNext = kk < vertices2D.Num() - 1 ? kk + 1 : 0;
 				auto [intersects, xIntersect, yIntersect] = MathPolygon::GetLineIntersection(
 					regionCenter.X, regionCenter.Y, point.X, point.Y,
-					plotVertices2D[kk].X, plotVertices2D[kk].Y,
-					plotVertices2D[indexNext].X, plotVertices2D[indexNext].Y);
+					vertices2D[kk].X, vertices2D[kk].Y,
+					vertices2D[indexNext].X, vertices2D[indexNext].Y);
 				if (intersects) {
 					newRegionVertices2D.Add(FVector2D(xIntersect, yIntersect));
 					break;
