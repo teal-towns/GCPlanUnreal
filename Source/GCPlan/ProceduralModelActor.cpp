@@ -21,7 +21,7 @@ void AProceduralModelActor::BeginPlay()
 
 void AProceduralModelActor::Init() {
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
-	unrealGlobal->InitCommon(GetWorld());
+	unrealGlobal->InitAll(GetWorld(), { "web" });
 	// ModelBase* modelBase = ModelBase::GetInstance();
 	// modelBase->SetWorld(GetWorld());
 
@@ -34,4 +34,10 @@ void AProceduralModelActor::GenerateModel() {
 	PMBase* pmBase = PMBase::GetInstance();
 	pmBase->SetInputs(ProceduralModelBase);
 	pmBase->Create();
+}
+
+void AProceduralModelActor::DestroyActors() {
+	Init();
+	PMBase* pmBase = PMBase::GetInstance();
+	pmBase->DestroyActors();
 }

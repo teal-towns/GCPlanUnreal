@@ -46,7 +46,7 @@ std::tuple<TMap<FString, FPlot>, int> PlotDivide::SubdividePlots(TMap<FString, F
 			plotDistance = Elem.Value.averagePlotDistance;
 
 			auto [spacesVertices, posCenter, boundsRect] = PlotFillVoronoi::Fill(PlotsTemp, plotDistance);
-			UE_LOG(LogTemp, Display, TEXT("LPA spacesVertices.Num %d %s %s"), spacesVertices.Num(), *boundsRect[0].ToString(), *boundsRect[1].ToString());
+			// UE_LOG(LogTemp, Display, TEXT("PlotDivide.SubdividePlots spacesVertices.Num %d %s %s"), spacesVertices.Num(), *boundsRect[0].ToString(), *boundsRect[1].ToString());
 
 			// Buffer vertices and remove any spaces that are not valid.
 			if (plotTemp.verticesBuffer != 0) {
@@ -80,4 +80,23 @@ std::tuple<TMap<FString, FPlot>, int> PlotDivide::SubdividePlots(TMap<FString, F
 		newPlots.Add(parentPlotUName, Plots[parentPlotUName]);
 	}
 	return { newPlots, countNew };
+}
+
+bool PlotDivide::AddRoads(TMap<FString, FPlot> Plots) {
+	SplineRoad* splineRoad = SplineRoad::GetInstance();
+	splineRoad->DestroyRoads();
+	TArray<TArray<FVector>> spacesVertices = {};
+	float verticesBuffer = -999;
+	for (auto& Elem : Plots) {
+		// Only do final plots.
+		if (Elem.Value.childPlotUNames.Num() < 1) {
+			spacesVertices.Add(Elem.Value.vertices);
+			if (verticesBuffer == -999) {
+				verticesBuffer = Elem.Value.verticesBuffer;
+			}
+		}
+	}
+	TMap<FString, FRoadPath> roads = BuildingRoad::BetweenSpaces(spacesVertices, verticesBuffer);
+	splineRoad->AddRoads(roads);
+	return true;
 }

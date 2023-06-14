@@ -1,3 +1,5 @@
+#define USELIBRARY
+
 #include "PlotFillVoronoi.h"
 #include "../CCdefines.h" // define statements to handle MAC and Windows compilers
 

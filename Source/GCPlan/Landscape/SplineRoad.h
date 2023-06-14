@@ -17,12 +17,13 @@ private:
 	UWorld* World;
 
 	TMap<FString, TMap<FString, FRoadPath>> _RoadsByType = {};
-	static AStaticMeshActor* _roadsActor;
+	AStaticMeshActor* _roadsActor = nullptr;
 	TMap<FString, AActor*> _RoadsActors = {};
 
 	USplineMeshComponent* InitMesh(FString UName, UObject* parentObject, USceneComponent* parent, float widthMeters);
-	void AddSplineMesh(FString UName, int pointCount, UObject* parentObject, USceneComponent* parent, float widthMeters,
-		USplineComponent* spline);
+	void AddSplineMesh(FString UName, int pointCount, UObject* parentObject, USceneComponent* parent,
+		float widthMeters, USplineComponent* spline, FVector tangentStart = FVector(0,0,0),
+		FVector tangentEnd = FVector(0,0,0));
 
 public:
 	SplineRoad();
@@ -34,8 +35,9 @@ public:
 
 	static SplineRoad *GetInstance();
 	void SetWorld(UWorld*);
+	void DestroyRoads();
+	void CleanUp();
 
 	void AddRoads(TMap<FString, FRoadPath> roads);
-	void DrawRoads(bool addPlants = true);
-	void DestroyRoads();
+	void DrawRoads(bool addPlants = true, bool carveLand = true);
 };

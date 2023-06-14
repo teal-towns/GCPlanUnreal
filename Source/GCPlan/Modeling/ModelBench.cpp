@@ -3,6 +3,7 @@
 #include "Engine/StaticMeshActor.h"
 
 #include "ModelBase.h"
+#include "../Mesh/LoadContent.h"
 #include "../ModelingStructsActor.h"
 #include "../ProceduralModel/PMCylinder.h"
 
@@ -30,8 +31,9 @@ void ModelBench::Create() {
 	actor = modelBase->CreateActor(name, location, rotation, scale, spawnParams);
 	USceneComponent* parent = actor->FindComponentByClass<USceneComponent>();
 
+	LoadContent* loadContent = LoadContent::GetInstance();
 	FString meshPath = "/Script/Engine.StaticMesh'/Game/Modeling/Primitives/Cube.Cube'";
-	FString materialPath = "/Script/Engine.Material'/Game/Nature/Wood/wood-pale-material.wood-pale-material'";
+	FString materialPath = loadContent->Material("wood");
 
 	// Seat
 	location = FVector(0, 0, size.Z);

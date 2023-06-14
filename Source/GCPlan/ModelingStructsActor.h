@@ -41,7 +41,9 @@ enum ModelingSubCategory {
 	DESK,
 	MONITOR,
 	KEYBOARD,
-	MOUSE
+	MOUSE,
+	STREETLIGHT,
+	EVCHARGER
 };
 
 USTRUCT()
@@ -67,7 +69,8 @@ struct FModelingBase {
 UENUM()
 enum ProceduralModelCategory {
 	CUBE,
-	CYLINDER
+	CYLINDER,
+	PRISM
 };
 
 USTRUCT()
@@ -82,6 +85,14 @@ struct FProceduralModelBase {
 	FVector size;
 	UPROPERTY(EditAnywhere)
 	FVector vertices;
+	UPROPERTY(EditAnywhere)
+	int32 sidesSegmentCount;
+	UPROPERTY(EditAnywhere)
+	float topOffsetWidth;
+	UPROPERTY(EditAnywhere)
+	bool closeTop; // Closes the top face of the prism
+	UPROPERTY(EditAnywhere)
+	bool closeBottom; // Closes the bottom face of the prism
 	UPROPERTY(EditAnywhere)
 	FString tagsString;
 	UPROPERTY()

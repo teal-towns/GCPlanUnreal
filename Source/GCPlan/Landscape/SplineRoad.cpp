@@ -8,6 +8,7 @@
 
 #include "../Common/Lodash.h"
 #include "../Common/UnrealGlobal.h"
+#include "../Landscape/HeightMap.h"
 #include "../Layout/LayoutPlace.h"
 #include "../Layout/LayoutPolyLine.h"
 #include "../Mesh/InstancedMesh.h"
@@ -16,7 +17,6 @@
 
 SplineRoad* SplineRoad::pinstance_{nullptr};
 std::mutex SplineRoad::mutex_;
-AStaticMeshActor* SplineRoad::_roadsActor;
 
 SplineRoad::SplineRoad() {
 }
@@ -28,24 +28,19 @@ SplineRoad *SplineRoad::GetInstance() {
 	std::lock_guard<std::mutex> lock(mutex_);
 	if (pinstance_ == nullptr) {
 		pinstance_ = new SplineRoad();
-
-		// In case of recompile in editor, will lose reference so need to check scene too.
-		FString name = "SplineRoads";
-		// UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
-		// AActor* actor = unrealGlobal->GetActorByName(name, AStaticMeshActor::StaticClass());
-		// if (actor) {
-		// 	_roadsActor = actor;
-		// } else {
-			PMBase* pmBase = PMBase::GetInstance();
-			FActorSpawnParameters spawnParams;
-			_roadsActor = pmBase->CreateActor(name, FVector(0,0,0), FRotator(0,0,0), spawnParams);
-		// }
 	}
 	return pinstance_;
 }
 
 void SplineRoad::SetWorld(UWorld* World1) {
 	World = World1;
+
+	if (!_roadsActor) {
+		FString name = "SplineRoads";
+		PMBase* pmBase = PMBase::GetInstance();
+		FActorSpawnParameters spawnParams;
+		_roadsActor = pmBase->CreateActor(name, FVector(0,0,0), FRotator(0,0,0), spawnParams);
+	}
 }
 
 void SplineRoad::DestroyRoads() {
@@ -74,6 +69,15 @@ void SplineRoad::DestroyRoads() {
 	instancedMesh->ClearInstances("RoadRoundabout");
 }
 
+void SplineRoad::CleanUp() {
+	DestroyRoads();
+	if (_roadsActor) {
+		_roadsActor->Destroy();
+	}
+	_roadsActor = nullptr;
+	pinstance_ = nullptr;
+}
+
 void SplineRoad::AddRoads(TMap<FString, FRoadPath> roadsPaths) {
 	for (auto& Elem : roadsPaths) {
 		FString UName = Elem.Key;
@@ -87,10 +91,11 @@ void SplineRoad::AddRoads(TMap<FString, FRoadPath> roadsPaths) {
 	}
 }
 
-void SplineRoad::DrawRoads(bool addPlants) {
+void SplineRoad::DrawRoads(bool addPlants, bool carveLand) {
 	float flatteningMeters = 10;
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	LoadContent* loadContent = LoadContent::GetInstance();
+	HeightMap* heightMap = HeightMap::GetInstance();
 	float widthMeters;
 	FString UName, name, nameTemp, uNameRoundabout;
 	TArray<FVector> vertices;
@@ -113,6 +118,8 @@ void SplineRoad::DrawRoads(bool addPlants) {
 
 	TArray<FString> meshNamesBush = loadContent->GetMeshNamesByTypes({ "bush" });
 	TArray<FString> meshNamesTree = loadContent->GetMeshNamesByTypes({ "tree" });
+	bool saveHeightMap = false;
+	TMap<FString, FImagePixelValue> newHeightImageValues = {};
 
 	for (auto& Elem1 : _RoadsByType) {
 		FString type = Elem1.Key;
@@ -184,39 +191,71 @@ void SplineRoad::DrawRoads(bool addPlants) {
 				}
 
 				// Add roundabout.
-				uNameRoundabout = "BuildingRoad_" + Lodash::ToFixed(vertices[vv].X, 1) + "_" + Lodash::ToFixed(vertices[vv].Y, 1);
+				// 0 digits to block overlap within 1 meter.
+				uNameRoundabout = "BuildingRoad_" + Lodash::ToFixed(vertices[vv].X, 0) + "_" + Lodash::ToFixed(vertices[vv].Y, 0);
 				if (!roundaboutUNames.Contains(uNameRoundabout)) {
 					// Move up a bit to cover roads.
 					FVector pos = vertices[vv];
 					pos.Z += 0.25;
-					instancedMesh->CreateInstance("RoadRoundabout", pos, FRotator(0,0,0), FVector(2,2,1));
+
+					instancedMesh->CreateInstance("RoadRoundabout", pos, FRotator(0,Lodash::RandomRangeFloat(0,360),0), FVector(2,2,1.5));
 					roundaboutUNames.Add(uNameRoundabout);
+				}
+
+				// Carve land (heightmap)
+				if (carveLand && type == "road" && vv > 0) {
+					newHeightImageValues = heightMap->CarveLine(vertices[(vv - 1)], vertices[vv], widthMeters,
+						newHeightImageValues);
+					saveHeightMap = true;
 				}
 			}
 
 			// Must update to get tangents calculated, so do mesh at end after have all points.
 			spline->UpdateSpline();
+			FVector tangentStart, tangentEnd, pathLine;
 			for (int ii = 1; ii < pointCount; ii++) {
-				AddSplineMesh(UName, ii, parentObject, parent, widthMeters, spline);
+				tangentStart = FVector(0,0,0);
+				tangentEnd = FVector(0,0,0);
+				// TODO - this did not seem to do anything; need to understand tangents better?
+				// // Fix tangents at (next to) start and end by flattening them (z = 0)
+				// if (ii == 2) {
+				// 	pathLine = vertices[1] - vertices[0];
+				// 	tangentStart = FVector(pathLine.X, pathLine.Y, 0);
+				// } else if (ii == pointCount - 2) {
+				// 	pathLine = vertices[(verticesCount - 1)] - vertices[(verticesCount - 2)];
+				// 	tangentEnd = FVector(pathLine.X, pathLine.Y, 0);
+				// }
+				AddSplineMesh(UName, ii, parentObject, parent, widthMeters, spline,
+					tangentStart, tangentEnd);
 			}
 
 			if (addPlants) {
 				// Place nature / trees on sides of roads.
 				placeParamsNature.spacing = 5;
 				placeParamsNature.spacingCrossAxis = 2;
+				placeParamsNature.scaleMin = 0.75;
+				placeParamsNature.scaleMax = 2;
 				LayoutPolyLine::PlaceOnLineSides(vertices, widthMeters + placingOffset * 2,
 					meshNamesBush, placeParamsNature);
 				placeParamsNature.spacing = 20;
 				placeParamsNature.spacingCrossAxis = 999;
+				placeParamsNature.scaleMin = 0.1;
+				placeParamsNature.scaleMax = 0.5;
 				LayoutPolyLine::PlaceOnLineSides(vertices, widthMeters + placingOffset * 2,
 					meshNamesTree, placeParamsNature);
 			}
 		}
 	}
+
+	if (saveHeightMap) {
+		// heightMap->SaveImage();
+		heightMap->SetImageValues(newHeightImageValues);
+	}
 }
 
-void SplineRoad::AddSplineMesh(FString UName, int pointCount, UObject* parentObject, USceneComponent* parent, float widthMeters,
-	USplineComponent* spline) {
+void SplineRoad::AddSplineMesh(FString UName, int pointCount, UObject* parentObject,
+	USceneComponent* parent, float widthMeters, USplineComponent* spline,
+	FVector tangentStart, FVector tangentEnd) {
 	// After have at least 2 points, add mesh between this point and past point.
 	if (pointCount > 0) {
 		FVector pointLocationStart, pointTangentStart, pointLocationEnd, pointTangentEnd;
@@ -225,6 +264,14 @@ void SplineRoad::AddSplineMesh(FString UName, int pointCount, UObject* parentObj
 		spline->GetLocalLocationAndTangentAtSplinePoint((pointCount - 1), pointLocationStart, pointTangentStart);
 		spline->GetLocalLocationAndTangentAtSplinePoint((pointCount), pointLocationEnd, pointTangentEnd);
 		// UE_LOG(LogTemp, Display, TEXT("mesh tangents start %s end %s locStart %s locEnd %s"), *pointTangentStart.ToString(), *pointTangentEnd.ToString(), *pointLocationStart.ToString(), *pointLocationEnd.ToString());
+		if (tangentStart != FVector(0,0,0)) {
+			UE_LOG(LogTemp, Display, TEXT("tangentStart %s orig %s"), *tangentStart.ToString(), *pointTangentStart.ToString());
+			pointTangentStart = tangentStart;
+		}
+		if (tangentEnd != FVector(0,0,0)) {
+			UE_LOG(LogTemp, Display, TEXT("tangentEnd %s orig %s"), *tangentEnd.ToString(), *pointTangentEnd.ToString());
+			pointTangentEnd = tangentEnd;
+		}
 		SplineMesh->SetStartAndEnd(pointLocationStart, pointTangentStart, pointLocationEnd, pointTangentEnd);
 	}
 }

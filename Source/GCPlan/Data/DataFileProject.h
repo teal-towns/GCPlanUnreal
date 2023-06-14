@@ -20,6 +20,6 @@ public:
 
 	static DataFileProject *GetInstance();
 
-	static std::tuple<FDataProjectJson, bool> LoadProject(FString fileName);
-	static bool SaveProject(FDataProjectJson json, FString fileName);
+	std::tuple<FDataProjectJson, bool> LoadProject(FString fileName);
+	bool SaveProject(FDataProjectJson json, FString fileName);
 };

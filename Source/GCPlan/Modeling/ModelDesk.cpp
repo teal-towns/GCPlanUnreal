@@ -3,6 +3,7 @@
 #include "Engine/StaticMeshActor.h"
 
 #include "ModelBase.h"
+#include "../Mesh/LoadContent.h"
 #include "../ModelingStructsActor.h"
 #include "../ProceduralModel/PMCylinder.h"
 
@@ -31,9 +32,10 @@ void ModelDesk::Create() {
 	actor = modelBase->CreateActor(name, location, rotation, scale, spawnParams);
 	USceneComponent* parent = actor->FindComponentByClass<USceneComponent>();
 
+	LoadContent* loadContent = LoadContent::GetInstance();
+	FString materialPathDesk = loadContent->Material("wood");
+	FString materialPathLegs = loadContent->Material("black");
 	FString meshPath = "/Script/Engine.StaticMesh'/Game/Modeling/Primitives/Cube.Cube'";
-	FString materialPathDesk = "/Script/Engine.Material'/Game/Nature/Wood/wood-pale-material.wood-pale-material'";
-	FString materialPathLegs = "/Script/Engine.Material'/Game/Landscape/VerticesEdit/Black_M.Black_M'";
 
 	spawnParams.Owner = actor;
 	UStaticMesh* mesh = nullptr;
@@ -150,7 +152,8 @@ void ModelMonitor::Create(FVector defLocation) {
 	USceneComponent* parent = actor->FindComponentByClass<USceneComponent>();
 
 	FString meshPath = "/Script/Engine.StaticMesh'/Game/Modeling/Primitives/Cube.Cube'";
-	FString materialPath = "/Script/Engine.Material'/Game/Landscape/VerticesEdit/Black_M.Black_M'";
+	LoadContent* loadContent = LoadContent::GetInstance();
+	FString materialPath = loadContent->Material("black");
 
 	spawnParams.Owner = actor;
 	UStaticMesh* mesh = nullptr;
@@ -202,7 +205,8 @@ void ModelKeyboard::Create(FVector defLocation) {
 	USceneComponent* parent = actor->FindComponentByClass<USceneComponent>();
 
 	FString meshPath = "/Script/Engine.StaticMesh'/Game/Modeling/Primitives/Cube.Cube'";
-	FString materialPath = "/Script/Engine.Material'/Game/Landscape/VerticesEdit/Grey_M.Grey_M'";
+	LoadContent* loadContent = LoadContent::GetInstance();
+	FString materialPath = loadContent->Material("grey");
 
 	spawnParams.Owner = actor;
 	UStaticMesh* mesh = nullptr;
@@ -239,7 +243,8 @@ void ModelMouse::Create(FVector defLocation) {
 	USceneComponent* parent = actor->FindComponentByClass<USceneComponent>();
 
 	FString meshPath = "/Script/Engine.StaticMesh'/Game/Modeling/Primitives/Cube.Cube'";
-	FString materialPath = "/Script/Engine.Material'/Game/Landscape/VerticesEdit/Blue_M.Blue_M'";
+	LoadContent* loadContent = LoadContent::GetInstance();
+	FString materialPath = loadContent->Material("blue");
 
 	spawnParams.Owner = actor;
 	UStaticMesh* mesh = nullptr;

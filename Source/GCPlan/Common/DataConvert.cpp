@@ -6,10 +6,21 @@
 
 #include "../BuildingStructsActor.h"
 
+DataConvert* DataConvert::pinstance_{nullptr};
+std::mutex DataConvert::mutex_;
+
 DataConvert::DataConvert() {
 }
 
 DataConvert::~DataConvert() {
+}
+
+DataConvert *DataConvert::GetInstance() {
+	std::lock_guard<std::mutex> lock(mutex_);
+	if (pinstance_ == nullptr) {
+		pinstance_ = new DataConvert();
+	}
+	return pinstance_;
 }
 
 FMapStringFloat DataConvert::VectorToDict(FVector vector) {
@@ -88,12 +99,20 @@ FRotator DataConvert::VectorToRotator(FVector vector) {
 // 	return FRotator(array1[0], array1[1], array1[2]);
 // }
 
+void DataConvert::SetProjectPath(FString path) {
+	_projectPath = path;
+}
+
 FString DataConvert::FileNameToPath(FString fileName, FString key) {
 	FString filePath = "";
 	if (fileName.Len() > 0) {
 		if (key == "conditional") {
-			filePath = "Source/Conditional/" + fileName;
+			filePath = "Source/Conditional/";
 		}
+		if (_projectPath.Len() > 0) {
+			filePath += _projectPath + "/";
+		}
+		filePath += fileName;
 		FString projectPath = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir());
 		filePath = projectPath + filePath;
 	}
@@ -114,12 +133,12 @@ std::tuple<FString, bool, FString> DataConvert::ReadStringFromFile(FString FileP
 	FString RetString = "";
 	if (!FPlatformFileManager::Get().GetPlatformFile().FileExists(*FilePath)) {
 		valid = false;
-		UE_LOG(LogTemp, Warning, TEXT("DataFileProject.ReadStringFromFile file does not exist %s"), *FilePath);
+		UE_LOG(LogTemp, Warning, TEXT("DataConvert.ReadStringFromFile file does not exist %s"), *FilePath);
 		msg = FString::Printf(TEXT("File does not exist %s"), *FilePath);
 	}
 	if (!FFileHelper::LoadFileToString(RetString, *FilePath)) {
 		valid = false;
-		UE_LOG(LogTemp, Warning, TEXT("DataFileProject.ReadStringFromFile unable to read file %s"), *FilePath);
+		UE_LOG(LogTemp, Warning, TEXT("DataConvert.ReadStringFromFile unable to read file %s"), *FilePath);
 		msg = FString::Printf(TEXT("Unable to read file %s"), *FilePath);
 	}
 	return {RetString, valid, msg};
@@ -131,8 +150,16 @@ std::tuple<bool, FString> DataConvert::WriteStringToFile(FString FilePath, FStri
 	if (!FFileHelper::SaveStringToFile(String, *FilePath, FFileHelper::EEncodingOptions::AutoDetect,
 			&IFileManager::Get(), EFileWrite::FILEWRITE_None)) {
 		valid = false;
-		UE_LOG(LogTemp, Warning, TEXT("DataFileProject.WriteStringToFile unable to write file %s"), *FilePath);
+		UE_LOG(LogTemp, Warning, TEXT("DataConvert.WriteStringToFile unable to write file %s"), *FilePath);
 		msg = FString::Printf(TEXT("Unable to write file %s"), *FilePath);
 	}
 	return {valid, msg};
+}
+
+std::tuple<bool, FString> DataConvert::WriteFile(FString fileName, FString String, FString filePathKey) {
+	FString filePath = FileNameToPath(fileName, filePathKey);
+	if (filePath.Len() < 1) {
+		return { false, "" };
+	}
+	return WriteStringToFile(filePath, String);
 }

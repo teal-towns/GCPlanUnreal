@@ -20,10 +20,11 @@ void LandNature::PlaceNature(TMap<FString, FPlot> plots) {
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	LayoutPolygon* layoutPolygon = LayoutPolygon::GetInstance();
 	LoadContent* loadContent = LoadContent::GetInstance();
+	DataFileProject* dataFileProject = DataFileProject::GetInstance();
 	// Use another json file for the land polygon.
 	TMap<FString, FPlot> landPlots = {};
-	TMap<FString, FString> jsonFiles = unrealGlobal->_settings->projectJsonFiles;
-	auto [data1, valid1] = DataFileProject::LoadProject(jsonFiles["landNature"]);
+	TMap<FString, FString> jsonFiles = unrealGlobal->_settings->jsonFiles;
+	auto [data1, valid1] = dataFileProject->LoadProject(jsonFiles["landNature"]);
 	// if (false) {
 	if (valid1) {
 		landPlots = data1.plots;
@@ -42,14 +43,14 @@ void LandNature::PlaceNature(TMap<FString, FPlot> plots) {
 	placeParams.snapToGround = true;
 	// Skip plots.
 	for (auto& Elem : plots) {
-		// // Only add final plots (not parent plots).
-		// if (Elem.Value.childPlotUNames.Num() < 1) {
-		// 	placeParams.skipPolygons.Add(Elem.Value.vertices);
-		// }
-		// Only add parent plots.
-		if (Elem.Value.parentPlotUName == "") {
+		// Only add final plots (not parent plots).
+		if (Elem.Value.childPlotUNames.Num() < 1) {
 			placeParams.skipPolygons.Add(Elem.Value.vertices);
 		}
+		// Only add parent plots.
+		// if (Elem.Value.parentPlotUName == "") {
+		// 	placeParams.skipPolygons.Add(Elem.Value.vertices);
+		// }
 	}
 
 	placeParams.offsetAverage = 30;
