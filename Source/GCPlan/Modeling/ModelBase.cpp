@@ -5,7 +5,12 @@
 
 #include "../Common/Lodash.h"
 #include "../Common/UnrealGlobal.h"
+#include "../Mesh/LoadContent.h"
 #include "../ModelingStructsActor.h"
+#include "Furniture/ModelBook.h"
+#include "Furniture/ModelCouch.h"
+#include "Furniture/ModelLight.h"
+#include "Furniture/ModelStand.h"
 #include "ModelBench.h"
 #include "ModelDesk.h"
 #include "ModelStreetLight.h"
@@ -103,19 +108,34 @@ void ModelBase::Create() {
 
 	if (_modelingBase.subCategory == "BENCH") {
 		ModelBench::Create();
+	} else if (_modelingBase.subCategory == "BOOK") {
+		ModelBook::Create();
+	} else if (_modelingBase.subCategory == "COUCH") {
+		ModelCouch::Create();
 	} else if (_modelingBase.subCategory == "DESK") {
 		ModelDesk::Create();
-	} else if (_modelingBase.subCategory == "MONITOR") {
-		ModelMonitor::Create(defLocation);
-	} else if (_modelingBase.subCategory == "KEYBOARD") {
-		ModelKeyboard::Create(defLocation);
-	} else if (_modelingBase.subCategory == "MOUSE") {
-		ModelMouse::Create(defLocation);
-	} else if (_modelingBase.subCategory == "STREETLIGHT") {
-		ModelStreetLight::Create();
 	} else if (_modelingBase.subCategory == "EVCHARGER") {
 		ModelEVCharger::Create();
+	} else if (_modelingBase.subCategory == "KEYBOARD") {
+		ModelKeyboard::Create(defLocation);
+	} else if (_modelingBase.subCategory == "LIGHT") {
+		ModelLight::Create();
+	} else if (_modelingBase.subCategory == "MONITOR") {
+		ModelMonitor::Create(defLocation);
+	} else if (_modelingBase.subCategory == "MOUSE") {
+		ModelMouse::Create(defLocation);
+	} else if (_modelingBase.subCategory == "STAND") {
+		ModelStand::Create();
+	} else if (_modelingBase.subCategory == "STREETLIGHT") {
+		ModelStreetLight::Create();
 	}
+}
+
+void ModelBase::CreateFloor() {
+	LoadContent* loadContent = LoadContent::GetInstance();
+	FString meshCube = loadContent->Mesh("cube");
+	CreateActor(Lodash::GetInstanceId("Floor_"), FVector(0,0,-1), FRotator(0,0,0), FVector(10,10,1),
+		FActorSpawnParameters(), nullptr, meshCube);
 }
 
 AStaticMeshActor* ModelBase::CreateActor(FString name, FVector location, FRotator rotation,
@@ -148,17 +168,9 @@ AStaticMeshActor* ModelBase::CreateActor(FString name, FVector location, FRotato
 		if (!meshComponent) {
 			meshComponent = actor->FindComponentByClass<UStaticMeshComponent>();
 		}
-		// meshComponent->SetStaticMesh(meshPath);
-		// const TCHAR* path = *meshPath;
-		// UStaticMesh* mesh = LoadObject(nullptr, *meshPath);
-		// UStaticMesh* mesh = LoadObject(nullptr, "/Script/Engine.StaticMesh'/Game/Modeling/Primitives/Cube.Cube'");
-		// UStaticMesh* mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL,
-		// 	TEXT("/Script/Engine.StaticMesh'/Game/Modeling/Primitives/Cube.Cube'")));
 		mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL,
 			*meshPath));
 		meshComponent->SetStaticMesh(mesh);
-		// const ConstructorHelpers::FObjectFinder<UStaticMesh> MeshObj(TEXT("/Script/Engine.StaticMesh'/Game/Modeling/Primitives/Cube.Cube'"));
-		// meshComponent->SetStaticMesh(MeshObj.Object);
 	}
 	if (materialPath.Len() > 0) {
 		if (!meshComponent) {

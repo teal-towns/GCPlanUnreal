@@ -28,4 +28,5 @@ public:
 	void LoadMeshes(FString defaultMeshPath = "/Script/Engine.StaticMesh'/Game/Modeling/Primitives/Cube.Cube'");
 	TArray<FString> GetMeshNamesByTypes(TArray<FString> types);
 	FString Material(FString key);
+	FString Mesh(FString key);
 };

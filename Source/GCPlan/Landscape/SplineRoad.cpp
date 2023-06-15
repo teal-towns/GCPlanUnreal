@@ -286,7 +286,8 @@ USplineMeshComponent* SplineRoad::InitMesh(FString nameTemp, UObject* parentObje
 	// SplineMesh->AttachParent = spline;
 	SplineMesh->bCastDynamicShadow = false;
 
-	FString meshPath = "/Script/Engine.StaticMesh'/Game/Landscape/RoadSegment1.RoadSegment1'";
+	LoadContent* loadContent = LoadContent::GetInstance();
+	FString meshPath = loadContent->Mesh("roadSegment1");
 	UStaticMesh* mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL, *meshPath));
 	SplineMesh->SetStaticMesh(mesh);
 

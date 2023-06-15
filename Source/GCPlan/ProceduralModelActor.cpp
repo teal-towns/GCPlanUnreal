@@ -1,7 +1,7 @@
 #include "ProceduralModelActor.h"
 
 #include "Common/UnrealGlobal.h"
-// #include "Modeling/ModelBase.h"
+#include "Modeling/ModelBase.h"
 #include "ProceduralModel/PMBase.h"
 
 AProceduralModelActor::AProceduralModelActor()
@@ -34,6 +34,8 @@ void AProceduralModelActor::GenerateModel() {
 	PMBase* pmBase = PMBase::GetInstance();
 	pmBase->SetInputs(ProceduralModelBase);
 	pmBase->Create();
+	ModelBase* modelBase = ModelBase::GetInstance();
+	modelBase->CreateFloor();
 }
 
 void AProceduralModelActor::DestroyActors() {

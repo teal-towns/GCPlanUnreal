@@ -4,6 +4,7 @@
 
 #include "ModelBase.h"
 #include "../ModelingStructsActor.h"
+#include "../Mesh/LoadContent.h"
 #include "../ProceduralModel/PMPrism.h"
 
 ModelEVCharger::ModelEVCharger()
@@ -33,9 +34,10 @@ void ModelEVCharger::Create()
     actor = modelBase->CreateActor(name, location, rotation, scale, spawnParams);
     USceneComponent *parent = actor->FindComponentByClass<USceneComponent>();
 
-    FString meshPathCube = "/Script/Engine.StaticMesh'/Game/Modeling/Primitives/Cube.Cube'";
-    FString meshPathCylinder = "/Script/Engine.StaticMesh'/Game/Modeling/Primitives/Cylinder.Cylinder'";
-    FString meshPathSphere = "/Script/Engine.StaticMesh'/Game/Modeling/Primitives/Sphere.Sphere'";
+	LoadContent* loadContent = LoadContent::GetInstance();
+    FString meshPathCube = loadContent->Mesh("cube");
+    FString meshPathCylinder = loadContent->Mesh("cylinder");
+    FString meshPathSphere = loadContent->Mesh("sphere");
 
     float chargerBottomHeight = size.Z * 2 / 3;
     float chargerTopHeight = size.Z / 3;

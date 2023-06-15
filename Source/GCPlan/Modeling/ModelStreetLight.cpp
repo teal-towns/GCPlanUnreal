@@ -4,6 +4,7 @@
 
 #include "ModelBase.h"
 #include "../ModelingStructsActor.h"
+#include "../Mesh/LoadContent.h"
 #include "../ProceduralModel/PMCylinder.h"
 
 ModelStreetLight::ModelStreetLight()
@@ -33,11 +34,12 @@ void ModelStreetLight::Create()
     actor = modelBase->CreateActor(name, location, rotation, scale, spawnParams);
     USceneComponent *parent = actor->FindComponentByClass<USceneComponent>();
 
-    FString meshPathCube = "/Script/Engine.StaticMesh'/Game/Modeling/Primitives/Cube.Cube'";
-    FString meshPathCylinder = "/Script/Engine.StaticMesh'/Game/Modeling/Primitives/Cylinder.Cylinder'";
-    FString meshPathSphere = "/Script/Engine.StaticMesh'/Game/Modeling/Primitives/Sphere.Sphere'";
+    LoadContent* loadContent = LoadContent::GetInstance();
+    FString meshPathCube = loadContent->Mesh("cube");
+    FString meshPathCylinder = loadContent->Mesh("cylinder");
+    FString meshPathSphere = loadContent->Mesh("sphere");
 
-    FString materialPath = "/Script/Engine.Material'/Game/Nature/Wood/wood-pale-material.wood-pale-material'";
+    FString materialPath = loadContent->Material("wood");
 
     float baseBottomHeight = size.Z * 2 / 5;
     float baseMiddleHeight = size.Z / 5;

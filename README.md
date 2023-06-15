@@ -30,10 +30,21 @@
 	- TGA is common and good, but much larger file size; can convert to PNG or JPG, e.g. https://products.aspose.app/imaging/image-resize
 
 ### Modeling
-- Use `ModelingStructsActor` as inputs (update / add to structs to add more input options)
-- Use `ProceduralModelActor` to generate new meshes (if need new "lego" building blocks / primitives)
-- Use `ModelingActor` to combine existing meshes (and optionally genereate new meshes via ProceduralModel) (e.g. combine 4 cubes as table legs and 1 cube as a table top to make a table).
-- After meshes are generated, use `Actor -> Convert "..." to Static Mesh` to save something in the scene as a reusable mesh (which can then be inputs to `ModelingActor`).
+- Use `ModelingStructsActor` as inputs (update / add to structs to add more input options / customizations).
+- Hierarchy
+	- Use `LayoutModelActor` for building rooms or lands / nature (using models generated from ModelingStructActor)
+	- Use `ModelingActor` for building 3D models (using / combining existing primitive meshes generated from ProceduralModelActor)
+		- (e.g. combine 4 cubes as table legs and 1 cube as a table top to make a table).
+	- Use `ProceduralModelActor` to generate new meshes (if need new "lego" building blocks / primitives)
+- After meshes are generated, use `Actor -> Convert "..." to Static Mesh` to save something in the scene as a reusable mesh (which can then be inputs, e.g. to `ModelingActor` or `LayoutModelActor`). In general use this for unique (smaller) models (e.g. procedural mesh or reusuable components) rather than full rooms or large layouts (which likely will be one of a kind and can be generated in code easily). One of each unique component should be able to build an entire city.
+- `ModelingActor` and `LayoutModelActor` are similar, but 3d models from `ModelingActor` will likely be saved as a new static mesh and re-used whereas rooms will likely always be re-built on the fly and will be unique / have many more possible combinations (and will be large file sizes with duplicated meshes so we don't want to save them).
+- Units: meters (will be converted to Unreal centimeters at the end).
+- Pivot: 0,0,0 would be centered for X & Y and bottom for Z (aligned to ground). So builds (expands) out from center for X & Y but up from bottom for Z. ALL models should use this save pivot system for consistency.
+- For consistent orientation / rotation, use Unreal XYZ coordinate system so assume positive X is forward (front), positive Y is right. This means in the editor you would be looking at the back of the object, so build as if you are looking at it from the back (so right side of couch is right from behind, left from in front looking at it head on). E.g. for a couch with scale (0.1, 0.2, 0.2), the sides would be:
+	- back: scale = FVector(scale.X, size.Y, size.Z); location = FVector(-1 * size.X / 2 + scale.X / 2, 0, 0);
+	- right: scale = FVector(size.X, scale.Y, size.Z); location = FVector(0, size.Y / 2 - scale.Y / 2, 0);
+	- left: scale = FVector(size.X, scale.Y, size.Z); location = FVector(0, -1 * size.Y / 2 + scale.Y / 2, 0);
+	- bottom: scale = FVector(size.X, size.Y, scale.Z); location = FVector(0, 0, 0);
 
 ### Include Third Party Code
 - https://georgy.dev/posts/third-party-integration/
