@@ -78,26 +78,44 @@ void ModelBase::Create() {
 	if (_modelingBase.tagsString.Len() > 0) {
 		_modelingBase.tagsString.ParseIntoArray(_modelingBase.tags, TEXT(","), true);
 	}
-	if (_modelingBase.subCategory == ModelingSubCategory::BENCH) {
+
+	if (_modelingBase.category == ModelingCategory::ANIMAL) {
+		_modelingBase.subCategory = *UEnum::GetValueAsString(_modelingBase.subCategoryAnimal);
+	} else if (_modelingBase.category == ModelingCategory::ARCHITECTURE) {
+		_modelingBase.subCategory = *UEnum::GetValueAsString(_modelingBase.subCategoryArchitecture);
+	} else if (_modelingBase.category == ModelingCategory::CLOTHES) {
+		_modelingBase.subCategory = *UEnum::GetValueAsString(_modelingBase.subCategoryClothes);
+	} else if (_modelingBase.category == ModelingCategory::ELECTRONICS) {
+		_modelingBase.subCategory = *UEnum::GetValueAsString(_modelingBase.subCategoryElectronics);
+	} else if (_modelingBase.category == ModelingCategory::FOOD) {
+		_modelingBase.subCategory = *UEnum::GetValueAsString(_modelingBase.subCategoryFood);
+	} else if (_modelingBase.category == ModelingCategory::FURNITURE) {
+		_modelingBase.subCategory = *UEnum::GetValueAsString(_modelingBase.subCategoryFurniture);
+	} else if (_modelingBase.category == ModelingCategory::PLANTS) {
+		_modelingBase.subCategory = *UEnum::GetValueAsString(_modelingBase.subCategoryPlants);
+	} else if (_modelingBase.category == ModelingCategory::SPORTS) {
+		_modelingBase.subCategory = *UEnum::GetValueAsString(_modelingBase.subCategorySports);
+	} else if (_modelingBase.category == ModelingCategory::TOOLS) {
+		_modelingBase.subCategory = *UEnum::GetValueAsString(_modelingBase.subCategoryTools);
+	} else if (_modelingBase.category == ModelingCategory::VEHICLE) {
+		_modelingBase.subCategory = *UEnum::GetValueAsString(_modelingBase.subCategoryVehicle);
+	}
+
+	if (_modelingBase.subCategory == "BENCH") {
 		ModelBench::Create();
-	} else if (_modelingBase.subCategory == ModelingSubCategory::DESK) {
+	} else if (_modelingBase.subCategory == "DESK") {
 		ModelDesk::Create();
-	} else if (_modelingBase.subCategory == ModelingSubCategory::MONITOR) {
+	} else if (_modelingBase.subCategory == "MONITOR") {
 		ModelMonitor::Create(defLocation);
-	} else if (_modelingBase.subCategory == ModelingSubCategory::KEYBOARD) {
+	} else if (_modelingBase.subCategory == "KEYBOARD") {
 		ModelKeyboard::Create(defLocation);
-	} else if (_modelingBase.subCategory == ModelingSubCategory::MOUSE) {
+	} else if (_modelingBase.subCategory == "MOUSE") {
 		ModelMouse::Create(defLocation);
-	}
-	else if (_modelingBase.subCategory == ModelingSubCategory::STREETLIGHT)
-	{
+	} else if (_modelingBase.subCategory == "STREETLIGHT") {
 		ModelStreetLight::Create();
-	}
-	else if (_modelingBase.subCategory == ModelingSubCategory::EVCHARGER)
-	{
+	} else if (_modelingBase.subCategory == "EVCHARGER") {
 		ModelEVCharger::Create();
 	}
-	// TODO
 }
 
 AStaticMeshActor* ModelBase::CreateActor(FString name, FVector location, FRotator rotation,
