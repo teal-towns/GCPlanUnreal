@@ -82,3 +82,10 @@ FString LoadContent::Material(FString key) {
 	}
 	return "";
 }
+
+FString LoadContent::Mesh(FString key) {
+	if (_meshModels.Contains(key)) {
+		return _meshModels[key].path;
+	}
+	return "";
+}

@@ -34,6 +34,7 @@ void AModelingActor::GenerateModel() {
 	ModelBase* modelBase = ModelBase::GetInstance();
 	modelBase->SetInputs(ModelingBase);
 	modelBase->Create();
+	modelBase->CreateFloor();
 }
 
 void AModelingActor::DestroyActors() {

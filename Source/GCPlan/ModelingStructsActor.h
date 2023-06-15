@@ -73,6 +73,7 @@ UENUM()
 enum ModelingSubCategoryFurniture {
 	BED,
 	BENCH,
+	BOOK,
 	CABINET,
 	CHAIR,
 	COUCH,
@@ -82,6 +83,7 @@ enum ModelingSubCategoryFurniture {
 	MIRROR,
 	PILLOW,
 	PLANTER_BOX,
+	STAND,
 	TABLE,
 	WINDOW
 };

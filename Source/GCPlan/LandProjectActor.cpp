@@ -137,6 +137,9 @@ void ALandProjectActor::EditorClear() {
 	// Must be last (after any others that call instanced mesh).
 	InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
 	instancedMesh->CleanUp();
+
+	// Not fixing the issue..
+	// GEngine->ForceGarbageCollection(true);
 }
 
 void ALandProjectActor::EditorGenerate() {

@@ -32,7 +32,7 @@ void ModelBench::Create() {
 	USceneComponent* parent = actor->FindComponentByClass<USceneComponent>();
 
 	LoadContent* loadContent = LoadContent::GetInstance();
-	FString meshPath = "/Script/Engine.StaticMesh'/Game/Modeling/Primitives/Cube.Cube'";
+	FString meshPath = loadContent->Mesh("cube");
 	FString materialPath = loadContent->Material("wood");
 
 	// Seat

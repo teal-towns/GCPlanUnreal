@@ -2,6 +2,7 @@
 
 #include "Common/UnrealGlobal.h"
 #include "LayoutModel/LayoutModelBase.h"
+#include "Modeling/ModelBase.h"
 
 ALayoutModelActor::ALayoutModelActor()
 {
@@ -28,6 +29,8 @@ void ALayoutModelActor::GenerateModel() {
 	LayoutModelBase* layoutModelBase = LayoutModelBase::GetInstance();
 	layoutModelBase->SetInputs(LayoutParams);
 	layoutModelBase->Create();
+	ModelBase* modelBase = ModelBase::GetInstance();
+	modelBase->CreateFloor();
 }
 
 void ALayoutModelActor::DestroyActors() {

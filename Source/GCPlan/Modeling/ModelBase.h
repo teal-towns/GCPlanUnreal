@@ -18,6 +18,7 @@ public:
 	void SetWorld(UWorld*);
 	UWorld* GetWorld();
 	void Create();
+	void CreateFloor();
 	AStaticMeshActor* CreateActor(FString name, FVector location, FRotator rotation,
 		FVector scale, FActorSpawnParameters spawnParams, USceneComponent* parent = nullptr,
 		FString meshPath = "", FString materialPath = "", UStaticMesh* mesh = nullptr);

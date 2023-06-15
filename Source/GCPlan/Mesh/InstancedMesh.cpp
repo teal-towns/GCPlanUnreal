@@ -5,6 +5,7 @@
 #include "Components/StaticMeshComponent.h"
 
 #include "../Common/UnrealGlobal.h"
+#include "../Mesh/LoadContent.h"
 #include "../ProceduralModel/PMBase.h"
 #include "../Modeling/ModelBase.h"
 
@@ -37,27 +38,28 @@ void InstancedMesh::CleanUp() {
 	_instancedMeshActors = {};
 	if (_instancedMeshesActor) {
 		_instancedMeshesActor->Destroy();
-		_instancedMeshesActor = nullptr;
+		// _instancedMeshesActor = nullptr;
 	}
 	pinstance_ = nullptr;
 }
 
 void InstancedMesh::InitMeshes() {
-	if (!_instancedMeshesActor) {
+	if (!IsValid(_instancedMeshesActor)) {
 		FString name = "InstancedMeshes";
 		PMBase* pmBase = PMBase::GetInstance();
 		FActorSpawnParameters spawnParams;
 		_instancedMeshesActor = pmBase->CreateActor(name, FVector(0,0,0), FRotator(0,0,0), spawnParams);
+	} else {
+		UE_LOG(LogTemp, Display, TEXT("InitMeshes actor still valid"));
+		if (_instancedMeshesActor) {
+			UE_LOG(LogTemp, Display, TEXT("pending?"), _instancedMeshesActor->IsPendingKill(), _instancedMeshesActor->HasAnyFlags(RF_BeginDestroyed));
+		}
 	}
 
-	// AddMesh("HexModule", "/Script/Engine.StaticMesh'/Game/Buildings/Hex/HexModule/HexModule.HexModule'",
-	// 	"/Script/Engine.Material'/Game/Nature/Wood/wood-pale-material.wood-pale-material'");
-	// AddMesh("HexModuleBlock", "/Script/Engine.StaticMesh'/Game/Buildings/Hex/HexModule/HexModule_LOD2.HexModule_LOD2'",
-	// 	"/Script/Engine.Material'/Game/Nature/Wood/wood-pale-material.wood-pale-material'");
-
+	// LoadContent* loadContent = LoadContent::GetInstance();
+	// TODO - replace and / or reference these all from load content
 	AddMesh("RoadRoundabout", "/Script/Engine.StaticMesh'/Game/Landscape/Roundabout1.Roundabout1'",
 		"/Script/Engine.Material'/Game/Landscape/Asphalt_M.Asphalt_M'");
-
 	AddMesh("VertexWhite", "/Script/Engine.StaticMesh'/Game/Landscape/VerticesEdit/VertexWhite.VertexWhite'",
 		"");
 	AddMesh("EdgeBlack", "/Script/Engine.StaticMesh'/Game/Landscape/VerticesEdit/EdgeBlack.EdgeBlack'",

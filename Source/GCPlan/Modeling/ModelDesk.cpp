@@ -35,7 +35,7 @@ void ModelDesk::Create() {
 	LoadContent* loadContent = LoadContent::GetInstance();
 	FString materialPathDesk = loadContent->Material("wood");
 	FString materialPathLegs = loadContent->Material("black");
-	FString meshPath = "/Script/Engine.StaticMesh'/Game/Modeling/Primitives/Cube.Cube'";
+	FString meshPath = loadContent->Mesh("cube");
 
 	spawnParams.Owner = actor;
 	UStaticMesh* mesh = nullptr;
@@ -151,8 +151,8 @@ void ModelMonitor::Create(FVector defLocation) {
 	actor = modelBase->CreateActor(name, location, rotation, scale, spawnParams);
 	USceneComponent* parent = actor->FindComponentByClass<USceneComponent>();
 
-	FString meshPath = "/Script/Engine.StaticMesh'/Game/Modeling/Primitives/Cube.Cube'";
 	LoadContent* loadContent = LoadContent::GetInstance();
+	FString meshPath = loadContent->Mesh("cube");
 	FString materialPath = loadContent->Material("black");
 
 	spawnParams.Owner = actor;
@@ -204,8 +204,8 @@ void ModelKeyboard::Create(FVector defLocation) {
 	actor = modelBase->CreateActor(name, location, rotation, scale, spawnParams);
 	USceneComponent* parent = actor->FindComponentByClass<USceneComponent>();
 
-	FString meshPath = "/Script/Engine.StaticMesh'/Game/Modeling/Primitives/Cube.Cube'";
 	LoadContent* loadContent = LoadContent::GetInstance();
+	FString meshPath = loadContent->Mesh("cube");
 	FString materialPath = loadContent->Material("grey");
 
 	spawnParams.Owner = actor;
@@ -242,8 +242,8 @@ void ModelMouse::Create(FVector defLocation) {
 	actor = modelBase->CreateActor(name, location, rotation, scale, spawnParams);
 	USceneComponent* parent = actor->FindComponentByClass<USceneComponent>();
 
-	FString meshPath = "/Script/Engine.StaticMesh'/Game/Modeling/Primitives/Cube.Cube'";
 	LoadContent* loadContent = LoadContent::GetInstance();
+	FString meshPath = loadContent->Mesh("cube");
 	FString materialPath = loadContent->Material("blue");
 
 	spawnParams.Owner = actor;
