@@ -75,3 +75,13 @@ UMaterialInstanceDynamic* DynamicMaterial::CreateTexture(FString name, FString t
 	_dynamicMaterials.Add(name, newMaterial);
 	return newMaterial;
 }
+
+UMaterialInstanceDynamic* DynamicMaterial::CreateColor(FString name, FLinearColor color) {
+	FString materialPath = "/Script/Engine.MaterialInstanceConstant'/Game/Material/Dynamic/DynamicColor_M_Inst.DynamicColor_M_Inst'";
+	UMaterialInstance* material = Cast<UMaterialInstance>(StaticLoadObject(UMaterialInstance::StaticClass(), NULL,
+		*materialPath));
+	UMaterialInstanceDynamic* newMaterial  = UMaterialInstanceDynamic::Create(material, NULL);
+	newMaterial->SetVectorParameterValue(FName("Color"), color);
+	_dynamicMaterials.Add(name, newMaterial);
+	return newMaterial;
+}
