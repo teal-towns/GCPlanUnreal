@@ -43,8 +43,12 @@ void ModelCouch::Create() {
 	FString materialPath = loadContent->Material("dynamicLeather");
 	FString texturePathBase = loadContent->Texture("leather_base");
 	FString texturePathNormal = loadContent->Texture("leather_normal");
-	UMaterialInstanceDynamic* material = dynamicMaterial->Create(name + "_leather", texturePathBase,
-		texturePathNormal, FLinearColor(255,230,145));
+	// FString texturePathBase = loadContent->Texture("marble_base");
+	// FString texturePathNormal = loadContent->Texture("marble_normal");
+	// UMaterialInstanceDynamic* material = dynamicMaterial->CreateTextureColor(name + "_leather", texturePathBase,
+	// 	texturePathNormal, FLinearColor(255,230,145));
+	UMaterialInstanceDynamic* material = dynamicMaterial->CreateTexture(name + "_leather", texturePathBase,
+		texturePathNormal);
 	FString materialPathWood = loadContent->Material("wood");
 	FModelParams modelParams;
 	modelParams.meshPath = meshCube;

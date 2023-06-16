@@ -20,7 +20,8 @@ public:
 
 	void CleanUp();
 	// void Init();
-	UMaterialInstanceDynamic* Create(FString name, FString textureBasePath = "",
+	UMaterialInstanceDynamic* CreateTextureColor(FString name, FString textureBasePath = "",
 		FString textureNormalPath = "", FLinearColor color = FLinearColor(255,255,255), float colorIntensity = 1);
-
+	UMaterialInstanceDynamic* CreateTexture(FString name, FString textureBasePath,
+		FString textureNormalPath);
 };
