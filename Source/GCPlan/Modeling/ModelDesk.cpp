@@ -62,7 +62,7 @@ void ModelDesk::Create() {
 			float legZ = legSize.Z * (float)ii;
 
 			// Left Front Leg
-			location = FVector(((-0.5 * size.X) + offXY), ((-0.5 * size.Y) + offXY), legZ);
+			location = FVector(((-0.5 * size.X) + offXY), ((0.5 * size.Y) - offXY), legZ);
 			scale = FVector(legThick, legThick, legSize.Z);
 			if (ii == 1) {
 				modelBase->CreateActor(name + "_LegsLF1", location, rotation, scale, spawnParams, modelParams);
@@ -71,7 +71,7 @@ void ModelDesk::Create() {
 			}
 
 			// Left Back Leg
-			location = FVector(((-0.5 * size.X) + offXY), ((0.5 * size.Y) - offXY), legZ);
+			location = FVector(((-0.5 * size.X) + offXY), ((-0.5 * size.Y) + offXY), legZ);
 			scale = FVector(legThick, legThick, legSize.Z);
 			if (ii == 1) {
 				modelBase->CreateActor(name + "_LegsLB1", location, rotation, scale, spawnParams, modelParams);

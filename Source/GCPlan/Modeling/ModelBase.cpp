@@ -12,6 +12,8 @@
 #include "Furniture/ModelLight.h"
 #include "Furniture/ModelStand.h"
 #include "ModelBench.h"
+#include "ModelChair.h"
+#include "ModelTable.h"
 #include "ModelDesk.h"
 #include "ModelStreetLight.h"
 #include "ModelEVCharger.h"
@@ -110,6 +112,8 @@ void ModelBase::Create() {
 		ModelBench::Create();
 	} else if (_modelingBase.subCategory == "BOOK") {
 		ModelBook::Create();
+	} else if (_modelingBase.subCategory == "CHAIR") {
+		ModelChair::Create();
 	} else if (_modelingBase.subCategory == "COUCH") {
 		ModelCouch::Create();
 	} else if (_modelingBase.subCategory == "DESK") {
@@ -128,6 +132,8 @@ void ModelBase::Create() {
 		ModelStand::Create();
 	} else if (_modelingBase.subCategory == "STREETLIGHT") {
 		ModelStreetLight::Create();
+	} else if (_modelingBase.subCategory == "TABLE") {
+		ModelTable::Create();
 	}
 }
 
