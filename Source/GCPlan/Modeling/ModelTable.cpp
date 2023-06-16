@@ -35,8 +35,12 @@ void ModelTable::Create() {
 	LoadContent* loadContent = LoadContent::GetInstance();
 	FString materialPath = loadContent->Material("wood");
 	FString materialPathMetal = loadContent->Material("black");
-	FString meshPath = "/Script/Engine.StaticMesh'/Game/Modeling/Primitives/Cube.Cube'";
-	FString meshPathCylinder = "/Script/Engine.StaticMesh'/Game/Modeling/Primitives/Cylinder.Cylinder'";
+	FString meshPath = loadContent->Mesh("cube");
+	FString meshPathCylinder = loadContent->Mesh("cylinder");
+	FModelParams modelParams;
+	modelParams.parent = parent;
+	modelParams.meshPath = meshPath;
+	modelParams.materialPath = materialPath;
 
 	spawnParams.Owner = actor;
 	UStaticMesh* mesh = nullptr;
@@ -46,46 +50,36 @@ void ModelTable::Create() {
 	float offset = thick / 2.0;
 	float offXY = (offset + (0.5 * legThick));
 
+	if (tags.Contains("METAL")) {
+		modelParams.materialPath = materialPathMetal;
+		modelParams.meshPath = meshPathCylinder;
+	}
+
 	// Left Front Leg
 	location = FVector(((-0.5 * size.X) + offXY), ((0.5 * size.Y) - offXY), 0);
 	scale = FVector(legThick, legThick, legZ);
-	if (tags.Contains("METAL")) {
-		modelBase->CreateActor(name + "_LegsLF", location, rotation, scale, spawnParams, parent, meshPathCylinder, materialPathMetal);
-	} else {
-		modelBase->CreateActor(name + "_LegsLF", location, rotation, scale, spawnParams, parent, meshPath, materialPath);
-	} // METAL
+	modelBase->CreateActor(name + "_LegsLF", location, rotation, scale, spawnParams, modelParams);
 
 	// Left Back Leg
 	location = FVector(((-0.5 * size.X) + offXY), ((-0.5 * size.Y) + offXY), 0);
 	scale = FVector(legThick, legThick, legZ);
-	if (tags.Contains("METAL")) {
-		modelBase->CreateActor(name + "_LegsLB", location, rotation, scale, spawnParams, parent, meshPathCylinder, materialPathMetal);
-	} else {
-		modelBase->CreateActor(name + "_LegsLB", location, rotation, scale, spawnParams, parent, meshPath, materialPath);
-	} // METAL
+	modelBase->CreateActor(name + "_LegsLB", location, rotation, scale, spawnParams, modelParams);
 
 	// Right Front Leg
 	location = FVector(((0.5 * size.X) - offXY), ((0.5 * size.Y) - offXY), 0);
 	scale = FVector(legThick, legThick, legZ);
-	if (tags.Contains("METAL")) {
-		modelBase->CreateActor(name + "_LegsRF", location, rotation, scale, spawnParams, parent, meshPathCylinder, materialPathMetal);
-	} else {
-		modelBase->CreateActor(name + "_LegsRF", location, rotation, scale, spawnParams, parent, meshPath, materialPath);
-	} // METAL
+	modelBase->CreateActor(name + "_LegsRF", location, rotation, scale, spawnParams, modelParams);
 
 	// Right Back Leg
 	location = FVector(((0.5 * size.X) - offXY), ((-0.5 * size.Y) + offXY), 0);
 	scale = FVector(legThick, legThick, legZ);
-	if (tags.Contains("METAL")) {
-		modelBase->CreateActor(name + "_LegsRB", location, rotation, scale, spawnParams, parent, meshPathCylinder, materialPathMetal);
-	} else {
-		modelBase->CreateActor(name + "_LegsRB", location, rotation, scale, spawnParams, parent, meshPath, materialPath);
-	} // METAL
+	modelBase->CreateActor(name + "_LegsRB", location, rotation, scale, spawnParams, modelParams);
 
+	modelParams.meshPath = meshPath;
+	modelParams.materialPath = materialPath;
 	// Top
 	location = FVector(0, 0, legZ);
 	scale = FVector(size.X, size.Y, thick);
-	modelBase->CreateActor(name + "_Top", location, rotation, scale, spawnParams, parent, meshPath, materialPath);
+	modelBase->CreateActor(name + "_Top", location, rotation, scale, spawnParams, modelParams);
 
 } // ModelTable
-

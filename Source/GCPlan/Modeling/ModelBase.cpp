@@ -113,7 +113,7 @@ void ModelBase::Create() {
 	} else if (_modelingBase.subCategory == "BOOK") {
 		ModelBook::Create();
 	} else if (_modelingBase.subCategory == "CHAIR") {
-		ModelChair:Create();
+		ModelChair::Create();
 	} else if (_modelingBase.subCategory == "COUCH") {
 		ModelCouch::Create();
 	} else if (_modelingBase.subCategory == "DESK") {
