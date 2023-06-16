@@ -5,6 +5,18 @@
 
 #include "../ModelingStructsActor.h"
 
+struct FModelParams {
+	FString meshPath = "";
+	FString materialPath = "";
+	UStaticMesh* mesh = nullptr;
+	UMaterialInstanceDynamic* dynamicMaterial = nullptr;
+	USceneComponent* parent = nullptr;
+	FString textureBase = "";
+	FString textureNormal = "";
+	FLinearColor textureColor = FLinearColor(255,255,255);
+	float textureColorIntensity = 1;
+};
+
 class ModelBase {
 public:
 	ModelBase();
@@ -19,9 +31,12 @@ public:
 	UWorld* GetWorld();
 	void Create();
 	void CreateFloor();
+	// AStaticMeshActor* CreateActor(FString name, FVector location, FRotator rotation,
+	// 	FVector scale, FActorSpawnParameters spawnParams, USceneComponent* parent = nullptr,
+	// 	FString meshPath = "", FString materialPath = "", UStaticMesh* mesh = nullptr,
+	// 	FModelParams = FModelParams());
 	AStaticMeshActor* CreateActor(FString name, FVector location, FRotator rotation,
-		FVector scale, FActorSpawnParameters spawnParams, USceneComponent* parent = nullptr,
-		FString meshPath = "", FString materialPath = "", UStaticMesh* mesh = nullptr);
+		FVector scale, FActorSpawnParameters spawnParams, FModelParams = FModelParams());
 
 	void SetInputs(FModelingBase);
 	FModelingBase GetInputs(FString defaultName, FVector defaultSize);

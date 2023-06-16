@@ -47,6 +47,7 @@ void LoadContent::LoadMeshes(FString defaultMeshPath) {
 	auto [data, valid] = LoadFile(unrealGlobal->Settings()->jsonFiles["contentMeshes"]);
 	if (valid) {
 		_materialPaths = data.materials;
+		_texturePaths = data.textures;
 		InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
 		UStaticMesh* mesh;
 		FString meshPath, name, materialPath;
@@ -79,6 +80,13 @@ TArray<FString> LoadContent::GetMeshNamesByTypes(TArray<FString> types) {
 FString LoadContent::Material(FString key) {
 	if (_materialPaths.Contains(key)) {
 		return _materialPaths[key];
+	}
+	return "";
+}
+
+FString LoadContent::Texture(FString key) {
+	if (_texturePaths.Contains(key)) {
+		return _texturePaths[key];
 	}
 	return "";
 }

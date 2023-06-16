@@ -134,7 +134,6 @@ void SplineRoad::DrawRoads(bool addPlants, bool carveLand) {
 			widthMeters = Elem.Value.widthMeters;
 			vertices = Elem.Value.vertices;
 
-			// actor = pmBase->CreateActor(UName, location, rotation, spawnParams, roadsParent);
 			spawnParams.Name = FName(UName);
 			actor = (AActor*)World->SpawnActor<AActor>(
 				AActor::StaticClass(), FVector(0,0,0) * unrealGlobal->GetScale(), FRotator(0,0,0), spawnParams);

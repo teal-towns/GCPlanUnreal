@@ -35,6 +35,10 @@ void LMLobby::Create() {
 	LoadContent* loadContent = LoadContent::GetInstance();
 	FString meshPath = loadContent->Mesh("cube");
 	FString materialPath = loadContent->Material("white");
+	FModelParams modelParams;
+	modelParams.meshPath = meshPath;
+	modelParams.materialPath = materialPath;
+	modelParams.parent = parent;
 
 	// Floor
 	// TODO
@@ -42,7 +46,7 @@ void LMLobby::Create() {
 	// Couch
 	location = FVector(0, 2, 0);
 	scale = FVector(1,1,1);
-	modelBase->CreateActor(name + "_Couch", location, rotation, scale, spawnParams, parent, meshPath, materialPath);
+	modelBase->CreateActor(name + "_Couch", location, rotation, scale, spawnParams, modelParams);
 
 	// Ceiling
 	// TODO
