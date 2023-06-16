@@ -51,9 +51,9 @@ void InstancedMesh::InitMeshes() {
 		_instancedMeshesActor = pmBase->CreateActor(name, FVector(0,0,0), FRotator(0,0,0), spawnParams);
 	} else {
 		UE_LOG(LogTemp, Display, TEXT("InitMeshes actor still valid"));
-		if (_instancedMeshesActor) {
-			UE_LOG(LogTemp, Display, TEXT("pending?"), _instancedMeshesActor->IsPendingKill(), _instancedMeshesActor->HasAnyFlags(RF_BeginDestroyed));
-		}
+		// if (_instancedMeshesActor) {
+		// 	UE_LOG(LogTemp, Display, TEXT("pending?"), _instancedMeshesActor->IsPendingKill(), _instancedMeshesActor->HasAnyFlags(RF_BeginDestroyed));
+		// }
 	}
 
 	// LoadContent* loadContent = LoadContent::GetInstance();
@@ -87,8 +87,6 @@ void InstancedMesh::AddMesh(FString name, FString meshPath, FString materialPath
 			// ModelBase* modelBase = ModelBase::GetInstance();
 			USceneComponent* meshesParent = _instancedMeshesActor->FindComponentByClass<USceneComponent>();
 			FActorSpawnParameters spawnParams;
-			// AStaticMeshActor* actor = modelBase->CreateActor(name, FVector(0,0,0), FRotator(0,0,0),
-			// 	FVector(1,1,1), spawnParams, meshesParent, meshPath, materialPath);
 			spawnParams.Name = FName(name);
 			actor = (AActor*)World->SpawnActor<AActor>(
 				AActor::StaticClass(), FVector(0,0,0) * unrealGlobal->GetScale(), FRotator(0,0,0), spawnParams);

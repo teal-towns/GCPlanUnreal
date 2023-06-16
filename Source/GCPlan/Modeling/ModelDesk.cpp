@@ -36,6 +36,9 @@ void ModelDesk::Create() {
 	FString materialPathDesk = loadContent->Material("wood");
 	FString materialPathLegs = loadContent->Material("black");
 	FString meshPath = loadContent->Mesh("cube");
+	FModelParams modelParams;
+	modelParams.meshPath = meshPath;
+	modelParams.parent = parent;
 
 	spawnParams.Owner = actor;
 	UStaticMesh* mesh = nullptr;
@@ -44,8 +47,10 @@ void ModelDesk::Create() {
 	// Top
 	location = FVector(0, 0, size.Z);
 	scale = FVector(size.X, size.Y, thick);
-	modelBase->CreateActor(name + "_Top", location, rotation, scale, spawnParams, parent, meshPath, materialPathDesk);
+	modelParams.materialPath = materialPathDesk;
+	modelBase->CreateActor(name + "_Top", location, rotation, scale, spawnParams, modelParams);
 
+	modelParams.materialPath = materialPathLegs;
 	if (tags.Contains("LEGS")) {
 		float legThick = thick;
 		float offset = thick / 2.0;
@@ -60,36 +65,36 @@ void ModelDesk::Create() {
 			location = FVector(((-0.5 * size.X) + offXY), ((-0.5 * size.Y) + offXY), legZ);
 			scale = FVector(legThick, legThick, legSize.Z);
 			if (ii == 1) {
-				modelBase->CreateActor(name + "_LegsLF1", location, rotation, scale, spawnParams, parent, meshPath, materialPathLegs);
+				modelBase->CreateActor(name + "_LegsLF1", location, rotation, scale, spawnParams, modelParams);
 			} else {
-				modelBase->CreateActor(name + "_LegsLF0", location, rotation, scale, spawnParams, parent, meshPath, materialPathLegs);
+				modelBase->CreateActor(name + "_LegsLF0", location, rotation, scale, spawnParams, modelParams);
 			}
 
 			// Left Back Leg
 			location = FVector(((-0.5 * size.X) + offXY), ((0.5 * size.Y) - offXY), legZ);
 			scale = FVector(legThick, legThick, legSize.Z);
 			if (ii == 1) {
-				modelBase->CreateActor(name + "_LegsLB1", location, rotation, scale, spawnParams, parent, meshPath, materialPathLegs);
+				modelBase->CreateActor(name + "_LegsLB1", location, rotation, scale, spawnParams, modelParams);
 			} else {
-				modelBase->CreateActor(name + "_LegsLB0", location, rotation, scale, spawnParams, parent, meshPath, materialPathLegs);
+				modelBase->CreateActor(name + "_LegsLB0", location, rotation, scale, spawnParams, modelParams);
 			}
 
 			// Right Front Leg
 			location = FVector(((0.5 * size.X) - offXY), ((0.5 * size.Y) - offXY), legZ);
 			scale = FVector(legThick, legThick, legSize.Z);
 			if (ii == 1) {
-				modelBase->CreateActor(name + "_LegsRF1", location, rotation, scale, spawnParams, parent, meshPath, materialPathLegs);
+				modelBase->CreateActor(name + "_LegsRF1", location, rotation, scale, spawnParams, modelParams);
 			} else {
-				modelBase->CreateActor(name + "_LegsRF0", location, rotation, scale, spawnParams, parent, meshPath, materialPathLegs);
+				modelBase->CreateActor(name + "_LegsRF0", location, rotation, scale, spawnParams, modelParams);
 			}
 
 			// Right Back Leg
 			location = FVector(((0.5 * size.X) - offXY), ((-0.5 * size.Y) + offXY), legZ);
 			scale = FVector(legThick, legThick, legSize.Z);
 			if (ii == 1) {
-				modelBase->CreateActor(name + "_LegsRB1", location, rotation, scale, spawnParams, parent, meshPath, materialPathLegs);
+				modelBase->CreateActor(name + "_LegsRB1", location, rotation, scale, spawnParams, modelParams);
 			} else {
-				modelBase->CreateActor(name + "_LegsRB0", location, rotation, scale, spawnParams, parent, meshPath, materialPathLegs);
+				modelBase->CreateActor(name + "_LegsRB0", location, rotation, scale, spawnParams, modelParams);
 			}
 
 			legThick /= 2.0;
@@ -98,21 +103,22 @@ void ModelDesk::Create() {
 
 	} else {
 
+		modelParams.materialPath = materialPathDesk;
 		// Left
 		location = FVector(((-0.5 * size.X) + (0.5 * thick)), 0, 0);
 		scale = FVector(thick, size.Y, size.Z);
-		modelBase->CreateActor(name + "_Left", location, rotation, scale, spawnParams, parent, meshPath, materialPathDesk);
+		modelBase->CreateActor(name + "_Left", location, rotation, scale, spawnParams, modelParams);
 
 		// Right
 		location = FVector(((0.5 * size.X) - (0.5 * thick)), 0, 0);
 		scale = FVector(thick, size.Y, size.Z);
-		modelBase->CreateActor(name + "_Right", location, rotation, scale, spawnParams, parent, meshPath, materialPathDesk);
+		modelBase->CreateActor(name + "_Right", location, rotation, scale, spawnParams, modelParams);
 
 		// Back
 		float gapBack = (0.2 * size.Z);
 		location = FVector(0, ((-0.5 * size.Y) + (0.5 * thick)), gapBack);
 		scale = FVector((size.X - (2.0 * thick)), thick, (size.Z - gapBack));
-		modelBase->CreateActor(name + "_Back", location, rotation, scale, spawnParams, parent, meshPath, materialPathDesk);
+		modelBase->CreateActor(name + "_Back", location, rotation, scale, spawnParams, modelParams);
 	} // LEGS
 
 	if (tags.Contains("KVM")) {
@@ -154,6 +160,10 @@ void ModelMonitor::Create(FVector defLocation) {
 	LoadContent* loadContent = LoadContent::GetInstance();
 	FString meshPath = loadContent->Mesh("cube");
 	FString materialPath = loadContent->Material("black");
+	FModelParams modelParams;
+	modelParams.meshPath = meshPath;
+	modelParams.materialPath = materialPath;
+	modelParams.parent = parent;
 
 	spawnParams.Owner = actor;
 	UStaticMesh* mesh = nullptr;
@@ -162,19 +172,19 @@ void ModelMonitor::Create(FVector defLocation) {
 	// Front
 	location = FVector(0, 0, stand);
 	scale = FVector(size.X, size.Y, size.Z);
-	modelBase->CreateActor(name + "_Front", location, rotation, scale, spawnParams, parent, meshPath, materialPath);
+	modelBase->CreateActor(name + "_Front", location, rotation, scale, spawnParams, modelParams);
 
 	if (stand > 0) {
 		// Back
 		float thick = 0.05;
 		location = FVector((-0.5 * stand), (-size.Y), thick);
 		scale = FVector(stand, thick, (stand * 2));
-		modelBase->CreateActor(name + "_Back", location, rotation, scale, spawnParams, parent, meshPath, materialPath);
+		modelBase->CreateActor(name + "_Back", location, rotation, scale, spawnParams, modelParams);
 
 		// Base
 		location = FVector((-0.5 * stand), (-size.Y), 0);
 		scale = FVector((stand * 3), stand, thick);
-		modelBase->CreateActor(name + "_Base", location, rotation, scale, spawnParams, parent, meshPath, materialPath);
+		modelBase->CreateActor(name + "_Base", location, rotation, scale, spawnParams, modelParams);
 
 	} // stand
 } // ModelMonitor
@@ -207,6 +217,10 @@ void ModelKeyboard::Create(FVector defLocation) {
 	LoadContent* loadContent = LoadContent::GetInstance();
 	FString meshPath = loadContent->Mesh("cube");
 	FString materialPath = loadContent->Material("grey");
+	FModelParams modelParams;
+	modelParams.meshPath = meshPath;
+	modelParams.materialPath = materialPath;
+	modelParams.parent = parent;
 
 	spawnParams.Owner = actor;
 	UStaticMesh* mesh = nullptr;
@@ -214,7 +228,7 @@ void ModelKeyboard::Create(FVector defLocation) {
 	// Top
 	location = FVector(0, 0, 0);
 	scale = FVector(size.X, size.Y, size.Z);
-	modelBase->CreateActor(name + "_Top", location, rotation, scale, spawnParams, parent, meshPath, materialPath);
+	modelBase->CreateActor(name + "_Top", location, rotation, scale, spawnParams, modelParams);
 } // ModelKeyboard
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -245,6 +259,10 @@ void ModelMouse::Create(FVector defLocation) {
 	LoadContent* loadContent = LoadContent::GetInstance();
 	FString meshPath = loadContent->Mesh("cube");
 	FString materialPath = loadContent->Material("blue");
+	FModelParams modelParams;
+	modelParams.meshPath = meshPath;
+	modelParams.materialPath = materialPath;
+	modelParams.parent = parent;
 
 	spawnParams.Owner = actor;
 	UStaticMesh* mesh = nullptr;
@@ -252,5 +270,5 @@ void ModelMouse::Create(FVector defLocation) {
 	// Top
 	location = FVector(0, 0, 0);
 	scale = FVector(size.X, size.Y, size.Z);
-	modelBase->CreateActor(name + "_Top", location, rotation, scale, spawnParams, parent, meshPath, materialPath);
+	modelBase->CreateActor(name + "_Top", location, rotation, scale, spawnParams, modelParams);
 } // ModelMouse

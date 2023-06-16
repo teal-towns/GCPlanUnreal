@@ -12,6 +12,7 @@ private:
 
 	TMap<FString, FContentMeshModel> _meshModels = {};
 	TMap<FString, FString> _materialPaths = {};
+	TMap<FString, FString> _texturePaths = {};
 
 public:
 	LoadContent();
@@ -28,5 +29,6 @@ public:
 	void LoadMeshes(FString defaultMeshPath = "/Script/Engine.StaticMesh'/Game/Modeling/Primitives/Cube.Cube'");
 	TArray<FString> GetMeshNamesByTypes(TArray<FString> types);
 	FString Material(FString key);
+	FString Texture(FString key);
 	FString Mesh(FString key);
 };

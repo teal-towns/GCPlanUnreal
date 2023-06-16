@@ -5,6 +5,7 @@
 #include "../ModelBase.h"
 #include "../Common/ModelLeg.h"
 #include "../Common/ModelSide.h"
+#include "../../Mesh/DynamicMaterial.h"
 #include "../../Mesh/LoadContent.h"
 #include "../../ModelingStructsActor.h"
 #include "../../ProceduralModel/PMCylinder.h"
@@ -37,24 +38,40 @@ void ModelCouch::Create() {
 	USceneComponent* parent = actor->FindComponentByClass<USceneComponent>();
 
 	LoadContent* loadContent = LoadContent::GetInstance();
+	DynamicMaterial* dynamicMaterial = DynamicMaterial::GetInstance();
 	FString meshCube = loadContent->Mesh("cube");
-	FString material = loadContent->Material("white");
-	FString materialWood = loadContent->Material("wood");
+	FString materialPath = loadContent->Material("dynamicLeather");
+	FString texturePathBase = loadContent->Texture("leather_base");
+	FString texturePathNormal = loadContent->Texture("leather_normal");
+	// FString texturePathBase = loadContent->Texture("marble_base");
+	// FString texturePathNormal = loadContent->Texture("marble_normal");
+	// UMaterialInstanceDynamic* material = dynamicMaterial->CreateTextureColor(name + "_leather", texturePathBase,
+	// 	texturePathNormal, FLinearColor(255,230,145));
+	// UMaterialInstanceDynamic* material = dynamicMaterial->CreateTexture(name + "_leather", texturePathBase,
+	// 	texturePathNormal);
+	UMaterialInstanceDynamic* material = dynamicMaterial->CreateColor(name + "_leather", FLinearColor(255,0,0));
+	FString materialPathWood = loadContent->Material("wood");
+	FModelParams modelParams;
+	modelParams.meshPath = meshCube;
+	modelParams.parent = parent;
 
+	modelParams.materialPath = materialPathWood;
 	FVector scaleLeg = FVector(0.1, 0.1, 0.2);
 	float buffer = 0.2;
-	ModelLeg::FrontRight(name, size, scaleLeg, buffer, parent, meshCube, materialWood);
-	ModelLeg::BackRight(name, size, scaleLeg, buffer, parent, meshCube, materialWood);
-	ModelLeg::BackLeft(name, size, scaleLeg, buffer, parent, meshCube, materialWood);
-	ModelLeg::FrontLeft(name, size, scaleLeg, buffer, parent, meshCube, materialWood);
+	ModelLeg::FrontRight(name, size, scaleLeg, buffer, modelParams);
+	ModelLeg::BackRight(name, size, scaleLeg, buffer, modelParams);
+	ModelLeg::BackLeft(name, size, scaleLeg, buffer, modelParams);
+	ModelLeg::FrontLeft(name, size, scaleLeg, buffer, modelParams);
 
+	// modelParams.materialPath = materialPath;
+	modelParams.dynamicMaterial = material;
 	FVector scaleSide = FVector(0.1, 0.2, 0.2);
 	FVector sizeSide = FVector(size.X, size.Y, size.Z - scaleLeg.Z);
 	FVector offsetSide = FVector(0,0,scaleLeg.Z);
-	ModelSide::Back(name, sizeSide, scaleSide, parent, meshCube, material, offsetSide);
-	ModelSide::Right(name, sizeSide, scaleSide, parent, meshCube, material, offsetSide);
-	ModelSide::Left(name, sizeSide, scaleSide, parent, meshCube, material, offsetSide);
-	ModelSide::Bottom(name, size, scaleSide, parent, meshCube, material, offsetSide);
+	ModelSide::Back(name, sizeSide, scaleSide, modelParams, offsetSide);
+	ModelSide::Right(name, sizeSide, scaleSide, modelParams, offsetSide);
+	ModelSide::Left(name, sizeSide, scaleSide, modelParams, offsetSide);
+	ModelSide::Bottom(name, size, scaleSide, modelParams, offsetSide);
 
 	// Cushions
 	FVector spacing = FVector(0.02, 0.02, 0.02);
@@ -84,9 +101,9 @@ void ModelCouch::Create() {
 	locationBack.Z += spacing.Z;
 	for (int ii = 0; ii < cushionCount; ii++) {
 		modelBase->CreateActor(name + "_CushionBack" + FString::FromInt(ii), locationBack, FRotator(0,0,0), scaleCushionBack,
-			spawnParams, parent, meshCube, material);
+			spawnParams, modelParams);
 		modelBase->CreateActor(name + "_CushionBottom" + FString::FromInt(ii), locationBottom, FRotator(0,0,0), scaleCushionBottom,
-			spawnParams, parent, meshCube, material);
+			spawnParams, modelParams);
 		// Move Y over to next cushion.
 		locationBack.Y += spacing.Y + scaleCushionBack.Y;
 		locationBottom.Y += spacing.Y + scaleCushionBottom.Y;

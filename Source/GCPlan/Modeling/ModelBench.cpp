@@ -34,11 +34,15 @@ void ModelBench::Create() {
 	LoadContent* loadContent = LoadContent::GetInstance();
 	FString meshPath = loadContent->Mesh("cube");
 	FString materialPath = loadContent->Material("wood");
+	FModelParams modelParams;
+	modelParams.meshPath = meshPath;
+	modelParams.materialPath = materialPath;
+	modelParams.parent = parent;
 
 	// Seat
 	location = FVector(0, 0, size.Z);
 	scale = FVector(size.X, size.Y, 0.2);
-	modelBase->CreateActor(name + "_Seat", location, rotation, scale, spawnParams, parent, meshPath, materialPath);
+	modelBase->CreateActor(name + "_Seat", location, rotation, scale, spawnParams, modelParams);
 
 	// Legs
 	spawnParams.Owner = actor;
@@ -47,20 +51,20 @@ void ModelBench::Create() {
 
 	UStaticMesh* mesh = nullptr;
 	if (tags.Contains("cylinderLegs")) {
-		mesh = PMCylinder::Create(name + "_Leg", scale, FVector(10,10,10), {}, true);
+		modelParams.mesh = PMCylinder::Create(name + "_Leg", scale, FVector(10,10,10), {}, true);
 		// Already scaled, so reset.
 		scale = FVector(1,1,1);
 	}
 
 	location = FVector(-0.5 * size.X + buffer, -0.5 * size.Y + buffer, 0);
-	modelBase->CreateActor(name + "_Leg1", location, rotation, scale, spawnParams, parent, meshPath, materialPath, mesh);
+	modelBase->CreateActor(name + "_Leg1", location, rotation, scale, spawnParams, modelParams);
 
 	location = FVector(-0.5 * size.X + buffer, 0.5 * size.Y - buffer, 0);
-	modelBase->CreateActor(name + "_Leg2", location, rotation, scale, spawnParams, parent, meshPath, materialPath, mesh);
+	modelBase->CreateActor(name + "_Leg2", location, rotation, scale, spawnParams, modelParams);
 
 	location = FVector(0.5 * size.X - buffer, -0.5 * size.Y + buffer, 0);
-	modelBase->CreateActor(name + "_Leg3", location, rotation, scale, spawnParams, parent, meshPath, materialPath, mesh);
+	modelBase->CreateActor(name + "_Leg3", location, rotation, scale, spawnParams, modelParams);
 
 	location = FVector(0.5 * size.X - buffer, 0.5 * size.Y - buffer, 0);
-	modelBase->CreateActor(name + "_Leg4", location, rotation, scale, spawnParams, parent, meshPath, materialPath, mesh);
+	modelBase->CreateActor(name + "_Leg4", location, rotation, scale, spawnParams, modelParams);
 }

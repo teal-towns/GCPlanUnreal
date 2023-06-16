@@ -160,10 +160,14 @@ struct FDataContentMesh {
 	TMap<FString, FContentMeshModel> models;
 	UPROPERTY()
 	TMap<FString, FString> materials;
+	UPROPERTY()
+	TMap<FString, FString> textures;
 
 	FDataContentMesh() {};
-	FDataContentMesh(TMap<FString, FContentMeshModel> models_, TMap<FString, FString> materials_) {
+	FDataContentMesh(TMap<FString, FContentMeshModel> models_, TMap<FString, FString> materials_,
+		TMap<FString, FString> textures_) {
 		models = models_;
 		materials = materials_;
+		textures = textures_;
 	};
 };

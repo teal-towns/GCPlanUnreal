@@ -42,4 +42,6 @@ void AProceduralModelActor::DestroyActors() {
 	Init();
 	PMBase* pmBase = PMBase::GetInstance();
 	pmBase->DestroyActors();
+	ModelBase* modelBase = ModelBase::GetInstance();
+	modelBase->DestroyActors();
 }

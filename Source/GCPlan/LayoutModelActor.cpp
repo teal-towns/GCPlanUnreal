@@ -37,5 +37,7 @@ void ALayoutModelActor::DestroyActors() {
 	Init();
 	LayoutModelBase* layoutModelBase = LayoutModelBase::GetInstance();
 	layoutModelBase->DestroyActors();
+	ModelBase* modelBase = ModelBase::GetInstance();
+	modelBase->DestroyActors();
 }
 

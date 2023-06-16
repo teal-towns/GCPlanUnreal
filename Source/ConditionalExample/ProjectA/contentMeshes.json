@@ -24,5 +24,7 @@
 		"grey": "/Script/Engine.Material'/Game/Material/Grey_M.Grey_M'",
 		"blue": "/Script/Engine.Material'/Game/Material/Blue_M.Blue_M'",
 		"red": "/Script/Engine.Material'/Game/Material/Red_M.Red_M'"
+	},
+	"textures": {
 	}
 }
