@@ -124,6 +124,7 @@ UProceduralMeshComponent* PMBase::CreateMesh(FString name, UObject* parentObject
 	name = Lodash::GetInstanceId(name + "_");
 	UProceduralMeshComponent* ProceduralMesh = NewObject<UProceduralMeshComponent>(parentObject,
 		UProceduralMeshComponent::StaticClass(), *name);
+    ProceduralMesh->CreationMethod = EComponentCreationMethod::Instance;
     ProceduralMesh->RegisterComponent();
     if (parent) {
     	ProceduralMesh->AttachToComponent(parent, FAttachmentTransformRules::KeepRelativeTransform);
@@ -202,7 +203,7 @@ AStaticMeshActor* PMBase::MeshToActor(FString name, UProceduralMeshComponent* pr
 	ModelBase* modelBase = ModelBase::GetInstance();
 	UStaticMesh* mesh = ToStaticMesh(proceduralMesh);
 	// AddMesh(createParams.parentActor, mesh);
-	FRotator rotation = FRotator(0,0,0);
+	FVector rotation = FVector(0,0,0);
 	FActorSpawnParameters spawnParams;
 	FVector location = FVector(0,0,0);
 	FVector scale = FVector(1,1,1);

@@ -3,26 +3,31 @@
 #include "Engine/StaticMeshActor.h"
 
 #include "ModelBase.h"
+#include "../Common/Lodash.h"
+#include "../Mesh/DynamicMaterial.h"
 #include "../Mesh/LoadContent.h"
+#include "../Modeling/Common/ModelLeg.h"
 #include "../ModelingStructsActor.h"
-#include "../ProceduralModel/PMCylinder.h"
+#include "../ProceduralModel/PMPlaneU.h"
 
-/////////////////////////////////////////////////////////////////////////////////////////////
 ModelChair::ModelChair() {
 }
 
 ModelChair::~ModelChair() {
 }
 
-void ModelChair::Create() {
+AActor* ModelChair::Create() {
 	ModelBase* modelBase = ModelBase::GetInstance();
 	UWorld* World = modelBase->GetWorld();
 	auto [modelingBase, modelParams] = modelBase->GetInputs("Chair1", FVector(1,1,1));
 	FString name = modelingBase.name;
 	FVector size = modelingBase.size;
 	TArray<FString> tags = modelingBase.tags;
+	if (tags.Contains("uChair")) {
+		return UChair(size, tags);
+	}
 
-	FRotator rotation = FRotator(0,0,0);
+	FVector rotation = FVector(0,0,0);
 	FActorSpawnParameters spawnParams;
 	FVector location = FVector(0,0,0);
 	FVector scale = FVector(1,1,1);
@@ -34,7 +39,7 @@ void ModelChair::Create() {
 
 	LoadContent* loadContent = LoadContent::GetInstance();
 	FString materialPath = loadContent->Material("wood");
-	FString materialPathMetal = loadContent->Material("black");
+	FString materialPathMetal = loadContent->Material("metalChrome");
 	FString meshPath = loadContent->Mesh("cube");
 	FString meshPathCylinder = loadContent->Mesh("cylinder");
 	modelParams.parent = parent;
@@ -149,5 +154,41 @@ void ModelChair::Create() {
 		modelBase->CreateActor(name + "_LegsRZ", location, rotation, scale, spawnParams, modelParams);
 	} // STOOL
 
+	return actor;
 } // ModelChair
 
+AActor* ModelChair::UChair(FVector size, TArray<FString> tags, FModelParams modelParams) {
+	FString name = Lodash::GetInstanceId("UChair_");
+	ModelBase* modelBase = ModelBase::GetInstance();
+	AActor* actor = modelBase->CreateActor(name);
+	FVector scale = FVector(1,1,1), rotation = FVector(0,0,0), location = FVector(0,0,0);
+	FActorSpawnParameters spawnParams;
+	modelParams.parent = actor->FindComponentByClass<USceneComponent>();
+
+	float seatHeight = 0.5;
+	FVector scaleLeg = FVector(0.05, 0.05, size.Z - seatHeight);
+	float buffer = 0.2;
+	modelParams.meshKey = "cube";
+	modelParams.materialKey = "black";
+	ModelLeg::FrontRight(name, size, scaleLeg, buffer, modelParams);
+	ModelLeg::BackRight(name, size, scaleLeg, buffer, modelParams);
+	ModelLeg::BackLeft(name, size, scaleLeg, buffer, modelParams);
+	ModelLeg::FrontLeft(name, size, scaleLeg, buffer, modelParams);
+
+	// Seat
+	FModelCreateParams createParams;
+	createParams.parentActor = actor;
+	createParams.parent = modelParams.parent;
+	LoadContent* loadContent = LoadContent::GetInstance();
+	DynamicMaterial* dynamicMaterial = DynamicMaterial::GetInstance();
+	FString texturePathBase = loadContent->Texture("leather_base");
+	FString texturePathNormal = loadContent->Texture("leather_normal");
+	modelParams.dynamicMaterial = dynamicMaterial->CreateTextureColor(name + "_leather", texturePathBase,
+		texturePathNormal, DynamicMaterial::GetColor("beige"));
+
+	// Plane map: z, y, x
+	scale = FVector(seatHeight, size.Y, size.X);
+	PMPlaneU::Create(name, scale, createParams, modelParams);
+
+	return actor;
+}

@@ -24,7 +24,7 @@ void ModelEVCharger::Create()
     FVector size = modelingBase.size;
     TArray<FString> tags = modelingBase.tags;
 
-    FRotator rotation = FRotator(0, 0, 0);
+    FVector rotation = FVector(0,0,0);
     FActorSpawnParameters spawnParams;
     FVector location = FVector(0, 0, 0);
     FVector scale = FVector(1, 1, 1);
@@ -84,14 +84,14 @@ void ModelEVCharger::Create()
     float cableCurrentZ = chargerBottomHeight * 0.8;
     location = FVector(cableCurrentX, 0, cableCurrentZ);
     scale = FVector(cableDiameter, cableDiameter, section1Length);
-    modelBase->CreateActor(name + "_ChargingCable_Section1", location, FRotator(90, 0, 0), scale, spawnParams, modelParams);
+    modelBase->CreateActor(name + "_ChargingCable_Section1", location, FVector(0, 90, 0), scale, spawnParams, modelParams);
 
     // Charging Cable Section 2
     float section2Length = cableLength * 0.3;
     cableCurrentZ = cableCurrentZ - section2Length + cableDiameter / 2;
     location = FVector(cableCurrentX, 0, cableCurrentZ);
     scale = FVector(cableDiameter, cableDiameter, section2Length);
-    modelBase->CreateActor(name + "_ChargingCable_Section2", location, FRotator(0, 0, 0), scale, spawnParams, modelParams);
+    modelBase->CreateActor(name + "_ChargingCable_Section2", location, FVector(0, 0, 0), scale, spawnParams, modelParams);
 
     // Charging Cable Section 3
     float section3Length = cableLength * 0.2;
@@ -114,7 +114,7 @@ void ModelEVCharger::Create()
     cableCurrentX = cableCurrentX + section3Length * 2 / PI;
     location = FVector(cableCurrentX, 0, cableCurrentZ);
     scale = FVector(cableDiameter, cableDiameter, section4Length);
-    modelBase->CreateActor(name + "_ChargingCable_Section4", location, FRotator(15, 0, 0), scale, spawnParams, modelParams);
+    modelBase->CreateActor(name + "_ChargingCable_Section4", location, FVector(0, 15, 0), scale, spawnParams, modelParams);
 
     // Charging Cable Section 5
     float section5Length = cableLength * 0.3;
@@ -122,7 +122,7 @@ void ModelEVCharger::Create()
     cableCurrentX = cableCurrentX - section4Length * FMath::Sin(FMath::DegreesToRadians(15.0));
     location = FVector(cableCurrentX, 0, cableCurrentZ);
     scale = FVector(cableDiameter, cableDiameter, section5Length);
-    modelBase->CreateActor(name + "_ChargingCable_Section5", location, FRotator(0, 0, 0), scale, spawnParams, modelParams);
+    modelBase->CreateActor(name + "_ChargingCable_Section5", location, FVector(0, 0, 0), scale, spawnParams, modelParams);
 
     /*************** Connector ***************/
     float connectorLength = cableCurrentX - chargerWidth / 2;
@@ -134,7 +134,7 @@ void ModelEVCharger::Create()
     cableCurrentZ += section5Length * 0.98; // 0.98 so that there's no gap between the cable and the connector
     location = FVector(cableCurrentX, 0, cableCurrentZ);
     scale = FVector(connectorBottomDiameter, connectorBottomDiameter, connectorBottomLength);
-    modelBase->CreateActor(name + "_ConnectorBottom", location, FRotator(connectorBottomAngleDegree, 0, 0), scale, spawnParams, modelParams);
+    modelBase->CreateActor(name + "_ConnectorBottom", location, FVector(0, connectorBottomAngleDegree, 0), scale, spawnParams, modelParams);
 
     // Connector Body Section 1
     float connectorBodyS1Width = connectorBottomDiameter * FMath::Cos(FMath::DegreesToRadians(60));
@@ -144,7 +144,7 @@ void ModelEVCharger::Create()
     location = FVector(cableCurrentX, -connectorBottomDiameter * 0.5, cableCurrentZ);
     scale = FVector(connectorBodyS1Width, connectorBodyS1Width, connectorBottomDiameter);
     modelParams.mesh = mesh;
-    modelBase->CreateActor(name + "_ConnectorBody_Section1", location, FRotator(0, 0, 90), scale, spawnParams, modelParams);
+    modelBase->CreateActor(name + "_ConnectorBody_Section1", location, FVector(90, 0, 0), scale, spawnParams, modelParams);
     modelParams.mesh = nullptr;
 
     modelParams.meshPath = meshPathCube;
@@ -155,7 +155,7 @@ void ModelEVCharger::Create()
     cableCurrentZ = cableCurrentZ - connectorBodyS2Width * 0.5;
     location = FVector(cableCurrentX, 0, cableCurrentZ);
     scale = FVector(connectorBodyS2Length, connectorBottomDiameter, connectorBodyS2Width);
-    modelBase->CreateActor(name + "_ConnectorBody_Section2", location, FRotator(0, 0, 0), scale, spawnParams, modelParams);
+    modelBase->CreateActor(name + "_ConnectorBody_Section2", location, FVector(0, 0, 0), scale, spawnParams, modelParams);
 
     modelParams.meshPath = meshPathCylinder;
     // Connector Head Pin 1
@@ -165,20 +165,20 @@ void ModelEVCharger::Create()
     cableCurrentZ = cableCurrentZ + connectorBodyS2Width - connectorHeadDiameter;
     location = FVector(cableCurrentX, 0, cableCurrentZ);
     scale = FVector(connectorHeadDiameter, connectorHeadDiameter, connectorHeadPin1Length);
-    modelBase->CreateActor(name + "_ConnectorHeadPin1", location, FRotator(90, 0, 0), scale, spawnParams, modelParams);
+    modelBase->CreateActor(name + "_ConnectorHeadPin1", location, FVector(0, 90, 0), scale, spawnParams, modelParams);
 
     // Connector Head Pin 2
     float connectorHeadPin2Length = connectorHeadPin1Length * 0.5;
     cableCurrentZ = cableCurrentZ - connectorHeadDiameter * 1.4;
     location = FVector(cableCurrentX, 0, cableCurrentZ);
     scale = FVector(connectorHeadDiameter, connectorHeadDiameter, connectorHeadPin2Length);
-    modelBase->CreateActor(name + "_ConnectorHeadPin2", location, FRotator(90, 0, 0), scale, spawnParams, modelParams);
+    modelBase->CreateActor(name + "_ConnectorHeadPin2", location, FVector(0, 90, 0), scale, spawnParams, modelParams);
 }
 
-std::tuple<TArray<FVector>, TArray<FRotator>> ModelEVCharger::BuildCircularCableLocations(float totalLength, float circularAngleDegree, FVector startLocation, float stepAngleDegree, float unitLength)
-{
+std::tuple<TArray<FVector>, TArray<FVector>> ModelEVCharger::BuildCircularCableLocations(float totalLength,
+	float circularAngleDegree, FVector startLocation, float stepAngleDegree, float unitLength) {
     TArray<FVector> locations;
-    TArray<FRotator> rotations;
+    TArray<FVector> rotations;
 
     for (float angleDegree = stepAngleDegree; angleDegree <= circularAngleDegree; angleDegree += stepAngleDegree)
     {
@@ -186,7 +186,7 @@ std::tuple<TArray<FVector>, TArray<FRotator>> ModelEVCharger::BuildCircularCable
         float Z = unitLength * FMath::Cos(FMath::DegreesToRadians(angleDegree));
         FVector location = FVector(X + startLocation.X, startLocation.Y, startLocation.Z - Z);
         startLocation = location;
-        FRotator rotation = FRotator(angleDegree, 0, 0);
+        FVector rotation = FVector(0, angleDegree, 0);
         locations.Add(location);
         rotations.Add(rotation);
     }

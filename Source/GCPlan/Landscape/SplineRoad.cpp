@@ -40,7 +40,7 @@ void SplineRoad::SetWorld(UWorld* World1) {
 		FString name = "SplineRoads";
 		ModelBase* modelBase = ModelBase::GetInstance();
 		FActorSpawnParameters spawnParams;
-		_roadsActor = modelBase->CreateActor(name, FVector(0,0,0), FRotator(0,0,0), FVector(1,1,1), spawnParams);
+		_roadsActor = modelBase->CreateActor(name, FVector(0,0,0), FVector(0,0,0), FVector(1,1,1), spawnParams);
 	}
 }
 
@@ -145,6 +145,7 @@ void SplineRoad::DrawRoads(bool addPlants, bool carveLand) {
 			nameTemp = UName + "_Spline";
 			USplineComponent* spline = NewObject<USplineComponent>(parentObject,
 				USplineComponent::StaticClass(), *nameTemp);
+			spline->CreationMethod = EComponentCreationMethod::Instance;
 			spline->RegisterComponent();
 			actor->SetRootComponent(spline);
 			// Must be after has root component.
@@ -279,6 +280,7 @@ void SplineRoad::AddSplineMesh(FString UName, int pointCount, UObject* parentObj
 USplineMeshComponent* SplineRoad::InitMesh(FString nameTemp, UObject* parentObject, USceneComponent* parent, float widthMeters) {
 	USplineMeshComponent* SplineMesh = NewObject<USplineMeshComponent>(parentObject,
 		USplineMeshComponent::StaticClass(), *nameTemp);
+	SplineMesh->CreationMethod = EComponentCreationMethod::Instance;
 	SplineMesh->RegisterComponent();
 	SplineMesh->AttachToComponent(parent, FAttachmentTransformRules::KeepRelativeTransform);
 	// SplineMesh->bCreatedByConstructionScript = true;
@@ -295,9 +297,6 @@ USplineMeshComponent* SplineRoad::InitMesh(FString nameTemp, UObject* parentObje
 	UMaterial* material = Cast<UMaterial>(StaticLoadObject(UMaterial::StaticClass(), NULL,
 		*materialPath));
 	SplineMesh->SetMaterial(0, material);
-	// UMaterialInstanceDynamic* dynamicMat = UMaterialInstanceDynamic::Create(mSplineMeshMaterial, NULL);
-	// dynamicMat->SetVectorParameterValue(TEXT("Color"), FLinearColor(mSegments[i].mColor));
-	// SplineMesh->SetMaterial(0, dynamicMat);
 
 	// Width of the mesh
 	float scale = 1;

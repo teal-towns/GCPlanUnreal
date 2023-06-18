@@ -24,6 +24,7 @@ void AMeshTerrainActor::InitMesh() {
     // ProceduralMesh = CreateDefaultSubobject<UProceduralMeshComponent>("ProceduralMesh");
     // ProceduralMesh->SetupAttachment(GetRootComponent());
 	ProceduralMesh = NewObject<UProceduralMeshComponent>(this,UProceduralMeshComponent::StaticClass(), TEXT("ProceduralMeshTerrain"));
+	ProceduralMesh->CreationMethod = EComponentCreationMethod::Instance;
     ProceduralMesh->RegisterComponent();
     ProceduralMesh->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
 }

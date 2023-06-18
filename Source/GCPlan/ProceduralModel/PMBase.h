@@ -9,23 +9,23 @@
 
 struct FPlaneOffsets {
 	float ratioFromStart;
-	float offsetX = 0;
-	float offsetY = 0;
-	float offsetZ = 0;
 	float offsetXRatio = 0;
 	float offsetYRatio = 0;
 	float offsetZRatio = 0;
+	float offsetX = 0;
+	float offsetY = 0;
+	float offsetZ = 0;
 
 	FPlaneOffsets() {};
-	FPlaneOffsets(float ratioFromStart_, float offsetX_ = 0, float offsetY_ = 0, float offsetZ_ = 0,
-		float offsetXRatio_ = 0, float offsetYRatio_= 0, float offsetZRatio_ = 0) {
+	FPlaneOffsets(float ratioFromStart_, float offsetXRatio_ = 0, float offsetYRatio_= 0, float offsetZRatio_ = 0,
+		float offsetX_ = 0, float offsetY_ = 0, float offsetZ_ = 0) {
 		ratioFromStart = ratioFromStart_;
-		offsetX = offsetX_;
-		offsetY = offsetY_;
-		offsetZ = offsetZ_;
 		offsetXRatio = offsetXRatio_;
 		offsetYRatio = offsetYRatio_;
 		offsetZRatio = offsetZRatio_;
+		offsetX = offsetX_;
+		offsetY = offsetY_;
+		offsetZ = offsetZ_;
 	};
 };
 

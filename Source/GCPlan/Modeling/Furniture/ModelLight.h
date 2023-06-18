@@ -5,5 +5,5 @@ public:
 	ModelLight();
 	~ModelLight();
 
-	static void Create();
+	static AActor* Create();
 };
