@@ -5,6 +5,29 @@
 #include "ProceduralMeshComponent.h"
 
 #include "../ModelingStructsActor.h"
+#include "../Modeling/ModelBase.h"
+
+struct FPlaneOffsets {
+	float ratioFromStart;
+	float offsetX = 0;
+	float offsetY = 0;
+	float offsetZ = 0;
+	float offsetXRatio = 0;
+	float offsetYRatio = 0;
+	float offsetZRatio = 0;
+
+	FPlaneOffsets() {};
+	FPlaneOffsets(float ratioFromStart_, float offsetX_ = 0, float offsetY_ = 0, float offsetZ_ = 0,
+		float offsetXRatio_ = 0, float offsetYRatio_= 0, float offsetZRatio_ = 0) {
+		ratioFromStart = ratioFromStart_;
+		offsetX = offsetX_;
+		offsetY = offsetY_;
+		offsetZ = offsetZ_;
+		offsetXRatio = offsetXRatio_;
+		offsetYRatio = offsetYRatio_;
+		offsetZRatio = offsetZRatio_;
+	};
+};
 
 class PMBase {
 public:
@@ -19,20 +42,22 @@ public:
 	void SetWorld(UWorld*);
 	UWorld* GetWorld();
 	void SetInputs(FProceduralModelBase);
-	FProceduralModelBase GetInputs(FString defaultName, FVector defaultSize, FVector defaultVertices, int32 defaultSidesSegmentCount = 4, float defaultTopOffsetWidth = 0.0);
+	std::tuple<FProceduralModelBase, FModelParams> GetInputs(FString defaultName, FVector defaultSize,
+		int32 defaultSidesSegmentCount = 4, float defaultTopOffsetWidth = 0.0);
 	void Create();
-	void DestroyActors();
 	void CleanUp();
 
-	AStaticMeshActor* CreateActor(FString name, FVector location,
-		FRotator rotation, FActorSpawnParameters spawnParams,
-		USceneComponent* parent = nullptr);
 	static void AddMesh(AStaticMeshActor* actor, UStaticMesh* mesh, FString materialPath = "");
-	static UProceduralMeshComponent* CreateMesh(UObject* parentObject, USceneComponent* parent,
-		FString name);
+	static UProceduralMeshComponent* CreateMesh(FString name, UObject* parentObject,
+		USceneComponent* parent = nullptr);
+	static std::tuple<UProceduralMeshComponent*, AActor*> GetMesh();
+	static void DestroyMesh(AActor* actor, UProceduralMeshComponent* proceduralMesh);
 	static void AddMeshSection(UProceduralMeshComponent* ProceduralMesh, TArray<FVector> Vertices,
-							   TArray<FVector2D> UV0, TArray<int> Triangles, TArray<FVector> Normals = TArray<FVector>(), TArray<FProcMeshTangent> Tangents = TArray<FProcMeshTangent>());
+		TArray<FVector2D> UV0, TArray<int> Triangles, TArray<FVector> Normals = {},
+		TArray<FProcMeshTangent> Tangents = {}, FModelParams modelParams = FModelParams());
 	static UStaticMesh* ToStaticMesh(UProceduralMeshComponent* ProceduralMesh);
+	static AStaticMeshActor* MeshToActor(FString name, UProceduralMeshComponent* proceduralMesh,
+		FModelCreateParams createParams, FModelParams modelParams = FModelParams());
 
 private:
 	static PMBase *pinstance_;
@@ -40,5 +65,4 @@ private:
 
 	UWorld* World;
 	FProceduralModelBase _proceduralModelBase;
-	TMap<FString, AStaticMeshActor*> _spawnedActors = {};
 };

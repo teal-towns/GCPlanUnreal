@@ -2,6 +2,7 @@
 
 #include <mutex>
 #include "Engine/StaticMeshActor.h"
+#include "ProceduralMeshComponent.h"
 
 #include "../ModelingStructsActor.h"
 
@@ -15,6 +16,18 @@ struct FModelParams {
 	FString textureNormal = "";
 	FLinearColor textureColor = FLinearColor(255,255,255);
 	float textureColorIntensity = 1;
+	FVector rotation = FVector(0,0,0);
+	FVector location = FVector(0,0,0);
+};
+
+struct FModelCreateParams {
+	// FVector size;
+	// TArray<FString> tags = {};
+	AStaticMeshActor* parentActor = nullptr;
+	USceneComponent* parent = nullptr;
+	// UProceduralMeshComponent* proceduralMesh = nullptr;
+	FVector offset = FVector(0,0,0);
+	FString trianglesOrder = "";
 };
 
 class ModelBase {
@@ -35,11 +48,14 @@ public:
 	// 	FVector scale, FActorSpawnParameters spawnParams, USceneComponent* parent = nullptr,
 	// 	FString meshPath = "", FString materialPath = "", UStaticMesh* mesh = nullptr,
 	// 	FModelParams = FModelParams());
-	AStaticMeshActor* CreateActor(FString name, FVector location, FRotator rotation,
-		FVector scale, FActorSpawnParameters spawnParams, FModelParams = FModelParams());
+	AStaticMeshActor* CreateActor(FString name, FVector location = FVector(0,0,0),
+		FRotator rotation = FRotator(0,0,0), FVector scale = FVector(1,1,1),
+		FActorSpawnParameters spawnParams = FActorSpawnParameters(), FModelParams = FModelParams());
+	static void SetTransform(AActor* actor, FVector location = FVector(0,0,0),
+		FVector rotation = FVector(0,0,0), FVector scale = FVector(1,1,1));
 
 	void SetInputs(FModelingBase);
-	FModelingBase GetInputs(FString defaultName, FVector defaultSize);
+	std::tuple<FModelingBase, FModelParams> GetInputs(FString defaultName, FVector defaultSize);
 	void DestroyActors();
 	void CleanUp();
 

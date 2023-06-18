@@ -17,7 +17,7 @@ void LMLobby::Create() {
 	ModelBase* modelBase = ModelBase::GetInstance();
 	LayoutModelBase* layoutModelBase = LayoutModelBase::GetInstance();
 	UWorld* World = layoutModelBase->GetWorld();
-	FLayoutModelBaseParams layoutParams = layoutModelBase->GetInputs("Lobby1", FVector(25,25,4));
+	auto [layoutParams, modelParams] = layoutModelBase->GetInputs("Lobby1", FVector(25,25,4));
 	FString name = layoutParams.name;
 	FVector size = layoutParams.size;
 	TArray<FString> tags = layoutParams.tags;
@@ -35,7 +35,6 @@ void LMLobby::Create() {
 	LoadContent* loadContent = LoadContent::GetInstance();
 	FString meshPath = loadContent->Mesh("cube");
 	FString materialPath = loadContent->Material("white");
-	FModelParams modelParams;
 	modelParams.meshPath = meshPath;
 	modelParams.materialPath = materialPath;
 	modelParams.parent = parent;

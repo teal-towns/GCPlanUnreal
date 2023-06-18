@@ -43,7 +43,9 @@ void ASocketActor::InitSocket() {
 	if (!FModuleManager::Get().IsModuleLoaded("WebSockets")) {
 		FModuleManager::Get().LoadModule("WebSockets");
 	}
-	this->Destroy();
+	if (IsValid(this)) {
+		this->Destroy();
+	}
 
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	FString Url = unrealGlobal->_settings->urlWebsocket;

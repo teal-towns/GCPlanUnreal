@@ -17,7 +17,7 @@ ModelChair::~ModelChair() {
 void ModelChair::Create() {
 	ModelBase* modelBase = ModelBase::GetInstance();
 	UWorld* World = modelBase->GetWorld();
-	FModelingBase modelingBase = modelBase->GetInputs("Chair1", FVector(1,1,1));
+	auto [modelingBase, modelParams] = modelBase->GetInputs("Chair1", FVector(1,1,1));
 	FString name = modelingBase.name;
 	FVector size = modelingBase.size;
 	TArray<FString> tags = modelingBase.tags;
@@ -37,7 +37,6 @@ void ModelChair::Create() {
 	FString materialPathMetal = loadContent->Material("black");
 	FString meshPath = loadContent->Mesh("cube");
 	FString meshPathCylinder = loadContent->Mesh("cylinder");
-	FModelParams modelParams;
 	modelParams.parent = parent;
 	modelParams.meshPath = meshPath;
 	modelParams.materialPath = materialPath;

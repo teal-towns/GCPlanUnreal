@@ -33,10 +33,12 @@ void InstancedMesh::SetWorld(UWorld* World1) {
 void InstancedMesh::CleanUp() {
 	for (auto& Elem : _instancedMeshActors) {
 		ClearInstances(Elem.Key);
-		Elem.Value->Destroy();
+		if (IsValid(Elem.Value)) {
+			Elem.Value->Destroy();
+		}
 	}
 	_instancedMeshActors = {};
-	if (_instancedMeshesActor) {
+	if (_instancedMeshesActor && IsValid(_instancedMeshesActor)) {
 		_instancedMeshesActor->Destroy();
 		// _instancedMeshesActor = nullptr;
 	}
@@ -46,9 +48,11 @@ void InstancedMesh::CleanUp() {
 void InstancedMesh::InitMeshes() {
 	if (!IsValid(_instancedMeshesActor)) {
 		FString name = "InstancedMeshes";
+		ModelBase* modelBase = ModelBase::GetInstance();
 		PMBase* pmBase = PMBase::GetInstance();
 		FActorSpawnParameters spawnParams;
-		_instancedMeshesActor = pmBase->CreateActor(name, FVector(0,0,0), FRotator(0,0,0), spawnParams);
+		_instancedMeshesActor = modelBase->CreateActor(name, FVector(0,0,0), FRotator(0,0,0),
+			FVector(1,1,1), spawnParams);
 	} else {
 		UE_LOG(LogTemp, Display, TEXT("InitMeshes actor still valid"));
 		// if (_instancedMeshesActor) {

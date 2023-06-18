@@ -4,6 +4,7 @@
 #include "Engine/StaticMeshActor.h"
 
 #include "../ModelingStructsActor.h"
+#include "../Modeling/ModelBase.h"
 
 class LayoutModelBase {
 public:
@@ -20,7 +21,7 @@ public:
 	void Create();
 
 	void SetInputs(FLayoutModelBaseParams);
-	FLayoutModelBaseParams GetInputs(FString defaultName, FVector defaultSize);
+	std::tuple<FLayoutModelBaseParams, FModelParams> GetInputs(FString defaultName, FVector defaultSize);
 	void DestroyActors();
 	void CleanUp();
 

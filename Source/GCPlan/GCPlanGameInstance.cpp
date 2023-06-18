@@ -15,7 +15,6 @@ void UGCPlanGameInstance::Init() {
 void UGCPlanGameInstance::Shutdown() {
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	unrealGlobal->CleanUp();
-	// SocketActor->Destroy();
 	Super::Shutdown();
 }
 

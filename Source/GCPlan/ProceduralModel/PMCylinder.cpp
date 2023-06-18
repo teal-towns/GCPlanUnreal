@@ -5,6 +5,7 @@
 #include "../Common/UnrealGlobal.h"
 
 #include "PMBase.h"
+#include "../Modeling/ModelBase.h"
 
 PMCylinder::PMCylinder() {
 }
@@ -14,14 +15,16 @@ PMCylinder::~PMCylinder() {
 
 UStaticMesh* PMCylinder::CreateFromInputs() {
 	PMBase* pmBase = PMBase::GetInstance();
-	FProceduralModelBase inputs = pmBase->GetInputs("Cylinder1", FVector(1,1,1), FVector(10,10,10));
-	return Create(inputs.name, inputs.size, inputs.vertices, inputs.tags);
+	auto [inputs, modelParams] = pmBase->GetInputs("Cylinder1", FVector(1,1,1));
+	return Create(inputs.name, inputs.size, inputs.tags);
 }
 
-UStaticMesh* PMCylinder::Create(FString name, FVector size, FVector vertices, TArray<FString> tags, bool destroyActor) {
+UStaticMesh* PMCylinder::Create(FString name, FVector size, TArray<FString> tags, bool destroyActor) {
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	float UVScale = 1;
+	FVector vertices = FVector(10,10,10);
 
+	ModelBase* modelBase = ModelBase::GetInstance();
 	PMBase* pmBase = PMBase::GetInstance();
 
 	FRotator rotation = FRotator(0,0,0);
@@ -31,10 +34,10 @@ UStaticMesh* PMCylinder::Create(FString name, FVector size, FVector vertices, TA
 	AStaticMeshActor* actor;
 
 	// Parent container
-	actor = pmBase->CreateActor(name, location, rotation, spawnParams);
+	actor = modelBase->CreateActor(name, location, rotation, scale, spawnParams);
 	USceneComponent* parent = actor->FindComponentByClass<USceneComponent>();
 	UObject* parentObject = (UObject*)actor;
-	UProceduralMeshComponent* ProceduralMesh = PMBase::CreateMesh(parentObject, parent, "Cylinder1");
+	UProceduralMeshComponent* ProceduralMesh = PMBase::CreateMesh("Cylinder1", parentObject);
 
 	// Make cylinder that goes straight in Z direction.
 	float radius = (size.X * 0.5 + size.Y * 0.5) / 2;
@@ -108,7 +111,9 @@ UStaticMesh* PMCylinder::Create(FString name, FVector size, FVector vertices, TA
 	if (!destroyActor) {
 		PMBase::AddMesh(actor, mesh);
 	} else {
-		actor->Destroy();
+		if (IsValid(actor)) {
+			actor->Destroy();
+		}
 	}
 	return mesh;
 }
