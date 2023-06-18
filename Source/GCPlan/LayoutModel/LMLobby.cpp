@@ -22,7 +22,7 @@ void LMLobby::Create() {
 	FVector size = layoutParams.size;
 	TArray<FString> tags = layoutParams.tags;
 
-	FRotator rotation = FRotator(0,0,0);
+	FVector rotation = FVector(0,0,0);
 	FActorSpawnParameters spawnParams;
 	FVector location = FVector(0,0,0);
 	FVector scale = FVector(1,1,1);

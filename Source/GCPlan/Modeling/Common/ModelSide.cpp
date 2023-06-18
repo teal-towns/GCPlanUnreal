@@ -18,7 +18,7 @@ void ModelSide::Left(FString name, FVector size, FVector scale, FModelParams mod
 	ModelBase* modelBase = ModelBase::GetInstance();
 	scale = FVector(size.X, scale.Y, size.Z);
 	FVector location = FVector(0, -1 * size.Y / 2 + scale.Y / 2, 0) + offset;
-	modelBase->CreateActor(name + "_Left", location, FRotator(0,0,0), scale,
+	modelBase->CreateActor(name + "_Left", location, FVector(0,0,0), scale,
 		FActorSpawnParameters(), modelParams);
 }
 
@@ -27,7 +27,7 @@ void ModelSide::Right(FString name, FVector size, FVector scale, FModelParams mo
 	ModelBase* modelBase = ModelBase::GetInstance();
 	scale = FVector(size.X, scale.Y, size.Z);
 	FVector location = FVector(0, size.Y / 2 - scale.Y / 2, 0) + offset;
-	modelBase->CreateActor(name + "_Right", location, FRotator(0,0,0), scale,
+	modelBase->CreateActor(name + "_Right", location, FVector(0,0,0), scale,
 		FActorSpawnParameters(), modelParams);
 }
 
@@ -36,7 +36,7 @@ void ModelSide::Back(FString name, FVector size, FVector scale, FModelParams mod
 	ModelBase* modelBase = ModelBase::GetInstance();
 	scale = FVector(scale.X, size.Y, size.Z);
 	FVector location = FVector(-1 * size.X / 2 + scale.X / 2, 0, 0) + offset;
-	modelBase->CreateActor(name + "_Back", location, FRotator(0,0,0), scale,
+	modelBase->CreateActor(name + "_Back", location, FVector(0,0,0), scale,
 		FActorSpawnParameters(), modelParams);
 }
 
@@ -45,7 +45,7 @@ void ModelSide::Front(FString name, FVector size, FVector scale, FModelParams mo
 	ModelBase* modelBase = ModelBase::GetInstance();
 	scale = FVector(scale.X, size.Y, size.Z);
 	FVector location = FVector(size.X / 2 - scale.X / 2, 0, 0) + offset;
-	modelBase->CreateActor(name + "_Front", location, FRotator(0,0,0), scale,
+	modelBase->CreateActor(name + "_Front", location, FVector(0,0,0), scale,
 		FActorSpawnParameters(), modelParams);
 }
 
@@ -54,7 +54,7 @@ void ModelSide::Bottom(FString name, FVector size, FVector scale, FModelParams m
 	ModelBase* modelBase = ModelBase::GetInstance();
 	scale = FVector(size.X, size.Y, scale.Z);
 	FVector location = FVector(0, 0, 0) + offset;
-	modelBase->CreateActor(name + "_Bottom", location, FRotator(0,0,0), scale,
+	modelBase->CreateActor(name + "_Bottom", location, FVector(0,0,0), scale,
 		FActorSpawnParameters(), modelParams);
 }
 
@@ -63,6 +63,6 @@ void ModelSide::Top(FString name, FVector size, FVector scale, FModelParams mode
 	ModelBase* modelBase = ModelBase::GetInstance();
 	scale = FVector(size.X, size.Y, scale.Z);
 	FVector location = FVector(0, 0, size.Z - scale.Z) + offset;
-	modelBase->CreateActor(name + "_Top", location, FRotator(0,0,0), scale,
+	modelBase->CreateActor(name + "_Top", location, FVector(0,0,0), scale,
 		FActorSpawnParameters(), modelParams);
 }

@@ -22,7 +22,7 @@ void UEditVerticesWidget::SetPlusActive(bool active) {
 	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
 	FString mode = _plusActive ? "add" : "";
 	verticesEdit->SetMode(mode);
-	FLinearColor color = _plusActive ? FLinearColor(0,150,0,1) : FLinearColor(255,255,255,1);
+	FLinearColor color = _plusActive ? FLinearColor(0,150/255,0,1) : FLinearColor(1,1,1,1);
 	PlusButton->SetColorAndOpacity(color);
 }
 

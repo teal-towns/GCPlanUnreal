@@ -43,13 +43,6 @@ AActor* PMPlane::Create(FString name, FVector size, TArray<FPlaneOffsets> xOffse
 	float UVScale = 1;
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 
-	// ModelBase* modelBase = ModelBase::GetInstance();
-	// if (!createParams.parentActor) {
-	// 	createParams.parentActor = modelBase->CreateActor(name + "_Plane");
-	// 	createParams.parent = createParams.parentActor->FindComponentByClass<USceneComponent>();
-	// }
-	// UObject* parentObject = (UObject*)createParams.parentActor;
-	// UProceduralMeshComponent* proceduralMesh = PMBase::CreateMesh(name + "_PlaneMesh", parentObject);
 	auto [proceduralMesh, meshActor] = PMBase::GetMesh();
 
 	TArray<FVector> Vertices = {};
@@ -141,13 +134,10 @@ AActor* PMPlane::Create(FString name, FVector size, TArray<FPlaneOffsets> xOffse
 		}
 	}
 
-	FString modelP = modelParams.parent ? modelParams.parent->GetName() : "null";
-	FString createP = createParams.parent ? createParams.parent->GetName() : "null";
 	PMBase::AddMeshSection(proceduralMesh, Vertices, UV0, Triangles, {}, {}, modelParams);
 	AStaticMeshActor* actorFinal = PMBase::MeshToActor(name + "_Plane", proceduralMesh, createParams, modelParams);
 	PMBase::DestroyMesh(meshActor, proceduralMesh);
 	return actorFinal;
-	// return proceduralMesh;
 }
 
 FVector PMPlane::MapXYZ(FVector xyz, FString plane) {
@@ -159,62 +149,3 @@ FVector PMPlane::MapXYZ(FVector xyz, FString plane) {
 	}
 	return vertexMapped;
 }
-
-// std::tuple<TArray<FPlaneOffsets>, TArray<FPlaneOffsets>> PMPlane::RoundedOffsets() {
-// 	TArray<FPlaneOffsets> xOffsets = {
-// 		{ FPlaneOffsets(0, 0, 0, 0, 0, 0, -0.5) },
-// 		{ FPlaneOffsets(0.02, 0, 0, 0, 0, 0, -0.4) },
-// 		{ FPlaneOffsets(0.04, 0, 0, 0, 0, 0, -0.3) },
-// 		{ FPlaneOffsets(0.08, 0, 0, 0, 0, 0, -0.2) },
-// 		{ FPlaneOffsets(0.16, 0, 0, 0, 0, 0, -0.1) },
-// 		{ FPlaneOffsets(0.32, 0, 0, 0, 0, 0, -0.05) },
-// 		{ FPlaneOffsets(1 - 0.32, 0, 0, 0, 0, 0, -0.05) },
-// 		{ FPlaneOffsets(1 - 0.16, 0, 0, 0, 0, 0, -0.1) },
-// 		{ FPlaneOffsets(1 - 0.08, 0, 0, 0, 0, 0, -0.2) },
-// 		{ FPlaneOffsets(1 - 0.04, 0, 0, 0, 0, 0, -0.3) },
-// 		{ FPlaneOffsets(1 - 0.02, 0, 0, 0, 0, 0, -0.4) },
-// 		{ FPlaneOffsets(1, 0, 0, 0, 0, 0, -0.5) }
-// 	};
-// 	TArray<FPlaneOffsets> yOffsets = {
-// 		// { FPlaneOffsets(0, 0, 0, 0, 0, 0, -0.5) },
-// 		// { FPlaneOffsets(0.02, 0, 0, 0, 0, 0, -0.4) },
-// 		// { FPlaneOffsets(0.04, 0, 0, 0, 0, 0, -0.3) },
-// 		// { FPlaneOffsets(0.08, 0, 0, 0, 0, 0, -0.2) },
-// 		// { FPlaneOffsets(0.16, 0, 0, 0, 0, 0, -0.1) },
-// 		// { FPlaneOffsets(0.32, 0, 0, 0, 0, 0, -0.05) },
-// 		// { FPlaneOffsets(1 - 0.32, 0, 0, 0, 0, 0, -0.05) },
-// 		// { FPlaneOffsets(1 - 0.16, 0, 0, 0, 0, 0, -0.1) },
-// 		// { FPlaneOffsets(1 - 0.08, 0, 0, 0, 0, 0, -0.2) },
-// 		// { FPlaneOffsets(1 - 0.04, 0, 0, 0, 0, 0, -0.3) },
-// 		// { FPlaneOffsets(1 - 0.02, 0, 0, 0, 0, 0, -0.4) },
-// 		// { FPlaneOffsets(1, 0, 0, 0, 0, 0, -0.5) }
-// 		{ FPlaneOffsets(0) },
-// 		{ FPlaneOffsets(1) }
-// 	};
-// 	return { xOffsets, yOffsets };
-// }
-
-// TArray<FPlaneOffsets> PMPlane::BorderRadiusTop(float radiusRatio, float startRatio,
-// 	FString anchor) {
-// 	TArray<FPlaneOffsets> offsets = {};
-// 	if (anchor == "start") {
-// 		offsets = {
-// 			{ FPlaneOffsets(startRatio * 0, 0, 0, 0, 0, 0, -1 * radiusRatio) },
-// 			{ FPlaneOffsets(startRatio * 0.05, 0, 0, 0, 0, 0, -1 * radiusRatio * 0.8) },
-// 			{ FPlaneOffsets(startRatio * 0.1, 0, 0, 0, 0, 0, -1 * radiusRatio * 0.6) },
-// 			{ FPlaneOffsets(startRatio * 0.25, 0, 0, 0, 0, 0, -1 * radiusRatio * 0.4) },
-// 			{ FPlaneOffsets(startRatio * 0.45, 0, 0, 0, 0, 0, -1 * radiusRatio * 0.2) },
-// 			{ FPlaneOffsets(startRatio * 0.75, 0, 0, 0, 0, 0, -1 * radiusRatio * 0.1) }
-// 		};
-// 	} else {
-// 		offsets = {
-// 			{ FPlaneOffsets(1 - startRatio * 0.75, 0, 0, 0, 0, 0, -1 * radiusRatio * 0.1) },
-// 			{ FPlaneOffsets(1 - startRatio * 0.45, 0, 0, 0, 0, 0, -1 * radiusRatio * 0.2) },
-// 			{ FPlaneOffsets(1 - startRatio * 0.25, 0, 0, 0, 0, 0, -1 * radiusRatio * 0.4) },
-// 			{ FPlaneOffsets(1 - startRatio * 0.1, 0, 0, 0, 0, 0, -1 * radiusRatio * 0.6) },
-// 			{ FPlaneOffsets(1 - startRatio * 0.05, 0, 0, 0, 0, 0, -1 * radiusRatio * 0.8) },
-// 			{ FPlaneOffsets(1 - startRatio * 0, 0, 0, 0, 0, 0, -1 * radiusRatio) }
-// 		};
-// 	}
-// 	return offsets;
-// }

@@ -51,7 +51,7 @@ void InstancedMesh::InitMeshes() {
 		ModelBase* modelBase = ModelBase::GetInstance();
 		PMBase* pmBase = PMBase::GetInstance();
 		FActorSpawnParameters spawnParams;
-		_instancedMeshesActor = modelBase->CreateActor(name, FVector(0,0,0), FRotator(0,0,0),
+		_instancedMeshesActor = modelBase->CreateActor(name, FVector(0,0,0), FVector(0,0,0),
 			FVector(1,1,1), spawnParams);
 	} else {
 		UE_LOG(LogTemp, Display, TEXT("InitMeshes actor still valid"));
@@ -102,6 +102,7 @@ void InstancedMesh::AddMesh(FString name, FString meshPath, FString materialPath
 			FString nameTemp = name + "_ISM";
 			UInstancedStaticMeshComponent* instancedStaticMesh = NewObject<UInstancedStaticMeshComponent>(parentObject,
 				UInstancedStaticMeshComponent::StaticClass(), *nameTemp);
+			instancedStaticMesh->CreationMethod = EComponentCreationMethod::Instance;
 			instancedStaticMesh->RegisterComponent();
 			// instancedStaticMesh->AttachToComponent(parent, FAttachmentTransformRules::KeepRelativeTransform);
 			actor->SetRootComponent(instancedStaticMesh);

@@ -3,26 +3,27 @@
 #include "Engine/StaticMeshActor.h"
 
 #include "ModelBase.h"
+#include "../Common/Lodash.h"
 #include "../Mesh/LoadContent.h"
 #include "../ModelingStructsActor.h"
-#include "../ProceduralModel/PMCylinder.h"
 
-/////////////////////////////////////////////////////////////////////////////////////////////
 ModelTable::ModelTable() {
 }
 
 ModelTable::~ModelTable() {
 }
 
-void ModelTable::Create() {
+AActor* ModelTable::Create() {
 	ModelBase* modelBase = ModelBase::GetInstance();
-	UWorld* World = modelBase->GetWorld();
 	auto [modelingBase, modelParams] = modelBase->GetInputs("Table1", FVector(3,2,1.5));
 	FString name = modelingBase.name;
 	FVector size = modelingBase.size;
 	TArray<FString> tags = modelingBase.tags;
+	if (tags.Contains("roundShort")) {
+		return RoundShort(size, tags);
+	}
 
-	FRotator rotation = FRotator(0,0,0);
+	FVector rotation = FVector(0,0,0);
 	FActorSpawnParameters spawnParams;
 	FVector location = FVector(0,0,0);
 	FVector scale = FVector(1,1,1);
@@ -34,15 +35,14 @@ void ModelTable::Create() {
 
 	LoadContent* loadContent = LoadContent::GetInstance();
 	FString materialPath = loadContent->Material("wood");
-	FString materialPathMetal = loadContent->Material("black");
+	FString materialPathMetal = loadContent->Material("metalChrome");
 	FString meshPath = loadContent->Mesh("cube");
 	FString meshPathCylinder = loadContent->Mesh("cylinder");
 	modelParams.parent = parent;
 	modelParams.meshPath = meshPath;
 	modelParams.materialPath = materialPath;
 
-	spawnParams.Owner = actor;
-	UStaticMesh* mesh = nullptr;
+	// spawnParams.Owner = actor;
 	float thick = 0.1;
 	float legZ = size.Z;
 	float legThick = thick;
@@ -80,5 +80,29 @@ void ModelTable::Create() {
 	location = FVector(0, 0, legZ);
 	scale = FVector(size.X, size.Y, thick);
 	modelBase->CreateActor(name + "_Top", location, rotation, scale, spawnParams, modelParams);
+	return actor;
+}
 
-} // ModelTable
+AActor* ModelTable::RoundShort(FVector size, TArray<FString> tags, FModelParams modelParams) {
+	FString name = Lodash::GetInstanceId("TableRoundShort_");
+	ModelBase* modelBase = ModelBase::GetInstance();
+	AActor* actor = modelBase->CreateActor(name);
+	FVector scale = FVector(1,1,1), rotation = FVector(0,0,0), location = FVector(0,0,0);
+	FActorSpawnParameters spawnParams;
+	modelParams.parent = actor->FindComponentByClass<USceneComponent>();
+
+	float topHeight = 0.05;
+	// Legs: 2 crossed pieces.
+	modelParams.meshKey = "cube";
+	modelParams.materialKey = "metalChrome";
+	scale = FVector(size.X * 0.9, 0.1, size.Z - topHeight);
+	modelBase->CreateActor(name + "_Leg1", location, rotation, scale, spawnParams, modelParams);
+	scale = FVector(size.Y * 0.9, 0.1, size.Z - topHeight);
+	modelBase->CreateActor(name + "_Leg2", location, FVector(0,0,90), scale, spawnParams, modelParams);
+	// Top
+	modelParams.meshKey = "cylinder";
+	modelParams.materialKey = "white";
+	scale = FVector(size.X, size.Y, topHeight);
+	modelBase->CreateActor(name + "_Top", FVector(0,0,size.Z - topHeight), rotation, scale, spawnParams, modelParams);
+	return actor;
+}

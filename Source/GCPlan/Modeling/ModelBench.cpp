@@ -20,7 +20,7 @@ void ModelBench::Create() {
 	FVector size = modelingBase.size;
 	TArray<FString> tags = modelingBase.tags;
 
-	FRotator rotation = FRotator(0,0,0);
+	FVector rotation = FVector(0,0,0);
 	FActorSpawnParameters spawnParams;
 	FVector location = FVector(0,0,0);
 	FVector scale = FVector(1,1,1);

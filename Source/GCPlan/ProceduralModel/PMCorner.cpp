@@ -25,13 +25,13 @@ AActor* PMCorner::Create(FVector size, TArray<FString> tags, FModelCreateParams 
 	float radiusRatio = 1;
 	if (xOffsets.Num() < 1) {
 		xOffsets = {
-			{ FPlaneOffsets(startRatio * 0, 0, 0, 0, 0, 0, -1 * radiusRatio) },
-			{ FPlaneOffsets(startRatio * 0.05, 0, 0, 0, 0, 0, -1 * radiusRatio * 0.8) },
-			{ FPlaneOffsets(startRatio * 0.1, 0, 0, 0, 0, 0, -1 * radiusRatio * 0.6) },
-			{ FPlaneOffsets(startRatio * 0.25, 0, 0, 0, 0, 0, -1 * radiusRatio * 0.4) },
-			{ FPlaneOffsets(startRatio * 0.45, 0, 0, 0, 0, 0, -1 * radiusRatio * 0.2) },
-			{ FPlaneOffsets(startRatio * 0.75, 0, 0, 0, 0, 0, -1 * radiusRatio * 0.05) },
-			{ FPlaneOffsets(startRatio * 1, 0, 0, 0, 0, 0, -1 * radiusRatio * 0) }
+			{ FPlaneOffsets(startRatio * 0, 0, 0, -1 * radiusRatio) },
+			{ FPlaneOffsets(startRatio * 0.05, 0, 0, -1 * radiusRatio * 0.8) },
+			{ FPlaneOffsets(startRatio * 0.1, 0, 0, -1 * radiusRatio * 0.6) },
+			{ FPlaneOffsets(startRatio * 0.25, 0, 0, -1 * radiusRatio * 0.4) },
+			{ FPlaneOffsets(startRatio * 0.45, 0, 0, -1 * radiusRatio * 0.2) },
+			{ FPlaneOffsets(startRatio * 0.75, 0, 0, -1 * radiusRatio * 0.05) },
+			{ FPlaneOffsets(startRatio * 1, 0, 0, -1 * radiusRatio * 0) }
 		};
 	}
 	if (yOffsets.Num() < 1) {

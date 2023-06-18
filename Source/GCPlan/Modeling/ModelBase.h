@@ -8,13 +8,15 @@
 
 struct FModelParams {
 	FString meshPath = "";
+	FString meshKey = "";
 	FString materialPath = "";
+	FString materialKey = "";
 	UStaticMesh* mesh = nullptr;
 	UMaterialInstanceDynamic* dynamicMaterial = nullptr;
 	USceneComponent* parent = nullptr;
 	FString textureBase = "";
 	FString textureNormal = "";
-	FLinearColor textureColor = FLinearColor(255,255,255);
+	FLinearColor textureColor = FLinearColor(1,1,1,1);
 	float textureColorIntensity = 1;
 	FVector rotation = FVector(0,0,0);
 	FVector location = FVector(0,0,0);
@@ -23,7 +25,7 @@ struct FModelParams {
 struct FModelCreateParams {
 	// FVector size;
 	// TArray<FString> tags = {};
-	AStaticMeshActor* parentActor = nullptr;
+	AActor* parentActor = nullptr;
 	USceneComponent* parent = nullptr;
 	// UProceduralMeshComponent* proceduralMesh = nullptr;
 	FVector offset = FVector(0,0,0);
@@ -44,12 +46,8 @@ public:
 	UWorld* GetWorld();
 	void Create();
 	void CreateFloor();
-	// AStaticMeshActor* CreateActor(FString name, FVector location, FRotator rotation,
-	// 	FVector scale, FActorSpawnParameters spawnParams, USceneComponent* parent = nullptr,
-	// 	FString meshPath = "", FString materialPath = "", UStaticMesh* mesh = nullptr,
-	// 	FModelParams = FModelParams());
 	AStaticMeshActor* CreateActor(FString name, FVector location = FVector(0,0,0),
-		FRotator rotation = FRotator(0,0,0), FVector scale = FVector(1,1,1),
+		FVector rotation = FVector(0,0,0), FVector scale = FVector(1,1,1),
 		FActorSpawnParameters spawnParams = FActorSpawnParameters(), FModelParams = FModelParams());
 	static void SetTransform(AActor* actor, FVector location = FVector(0,0,0),
 		FVector rotation = FVector(0,0,0), FVector scale = FVector(1,1,1));

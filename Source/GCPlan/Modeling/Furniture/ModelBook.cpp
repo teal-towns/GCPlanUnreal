@@ -1,11 +1,9 @@
 #include "ModelBook.h"
 
-#include "Engine/StaticMeshActor.h"
-
 #include "../ModelBase.h"
-#include "../../Mesh/LoadContent.h"
+#include "../../Common/Lodash.h"
+#include "../../Mesh/DynamicMaterial.h"
 #include "../../ModelingStructsActor.h"
-#include "../../ProceduralModel/PMCylinder.h"
 
 ModelBook::ModelBook() {
 }
@@ -13,26 +11,66 @@ ModelBook::ModelBook() {
 ModelBook::~ModelBook() {
 }
 
-void ModelBook::Create() {
+AActor* ModelBook::Create() {
 	ModelBase* modelBase = ModelBase::GetInstance();
-	UWorld* World = modelBase->GetWorld();
-	auto [modelingBase, modelParams] = modelBase->GetInputs("Book1", FVector(3,1,1));
+	auto [modelingBase, modelParams] = modelBase->GetInputs("Book", FVector(0.2,0.05,0.3));
 	FString name = modelingBase.name;
 	FVector size = modelingBase.size;
 	TArray<FString> tags = modelingBase.tags;
+	if (tags.Contains("books")) {
+		return Books(size, tags);
+	}
 
-	FRotator rotation = FRotator(0,0,0);
+	AActor* actor = modelBase->CreateActor(name);
+	modelParams.parent = actor->FindComponentByClass<USceneComponent>();
+
+	FVector scale = FVector(1,1,1), rotation = FVector(0,0,0), location = FVector(0,0,0);
 	FActorSpawnParameters spawnParams;
-	FVector location = FVector(0,0,0);
-	FVector scale = FVector(1,1,1);
-	AStaticMeshActor* actor;
 
-	// Parent container
-	actor = modelBase->CreateActor(name, location, rotation, scale, spawnParams);
-	USceneComponent* parent = actor->FindComponentByClass<USceneComponent>();
+	modelParams.meshKey = "cube";
+	DynamicMaterial* dynamicMaterial = DynamicMaterial::GetInstance();
+	FLinearColor color = FLinearColor(Lodash::RandomRangeFloat(0,1), Lodash::RandomRangeFloat(0,1),
+		Lodash::RandomRangeFloat(0,1), 1);
+	UMaterialInstanceDynamic* material = dynamicMaterial->CreateColor(name + "_book", color);
+	modelParams.dynamicMaterial = material;
+	scale = size;
+	modelBase->CreateActor(name + "_Book", location, rotation, scale, spawnParams, modelParams);
 
-	LoadContent* loadContent = LoadContent::GetInstance();
-	FString meshCube = loadContent->Mesh("cube");
-	FString materialWood = loadContent->Material("wood");
+	return actor;
+}
 
+AActor* ModelBook::Books(FVector size, TArray<FString> tags, FModelParams modelParams) {
+	FString name = Lodash::GetInstanceId("Books_");
+	ModelBase* modelBase = ModelBase::GetInstance();
+	AActor* actor = modelBase->CreateActor(name);
+	FVector scale = FVector(1,1,1), rotation = FVector(0,0,0), location = FVector(0,0,0);
+	FActorSpawnParameters spawnParams;
+	modelParams.parent = actor->FindComponentByClass<USceneComponent>();
+
+	modelParams.meshKey = "cube";
+	DynamicMaterial* dynamicMaterial = DynamicMaterial::GetInstance();
+	FLinearColor color;
+	UMaterialInstanceDynamic* material;
+
+	FVector averageBookSize = FVector(size.X, 0.05, size.Z);
+	FVector bookSize;
+	// Go along Y.
+	float yStart = -1 * size.Y / 2;
+	float yEnd = size.Y / 2;
+	float yCurrent = yStart;
+	FString bookName;
+	while (yCurrent < yEnd) {
+		bookName = Lodash::GetInstanceId("Book");
+		bookSize = averageBookSize * Lodash::RandomRangeFloat(0.7, 1.3);
+		color = FLinearColor(Lodash::RandomRangeFloat(0,1), Lodash::RandomRangeFloat(0,1),
+			Lodash::RandomRangeFloat(0,1), 1);
+		material = dynamicMaterial->CreateColor(name + bookName, color);
+		modelParams.dynamicMaterial = material;
+		location.Y = yCurrent;
+		location.X = Lodash::RandomRangeFloat(averageBookSize.X * -0.3, averageBookSize.X * 0.3);
+		modelBase->CreateActor(name + bookName, location, rotation, bookSize, spawnParams, modelParams);
+		// Give a little spacing.
+		yCurrent += bookSize.Y + Lodash::RandomRangeFloat(0, averageBookSize.Y * 0.1);
+	}
+	return actor;
 }

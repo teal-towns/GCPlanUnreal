@@ -67,7 +67,7 @@ UStaticMesh *PMPrism::Create(FString name, TArray<FString> tags, int32 sidesSegm
 	UnrealGlobal *unrealGlobal = UnrealGlobal::GetInstance();
 	float scale = unrealGlobal->GetScale();
 
-	FRotator rotation = FRotator(0, 0, 0);
+	FVector rotation = FVector(0,0,0);
 	FActorSpawnParameters spawnParams;
 	FVector location = FVector(0, 0, 0);
 	AStaticMeshActor *actor;

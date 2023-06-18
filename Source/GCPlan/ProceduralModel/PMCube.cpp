@@ -137,18 +137,18 @@ void PMCube::Create(FString name, FVector size, TArray<FString> tags, FModelPara
 // 	// 	{ FPlaneOffsets(1) }
 // 	// };
 // 	TArray<FPlaneOffsets> xOffsets = {
-// 		{ FPlaneOffsets(0, 0, 0, 0, 0, 0, -0.5) },
-// 		{ FPlaneOffsets(0.02, 0, 0, 0, 0, 0, -0.4) },
-// 		{ FPlaneOffsets(0.04, 0, 0, 0, 0, 0, -0.3) },
-// 		{ FPlaneOffsets(0.08, 0, 0, 0, 0, 0, -0.2) },
-// 		{ FPlaneOffsets(0.16, 0, 0, 0, 0, 0, -0.1) },
-// 		{ FPlaneOffsets(0.32, 0, 0, 0, 0, 0, -0.05) },
-// 		{ FPlaneOffsets(1 - 0.32, 0, 0, 0, 0, 0, -0.05) },
-// 		{ FPlaneOffsets(1 - 0.16, 0, 0, 0, 0, 0, -0.1) },
-// 		{ FPlaneOffsets(1 - 0.08, 0, 0, 0, 0, 0, -0.2) },
-// 		{ FPlaneOffsets(1 - 0.04, 0, 0, 0, 0, 0, -0.3) },
-// 		{ FPlaneOffsets(1 - 0.02, 0, 0, 0, 0, 0, -0.4) },
-// 		{ FPlaneOffsets(1, 0, 0, 0, 0, 0, -0.5) }
+// 		{ FPlaneOffsets(0, 0, 0, -0.5) },
+// 		{ FPlaneOffsets(0.02, 0, 0, -0.4) },
+// 		{ FPlaneOffsets(0.04, 0, 0, -0.3) },
+// 		{ FPlaneOffsets(0.08, 0, 0, -0.2) },
+// 		{ FPlaneOffsets(0.16, 0, 0, -0.1) },
+// 		{ FPlaneOffsets(0.32, 0, 0, -0.05) },
+// 		{ FPlaneOffsets(1 - 0.32, 0, 0, -0.05) },
+// 		{ FPlaneOffsets(1 - 0.16, 0, 0, -0.1) },
+// 		{ FPlaneOffsets(1 - 0.08, 0, 0, -0.2) },
+// 		{ FPlaneOffsets(1 - 0.04, 0, 0, -0.3) },
+// 		{ FPlaneOffsets(1 - 0.02, 0, 0, -0.4) },
+// 		{ FPlaneOffsets(1, 0, 0, -0.5) }
 // 	};
 // 	TArray<FPlaneOffsets> yOffsets = {
 // 		{ FPlaneOffsets(0) },
@@ -220,7 +220,7 @@ void PMCube::RoundedTopSide(FVector size, TArray<FString> tags, FModelCreatePara
 	ModelBase* modelBase = ModelBase::GetInstance();
 	AActor* actorBase;
 	FVector location = FVector(0,0,0);
-	FRotator rotation = FRotator(0,0,0);
+	FVector rotation = FVector(0,0,0);
 	FVector scale = FVector(1,1,1);
 	FActorSpawnParameters spawnParams;
 	// FModelParams modelParams;

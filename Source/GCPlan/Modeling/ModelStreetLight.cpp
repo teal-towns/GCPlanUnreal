@@ -24,7 +24,7 @@ void ModelStreetLight::Create()
     FVector size = modelingBase.size;
     TArray<FString> tags = modelingBase.tags;
 
-    FRotator rotation = FRotator(0, 0, 0);
+    FVector rotation = FVector(0,0,0);
     FActorSpawnParameters spawnParams;
     FVector location = FVector(0, 0, 0);
     FVector scale = FVector(1, 1, 1);
@@ -74,12 +74,12 @@ void ModelStreetLight::Create()
     // Base top V right
     location = FVector(0, 0, currentHeight);
     scale = FVector(vShapeWidth, vShapeWidth, vShapeLength);
-    modelBase->CreateActor(name + "_BaseTopRight", location, FRotator(vShapeAngle, 0, 0), scale, spawnParams, modelParams);
+    modelBase->CreateActor(name + "_BaseTopRight", location, FVector(0, vShapeAngle, 0), scale, spawnParams, modelParams);
 
     // Base top V left
     location = FVector(0, 0, currentHeight);
     scale = FVector(vShapeWidth, vShapeWidth, vShapeLength);
-    modelBase->CreateActor(name + "_BaseTopLeft", location, FRotator(-vShapeAngle, 0, 0), scale, spawnParams, modelParams);
+    modelBase->CreateActor(name + "_BaseTopLeft", location, FVector(0, -vShapeAngle, 0), scale, spawnParams, modelParams);
 
 
     modelParams.meshPath = meshPathSphere;
@@ -94,5 +94,5 @@ void ModelStreetLight::Create()
     // Solar panel
     location = FVector(0, 0, currentHeight);
     scale = FVector(solarPanelWidth, 0.1, solarPanelHeight * 1.5);
-    modelBase->CreateActor(name + "_SolarPanel", location, FRotator(0, 0, 30), scale, spawnParams, modelParams);
+    modelBase->CreateActor(name + "_SolarPanel", location, FVector(30, 0, 0), scale, spawnParams, modelParams);
 }

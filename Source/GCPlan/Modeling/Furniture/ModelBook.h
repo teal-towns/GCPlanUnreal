@@ -1,9 +1,13 @@
 #pragma once
 
+#include "../ModelBase.h"
+
 class ModelBook {
 public:
 	ModelBook();
 	~ModelBook();
 
-	static void Create();
+	static AActor* Create();
+	static AActor* Books(FVector size, TArray<FString> tags = {},
+		FModelParams modelParams = FModelParams());
 };

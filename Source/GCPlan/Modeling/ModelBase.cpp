@@ -71,13 +71,13 @@ std::tuple<FModelingBase, FModelParams> ModelBase::GetInputs(FString defaultName
 	modelingBase.name = Lodash::GetInstanceId(modelingBase.name + "_");
 
 	float minSize = 0.01;
-	if (modelingBase.size.X < minSize || modelingBase.size.X > -1 * minSize) {
+	if (modelingBase.size.X < minSize) {
 		modelingBase.size.X = defaultSize.X;
 	}
-	if (modelingBase.size.Y < minSize || modelingBase.size.Y > -1 * minSize) {
+	if (modelingBase.size.Y < minSize) {
 		modelingBase.size.Y = defaultSize.Y;
 	}
-	if (modelingBase.size.Z < minSize || modelingBase.size.Z > -1 * minSize) {
+	if (modelingBase.size.Z < minSize) {
 		modelingBase.size.Z = defaultSize.Z;
 	}
 
@@ -153,11 +153,12 @@ void ModelBase::CreateFloor() {
 	FString meshCube = loadContent->Mesh("cube");
 	FModelParams modelParams;
 	modelParams.meshPath = meshCube;
-	CreateActor(Lodash::GetInstanceId("Floor_"), FVector(0,0,-1), FRotator(0,0,0), FVector(10,10,1),
+	modelParams.materialKey = "marbleTile";
+	CreateActor(Lodash::GetInstanceId("Floor_"), FVector(0,0,-1), FVector(0,0,0), FVector(10,10,1),
 		FActorSpawnParameters(), modelParams);
 }
 
-AStaticMeshActor* ModelBase::CreateActor(FString name, FVector location, FRotator rotation,
+AStaticMeshActor* ModelBase::CreateActor(FString name, FVector location, FVector rotation,
 	FVector scale, FActorSpawnParameters spawnParams, FModelParams modelParams) {
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 
@@ -167,8 +168,11 @@ AStaticMeshActor* ModelBase::CreateActor(FString name, FVector location, FRotato
 		return (AStaticMeshActor*)actor1;
 	}
 
-	if (modelParams.rotation.X != 0 || modelParams.rotation.Y != 0 || modelParams.rotation.Z != 0) {
-		rotation = FRotator(modelParams.rotation.Y, modelParams.rotation.Z, modelParams.rotation.X);
+	FRotator rotator = FRotator(0,0,0);
+	if (rotation.X != 0 || rotation.Y != 0 || rotation.Z != 0) {
+		rotator = FRotator(rotation.Y, rotation.Z, rotation.X);
+	} else if (modelParams.rotation.X != 0 || modelParams.rotation.Y != 0 || modelParams.rotation.Z != 0) {
+		rotator = FRotator(modelParams.rotation.Y, modelParams.rotation.Z, modelParams.rotation.X);
 	}
 	spawnParams.Name = FName(name);
 	if (location.X == 0 && location.Y == 0 && location.Z == 0 && (modelParams.location.X != 0 ||
@@ -176,7 +180,7 @@ AStaticMeshActor* ModelBase::CreateActor(FString name, FVector location, FRotato
 		location = modelParams.location;
 	}
 	AStaticMeshActor* actor = (AStaticMeshActor*)World->SpawnActor<AStaticMeshActor>(
-		AStaticMeshActor::StaticClass(), location * unrealGlobal->GetScale(), rotation, spawnParams);
+		AStaticMeshActor::StaticClass(), location * unrealGlobal->GetScale(), rotator, spawnParams);
 	_spawnedActors.Add(name, actor);
 	unrealGlobal->SetActorFolder(actor);
 	actor->SetActorLabel(name);
@@ -184,7 +188,11 @@ AStaticMeshActor* ModelBase::CreateActor(FString name, FVector location, FRotato
 		actor->SetActorScale3D(scale);
 	}
 
+	LoadContent* loadContent = LoadContent::GetInstance();
 	UStaticMeshComponent* meshComponent = nullptr;
+	if (modelParams.meshPath.Len() < 1 && modelParams.meshKey.Len() > 0) {
+		modelParams.meshPath = loadContent->Mesh(modelParams.meshKey);
+	}
 	if (modelParams.mesh) {
 		if (!meshComponent) {
 			meshComponent = actor->FindComponentByClass<UStaticMeshComponent>();
@@ -199,6 +207,9 @@ AStaticMeshActor* ModelBase::CreateActor(FString name, FVector location, FRotato
 		meshComponent->SetStaticMesh(mesh);
 	}
 
+	if (modelParams.materialPath.Len() < 1 && modelParams.materialKey.Len() > 0) {
+		modelParams.materialPath = loadContent->Material(modelParams.materialKey);
+	}
 	if (modelParams.dynamicMaterial) {
 		if (!meshComponent) {
 			meshComponent = actor->FindComponentByClass<UStaticMeshComponent>();

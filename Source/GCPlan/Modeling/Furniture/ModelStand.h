@@ -5,5 +5,5 @@ public:
 	ModelStand();
 	~ModelStand();
 
-	static void Create();
+	static AActor* Create();
 };

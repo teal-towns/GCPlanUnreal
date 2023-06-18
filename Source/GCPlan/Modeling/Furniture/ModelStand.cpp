@@ -1,11 +1,8 @@
 #include "ModelStand.h"
 
-#include "Engine/StaticMeshActor.h"
-
 #include "../ModelBase.h"
-#include "../../Mesh/LoadContent.h"
+#include "../Common/ModelSide.h"
 #include "../../ModelingStructsActor.h"
-#include "../../ProceduralModel/PMCylinder.h"
 
 ModelStand::ModelStand() {
 }
@@ -13,26 +10,25 @@ ModelStand::ModelStand() {
 ModelStand::~ModelStand() {
 }
 
-void ModelStand::Create() {
+AActor* ModelStand::Create() {
 	ModelBase* modelBase = ModelBase::GetInstance();
-	UWorld* World = modelBase->GetWorld();
-	auto [modelingBase, modelParams] = modelBase->GetInputs("Stand1", FVector(3,1,1));
+	auto [modelingBase, modelParams] = modelBase->GetInputs("Stand", FVector(3,2,1));
 	FString name = modelingBase.name;
 	FVector size = modelingBase.size;
 	TArray<FString> tags = modelingBase.tags;
 
-	FRotator rotation = FRotator(0,0,0);
+	AActor* actor = modelBase->CreateActor(name);
+	modelParams.parent = actor->FindComponentByClass<USceneComponent>();
+
+	FVector scale = FVector(1,1,1), rotation = FVector(0,0,0), location = FVector(0,0,0);
 	FActorSpawnParameters spawnParams;
-	FVector location = FVector(0,0,0);
-	FVector scale = FVector(1,1,1);
-	AStaticMeshActor* actor;
 
-	// Parent container
-	actor = modelBase->CreateActor(name, location, rotation, scale, spawnParams);
-	USceneComponent* parent = actor->FindComponentByClass<USceneComponent>();
+	modelParams.meshKey = "cube";
+	modelParams.materialKey = "metalChrome";
+	scale = FVector(0.1,0.1,0.1);
+	ModelSide::Right(name, size, scale, modelParams);
+	ModelSide::Left(name, size, scale, modelParams);
+	ModelSide::Top(name, size, scale, modelParams);
 
-	LoadContent* loadContent = LoadContent::GetInstance();
-	FString meshCube = loadContent->Mesh("cube");
-	FString materialWood = loadContent->Material("wood");
-
+	return actor;
 }

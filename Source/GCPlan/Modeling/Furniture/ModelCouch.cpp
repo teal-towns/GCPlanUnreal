@@ -28,7 +28,7 @@ AStaticMeshActor* ModelCouch::Create() {
 		cushionCount = 3;
 	}
 
-	FRotator rotation = FRotator(0,0,0);
+	FVector rotation = FVector(0,0,0);
 	FActorSpawnParameters spawnParams;
 	FVector location = FVector(0,0,0);
 	FVector scale = FVector(1,1,1);
@@ -41,16 +41,17 @@ AStaticMeshActor* ModelCouch::Create() {
 	LoadContent* loadContent = LoadContent::GetInstance();
 	DynamicMaterial* dynamicMaterial = DynamicMaterial::GetInstance();
 	FString meshCube = loadContent->Mesh("cube");
-	FString materialPath = loadContent->Material("dynamicLeather");
+	// FString materialPath = loadContent->Material("dynamicLeather");
+	FString materialPath = loadContent->Material("leather");
 	FString texturePathBase = loadContent->Texture("leather_base");
 	FString texturePathNormal = loadContent->Texture("leather_normal");
-	// FString texturePathBase = loadContent->Texture("marble_base");
-	// FString texturePathNormal = loadContent->Texture("marble_normal");
-	// UMaterialInstanceDynamic* material = dynamicMaterial->CreateTextureColor(name + "_leather", texturePathBase,
-	// 	texturePathNormal, FLinearColor(255,230,145));
-	UMaterialInstanceDynamic* material = dynamicMaterial->CreateTexture(name + "_leather", texturePathBase,
-		texturePathNormal);
-	// UMaterialInstanceDynamic* material = dynamicMaterial->CreateColor(name + "_leather", FLinearColor(255,0,0));
+	// // FString texturePathBase = loadContent->Texture("marble_base");
+	// // FString texturePathNormal = loadContent->Texture("marble_normal");
+	UMaterialInstanceDynamic* material = dynamicMaterial->CreateTextureColor(name + "_leather", texturePathBase,
+		texturePathNormal, DynamicMaterial::GetColor("beige"));
+	// UMaterialInstanceDynamic* material = dynamicMaterial->CreateTexture(name + "_leather", texturePathBase,
+	// 	texturePathNormal);
+	// UMaterialInstanceDynamic* material = dynamicMaterial->CreateColor(name + "_leather", FLinearColor(1,0,0,1));
 	FString materialPathWood = loadContent->Material("wood");
 	modelParams.meshPath = meshCube;
 	modelParams.parent = parent;
@@ -106,9 +107,9 @@ AStaticMeshActor* ModelCouch::Create() {
 	locationBack.Z += spacing.Z;
 	for (int ii = 0; ii < cushionCount; ii++) {
 		// modelBase->CreateActor(name + "_CushionBack" + FString::FromInt(ii), locationBack,
-		// 	FRotator(0,0,0), scaleCushionBack, spawnParams, modelParams);
+		// 	FVector(0,0,0), scaleCushionBack, spawnParams, modelParams);
 		// modelBase->CreateActor(name + "_CushionBottom" + FString::FromInt(ii), locationBottom,
-		// 	FRotator(0,0,0), scaleCushionBottom, spawnParams, modelParams);
+		// 	FVector(0,0,0), scaleCushionBottom, spawnParams, modelParams);
 		modelParamsCushion.location = locationBack;
 		PMCube::RoundedTop(name + "_CushionBack" + FString::FromInt(ii), scaleCushionBack, {},
 			roundedTopHeight, modelParamsCushion);
