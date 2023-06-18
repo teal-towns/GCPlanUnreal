@@ -6,6 +6,6 @@ public:
 	~PMCylinder();
 
 	static UStaticMesh* CreateFromInputs();
-	static UStaticMesh* Create(FString name, FVector size, FVector vertices = FVector(10,10,10),
+	static UStaticMesh* Create(FString name, FVector size,
 		TArray<FString> tags = {}, bool destroyActor = false);
 };

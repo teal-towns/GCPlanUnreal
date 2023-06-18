@@ -15,8 +15,7 @@ ModelBench::~ModelBench() {
 
 void ModelBench::Create() {
 	ModelBase* modelBase = ModelBase::GetInstance();
-	UWorld* World = modelBase->GetWorld();
-	FModelingBase modelingBase = modelBase->GetInputs("Bench1", FVector(3,1,1));
+	auto [modelingBase, modelParams] = modelBase->GetInputs("Bench1", FVector(3,1,1));
 	FString name = modelingBase.name;
 	FVector size = modelingBase.size;
 	TArray<FString> tags = modelingBase.tags;
@@ -34,7 +33,6 @@ void ModelBench::Create() {
 	LoadContent* loadContent = LoadContent::GetInstance();
 	FString meshPath = loadContent->Mesh("cube");
 	FString materialPath = loadContent->Material("wood");
-	FModelParams modelParams;
 	modelParams.meshPath = meshPath;
 	modelParams.materialPath = materialPath;
 	modelParams.parent = parent;
@@ -51,7 +49,7 @@ void ModelBench::Create() {
 
 	UStaticMesh* mesh = nullptr;
 	if (tags.Contains("cylinderLegs")) {
-		modelParams.mesh = PMCylinder::Create(name + "_Leg", scale, FVector(10,10,10), {}, true);
+		modelParams.mesh = PMCylinder::Create(name + "_Leg", scale, {}, true);
 		// Already scaled, so reset.
 		scale = FVector(1,1,1);
 	}

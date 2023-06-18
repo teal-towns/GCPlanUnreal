@@ -19,7 +19,7 @@ void ModelStreetLight::Create()
 {
     ModelBase *modelBase = ModelBase::GetInstance();
     UWorld *World = modelBase->GetWorld();
-    FModelingBase modelingBase = modelBase->GetInputs("StreetLight1", FVector(1, 1, 5));
+    auto [modelingBase, modelParams] = modelBase->GetInputs("StreetLight1", FVector(1, 1, 5));
     FString name = modelingBase.name;
     FVector size = modelingBase.size;
     TArray<FString> tags = modelingBase.tags;
@@ -41,7 +41,6 @@ void ModelStreetLight::Create()
 
     FString materialPath = loadContent->Material("wood");
 
-    FModelParams modelParams;
 	modelParams.materialPath = materialPath;
 	modelParams.parent = parent;
 

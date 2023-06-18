@@ -43,7 +43,10 @@ void UnrealGlobal::InitAll(UWorld* World1, TArray<FString> skipKeys) {
     modelBase->SetWorld(World1);
     PMBase* pmBase = PMBase::GetInstance();
     pmBase->SetWorld(World1);
-	InitMeshes(World1);
+
+    if (!skipKeys.Contains("meshes")) {
+		InitMeshes(World1);
+	}
 
 	InitCommon(World1);
 
@@ -121,7 +124,7 @@ void UnrealGlobal::CleanUp(TArray<FString> skipKeys) {
 	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
     verticesEdit->CleanUp();
 
-    if (!skipKeys.Contains("socket")) {
+    if (!skipKeys.Contains("socket") && IsValid(SocketActor)) {
 		SocketActor->Destroy();
 	}
 	_initeds.Empty();
@@ -155,26 +158,11 @@ void UnrealGlobal::RemoveAttachedActors(AActor* actor) {
 	TArray<AActor*> OutActors;
 	actor->GetAttachedActors(OutActors);
 	for (AActor* a : OutActors) {
-		a->Destroy();
+		if (IsValid(a)) {
+			a->Destroy();
+		}
 	}
 }
-
-// bool UnrealGlobal::RemoveActorByName(FString name, TSubclassOf<AActor> ActorClass, bool removeAttached) {
-// 	bool found = false;
-// 	TArray<AActor*> OutActors;
-// 	UGameplayStatics::GetAllActorsOfClass(World, ActorClass, OutActors);
-// 	for (AActor* a : OutActors) {
-// 		if (a->GetName() == name) {
-// 			if (removeAttached) {
-// 				RemoveAttachedActors(a);
-// 			}
-// 			a->Destroy();
-// 			found = true;
-// 			break;
-// 		}
-// 	}
-// 	return found;
-// }
 
 AActor* UnrealGlobal::GetActorByName(FString name, TSubclassOf<AActor> ActorClass, bool save, bool matchStartsWith) {
 	// UE_LOG(LogTemp, Display, TEXT("GetActorByName %s"), *name);

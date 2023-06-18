@@ -19,7 +19,7 @@ void ModelEVCharger::Create()
 {
     ModelBase *modelBase = ModelBase::GetInstance();
     UWorld *World = modelBase->GetWorld();
-    FModelingBase modelingBase = modelBase->GetInputs("EVCharger", FVector(1, 1, 2));
+    auto [modelingBase, modelParams] = modelBase->GetInputs("EVCharger", FVector(1, 1, 2));
     FString name = modelingBase.name;
     FVector size = modelingBase.size;
     TArray<FString> tags = modelingBase.tags;
@@ -38,7 +38,6 @@ void ModelEVCharger::Create()
     FString meshPathCube = loadContent->Mesh("cube");
     FString meshPathCylinder = loadContent->Mesh("cylinder");
     FString meshPathSphere = loadContent->Mesh("sphere");
-    FModelParams modelParams;
 	modelParams.parent = parent;
 
     float chargerBottomHeight = size.Z * 2 / 3;

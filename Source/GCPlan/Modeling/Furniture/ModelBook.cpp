@@ -16,7 +16,7 @@ ModelBook::~ModelBook() {
 void ModelBook::Create() {
 	ModelBase* modelBase = ModelBase::GetInstance();
 	UWorld* World = modelBase->GetWorld();
-	FModelingBase modelingBase = modelBase->GetInputs("Book1", FVector(3,1,1));
+	auto [modelingBase, modelParams] = modelBase->GetInputs("Book1", FVector(3,1,1));
 	FString name = modelingBase.name;
 	FVector size = modelingBase.size;
 	TArray<FString> tags = modelingBase.tags;

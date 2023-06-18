@@ -2,6 +2,7 @@
 
 #include "../Common/Lodash.h"
 #include "../Common/UnrealGlobal.h"
+#include "../Mesh/LoadContent.h"
 #include "../Modeling/ModelBase.h"
 #include "../ModelingStructsActor.h"
 #include "LMLobby.h"
@@ -44,7 +45,7 @@ void LayoutModelBase::SetInputs(FLayoutModelBaseParams layoutParams) {
 	_layoutParams = layoutParams;
 }
 
-FLayoutModelBaseParams LayoutModelBase::GetInputs(FString defaultName, FVector defaultSize) {
+std::tuple<FLayoutModelBaseParams, FModelParams> LayoutModelBase::GetInputs(FString defaultName, FVector defaultSize) {
 	FLayoutModelBaseParams layoutParams = _layoutParams;
 	if (layoutParams.name.Len() < 1) {
 		layoutParams.name = defaultName;
@@ -62,7 +63,13 @@ FLayoutModelBaseParams LayoutModelBase::GetInputs(FString defaultName, FVector d
 		layoutParams.size.Z = defaultSize.Z;
 	}
 
-	return layoutParams;
+	FModelParams modelParams;
+	if (layoutParams.materialKey.Len() > 0) {
+		LoadContent* loadContent = LoadContent::GetInstance();
+		modelParams.materialPath = loadContent->Material(layoutParams.materialKey);
+	}
+
+	return { layoutParams, modelParams };
 }
 
 void LayoutModelBase::Create() { 

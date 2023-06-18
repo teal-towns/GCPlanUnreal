@@ -8,6 +8,7 @@
 #include "../../Mesh/DynamicMaterial.h"
 #include "../../Mesh/LoadContent.h"
 #include "../../ModelingStructsActor.h"
+#include "../../ProceduralModel/PMCube.h"
 #include "../../ProceduralModel/PMCylinder.h"
 
 ModelCouch::ModelCouch() {
@@ -16,9 +17,9 @@ ModelCouch::ModelCouch() {
 ModelCouch::~ModelCouch() {
 }
 
-void ModelCouch::Create() {
+AStaticMeshActor* ModelCouch::Create() {
 	ModelBase* modelBase = ModelBase::GetInstance();
-	FModelingBase modelingBase = modelBase->GetInputs("Couch1", FVector(1.3,2.3,1));
+	auto [modelingBase, modelParams] = modelBase->GetInputs("Couch1", FVector(1.3,2.3,1));
 	FString name = modelingBase.name;
 	FVector size = modelingBase.size;
 	TArray<FString> tags = modelingBase.tags;
@@ -47,11 +48,10 @@ void ModelCouch::Create() {
 	// FString texturePathNormal = loadContent->Texture("marble_normal");
 	// UMaterialInstanceDynamic* material = dynamicMaterial->CreateTextureColor(name + "_leather", texturePathBase,
 	// 	texturePathNormal, FLinearColor(255,230,145));
-	// UMaterialInstanceDynamic* material = dynamicMaterial->CreateTexture(name + "_leather", texturePathBase,
-	// 	texturePathNormal);
-	UMaterialInstanceDynamic* material = dynamicMaterial->CreateColor(name + "_leather", FLinearColor(255,0,0));
+	UMaterialInstanceDynamic* material = dynamicMaterial->CreateTexture(name + "_leather", texturePathBase,
+		texturePathNormal);
+	// UMaterialInstanceDynamic* material = dynamicMaterial->CreateColor(name + "_leather", FLinearColor(255,0,0));
 	FString materialPathWood = loadContent->Material("wood");
-	FModelParams modelParams;
 	modelParams.meshPath = meshCube;
 	modelParams.parent = parent;
 
@@ -74,6 +74,11 @@ void ModelCouch::Create() {
 	ModelSide::Bottom(name, size, scaleSide, modelParams, offsetSide);
 
 	// Cushions
+	FModelParams modelParamsCushion;
+	modelParamsCushion.materialPath = modelParams.materialPath;
+	modelParamsCushion.dynamicMaterial = modelParams.dynamicMaterial;
+
+	float roundedTopHeight = 0.1;
 	FVector spacing = FVector(0.02, 0.02, 0.02);
 	// Spacing on ends and between each cushion.
 	float totalSpacingY = spacing.Y * (cushionCount + 1);
@@ -100,12 +105,21 @@ void ModelCouch::Create() {
 	// Extra to account for bottom spacing.
 	locationBack.Z += spacing.Z;
 	for (int ii = 0; ii < cushionCount; ii++) {
-		modelBase->CreateActor(name + "_CushionBack" + FString::FromInt(ii), locationBack, FRotator(0,0,0), scaleCushionBack,
-			spawnParams, modelParams);
-		modelBase->CreateActor(name + "_CushionBottom" + FString::FromInt(ii), locationBottom, FRotator(0,0,0), scaleCushionBottom,
-			spawnParams, modelParams);
+		// modelBase->CreateActor(name + "_CushionBack" + FString::FromInt(ii), locationBack,
+		// 	FRotator(0,0,0), scaleCushionBack, spawnParams, modelParams);
+		// modelBase->CreateActor(name + "_CushionBottom" + FString::FromInt(ii), locationBottom,
+		// 	FRotator(0,0,0), scaleCushionBottom, spawnParams, modelParams);
+		modelParamsCushion.location = locationBack;
+		PMCube::RoundedTop(name + "_CushionBack" + FString::FromInt(ii), scaleCushionBack, {},
+			roundedTopHeight, modelParamsCushion);
+		modelParamsCushion.location = locationBottom;
+		PMCube::RoundedTop(name + "_CushionBottom" + FString::FromInt(ii), scaleCushionBottom, {},
+			roundedTopHeight, modelParamsCushion);
+
 		// Move Y over to next cushion.
 		locationBack.Y += spacing.Y + scaleCushionBack.Y;
 		locationBottom.Y += spacing.Y + scaleCushionBottom.Y;
 	}
+
+	return actor;
 }

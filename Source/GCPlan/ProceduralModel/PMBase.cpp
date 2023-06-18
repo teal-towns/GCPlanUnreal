@@ -6,6 +6,8 @@
 
 #include "../Common/Lodash.h"
 #include "../Common/UnrealGlobal.h"
+#include "../Mesh/LoadContent.h"
+#include "../Modeling/ModelBase.h"
 #include "../ModelingStructsActor.h"
 
 #include "PMCube.h"
@@ -37,23 +39,15 @@ UWorld* PMBase::GetWorld() {
 	return World;
 }
 
-void PMBase::DestroyActors() {
-	for (auto& Elem : _spawnedActors) {
-		Elem.Value->Destroy();
-	}
-	_spawnedActors.Empty();
-}
-
 void PMBase::CleanUp() {
-	DestroyActors();
 }
 
 void PMBase::SetInputs(FProceduralModelBase proceduralModelBase) {
 	_proceduralModelBase = proceduralModelBase;
 }
 
-FProceduralModelBase PMBase::GetInputs(FString defaultName, FVector defaultSize, FVector defaultVertices,
-									   int32 defaultSidesSegmentCount, float defaultTopOffsetWidth) {
+std::tuple<FProceduralModelBase, FModelParams> PMBase::GetInputs(FString defaultName, FVector defaultSize,
+	int32 defaultSidesSegmentCount, float defaultTopOffsetWidth) {
 	FProceduralModelBase proceduralModelBase = _proceduralModelBase;
 	if (proceduralModelBase.name.Len() < 1) {
 		proceduralModelBase.name = defaultName;
@@ -71,15 +65,15 @@ FProceduralModelBase PMBase::GetInputs(FString defaultName, FVector defaultSize,
 		proceduralModelBase.size.Z = defaultSize.Z;
 	}
 
-	if (proceduralModelBase.vertices.X < minSize || proceduralModelBase.vertices.X > -1 * minSize) {
-		proceduralModelBase.vertices.X = defaultVertices.X;
-	}
-	if (proceduralModelBase.vertices.Y < minSize || proceduralModelBase.vertices.Y > -1 * minSize) {
-		proceduralModelBase.vertices.Y = defaultVertices.Y;
-	}
-	if (proceduralModelBase.vertices.Z < minSize || proceduralModelBase.vertices.Z > -1 * minSize) {
-		proceduralModelBase.vertices.Z = defaultVertices.Z;
-	}
+	// if (proceduralModelBase.vertices.X < minSize || proceduralModelBase.vertices.X > -1 * minSize) {
+	// 	proceduralModelBase.vertices.X = defaultVertices.X;
+	// }
+	// if (proceduralModelBase.vertices.Y < minSize || proceduralModelBase.vertices.Y > -1 * minSize) {
+	// 	proceduralModelBase.vertices.Y = defaultVertices.Y;
+	// }
+	// if (proceduralModelBase.vertices.Z < minSize || proceduralModelBase.vertices.Z > -1 * minSize) {
+	// 	proceduralModelBase.vertices.Z = defaultVertices.Z;
+	// }
 	if (proceduralModelBase.sidesSegmentCount < 3)
 	{
 		proceduralModelBase.sidesSegmentCount = defaultSidesSegmentCount;
@@ -89,7 +83,13 @@ FProceduralModelBase PMBase::GetInputs(FString defaultName, FVector defaultSize,
 		proceduralModelBase.topOffsetWidth = defaultTopOffsetWidth;
 	}
 
-	return proceduralModelBase;
+	FModelParams modelParams;
+	if (proceduralModelBase.materialKey.Len() > 0) {
+		LoadContent* loadContent = LoadContent::GetInstance();
+		modelParams.materialPath = loadContent->Material(proceduralModelBase.materialKey);
+	}
+
+	return { proceduralModelBase, modelParams };
 }
 
 void PMBase::Create() {
@@ -107,30 +107,6 @@ void PMBase::Create() {
 	}
 }
 
-AStaticMeshActor* PMBase::CreateActor(FString name, FVector location, FRotator rotation,
-	FActorSpawnParameters spawnParams, USceneComponent* parent) {
-	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
-
-	// In case of recompile in editor, will lose reference so need to check scene too.
-	AActor* actor1 = unrealGlobal->GetActorByName(name, AStaticMeshActor::StaticClass());
-	if (actor1) {
-		return (AStaticMeshActor*)actor1;
-	}
-
-	spawnParams.Name = FName(name);
-	// AActor* actor = (AActor*)World->SpawnActor<AActor>(AActor::StaticClass(), location * unrealGlobal->GetScale(),
-	// 	rotation, spawnParams);
-	AStaticMeshActor* actor = (AStaticMeshActor*)World->SpawnActor<AStaticMeshActor>(
-		AStaticMeshActor::StaticClass(), location * unrealGlobal->GetScale(), rotation, spawnParams);
-	_spawnedActors.Add(name, actor);
-	unrealGlobal->SetActorFolder(actor);
-	actor->SetActorLabel(name);
-	if (parent) {
-		actor->AttachToComponent(parent, FAttachmentTransformRules::KeepRelativeTransform);
-	}
-	return actor;
-}
-
 void PMBase::AddMesh(AStaticMeshActor* actor, UStaticMesh* mesh, FString materialPath) {
 	UStaticMeshComponent* meshComponent = actor->FindComponentByClass<UStaticMeshComponent>();
 	meshComponent->SetStaticMesh(mesh);
@@ -144,21 +120,51 @@ void PMBase::AddMesh(AStaticMeshActor* actor, UStaticMesh* mesh, FString materia
 	}
 }
 
-UProceduralMeshComponent* PMBase::CreateMesh(UObject* parentObject, USceneComponent* parent, FString name) {
+UProceduralMeshComponent* PMBase::CreateMesh(FString name, UObject* parentObject, USceneComponent* parent) {
 	name = Lodash::GetInstanceId(name + "_");
 	UProceduralMeshComponent* ProceduralMesh = NewObject<UProceduralMeshComponent>(parentObject,
 		UProceduralMeshComponent::StaticClass(), *name);
     ProceduralMesh->RegisterComponent();
-    ProceduralMesh->AttachToComponent(parent, FAttachmentTransformRules::KeepRelativeTransform);
+    if (parent) {
+    	ProceduralMesh->AttachToComponent(parent, FAttachmentTransformRules::KeepRelativeTransform);
+    }
     ProceduralMesh->bUseComplexAsSimpleCollision = true;
 	return ProceduralMesh;
 }
 
-void PMBase::AddMeshSection(UProceduralMeshComponent *ProceduralMesh, TArray<FVector> Vertices,
-							TArray<FVector2D> UV0, TArray<int> Triangles, TArray<FVector> Normals, TArray<FProcMeshTangent> Tangents)
-{
-	ProceduralMesh->CreateMeshSection(0, Vertices, Triangles, Normals, UV0,
-									  TArray<FColor>(), Tangents, true);
+std::tuple<UProceduralMeshComponent*, AActor*> PMBase::GetMesh() {
+	ModelBase* modelBase = ModelBase::GetInstance();
+	FString name = Lodash::GetInstanceId("PMGetMesh_");
+	AStaticMeshActor* actor = modelBase->CreateActor(name);
+	UObject* parentObject = (UObject*)actor;
+	UProceduralMeshComponent* proceduralMesh = PMBase::CreateMesh(name + "_Mesh", parentObject);
+	return { proceduralMesh, actor };
+}
+
+void PMBase::DestroyMesh(AActor* actor, UProceduralMeshComponent* proceduralMesh) {
+	if (IsValid(actor)) {
+		actor->Destroy();
+	}
+}
+
+void PMBase::AddMeshSection(UProceduralMeshComponent* proceduralMesh, TArray<FVector> Vertices,
+	TArray<FVector2D> UV0, TArray<int> Triangles, TArray<FVector> Normals,
+	TArray<FProcMeshTangent> Tangents, FModelParams modelParams) {
+	proceduralMesh->CreateMeshSection(0, Vertices, Triangles, Normals, UV0,
+		TArray<FColor>(), Tangents, true);
+	if (modelParams.dynamicMaterial) {
+		proceduralMesh->SetMaterial(0, modelParams.dynamicMaterial);
+	} else if (modelParams.materialPath.Len() > 0) {
+		if (modelParams.materialPath.Contains(".MaterialInstance")) {
+			UMaterialInstance* material = Cast<UMaterialInstance>(StaticLoadObject(UMaterialInstance::StaticClass(),
+				NULL, *modelParams.materialPath));
+			proceduralMesh->SetMaterial(0, material);
+		} else {
+			UMaterial* material = Cast<UMaterial>(StaticLoadObject(UMaterial::StaticClass(), NULL,
+				*modelParams.materialPath));
+			proceduralMesh->SetMaterial(0, material);
+		}
+	}
 }
 
 // https://forums.unrealengine.com/t/procedural-mesh-not-saving-all-of-its-sections-to-static-mesh/382319/17
@@ -189,4 +195,18 @@ UStaticMesh* PMBase::ToStaticMesh(UProceduralMeshComponent* ProceduralMesh) {
 
 	StaticMesh->MarkPackageDirty();
 	return StaticMesh;
+}
+
+AStaticMeshActor* PMBase::MeshToActor(FString name, UProceduralMeshComponent* proceduralMesh,
+	FModelCreateParams createParams, FModelParams modelParams) {
+	ModelBase* modelBase = ModelBase::GetInstance();
+	UStaticMesh* mesh = ToStaticMesh(proceduralMesh);
+	// AddMesh(createParams.parentActor, mesh);
+	FRotator rotation = FRotator(0,0,0);
+	FActorSpawnParameters spawnParams;
+	FVector location = FVector(0,0,0);
+	FVector scale = FVector(1,1,1);
+	modelParams.mesh = mesh;
+	modelParams.parent = createParams.parent;
+	return modelBase->CreateActor(name, location, rotation, scale, spawnParams, modelParams);
 }

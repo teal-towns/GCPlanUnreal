@@ -13,6 +13,7 @@
 #include "../Layout/LayoutPolyLine.h"
 #include "../Mesh/InstancedMesh.h"
 #include "../Mesh/LoadContent.h"
+#include "../Modeling/ModelBase.h"
 #include "../ProceduralModel/PMBase.h"
 
 SplineRoad* SplineRoad::pinstance_{nullptr};
@@ -37,9 +38,9 @@ void SplineRoad::SetWorld(UWorld* World1) {
 
 	if (!_roadsActor) {
 		FString name = "SplineRoads";
-		PMBase* pmBase = PMBase::GetInstance();
+		ModelBase* modelBase = ModelBase::GetInstance();
 		FActorSpawnParameters spawnParams;
-		_roadsActor = pmBase->CreateActor(name, FVector(0,0,0), FRotator(0,0,0), spawnParams);
+		_roadsActor = modelBase->CreateActor(name, FVector(0,0,0), FRotator(0,0,0), FVector(1,1,1), spawnParams);
 	}
 }
 
@@ -48,7 +49,7 @@ void SplineRoad::DestroyRoads() {
 		FString type = Elem1.Key;
 		for (auto& Elem : _RoadsByType[type]) {
 			FString UName = Elem.Key;
-			if (_RoadsActors.Contains(UName)) {
+			if (_RoadsActors.Contains(UName) && IsValid(_RoadsActors[UName])) {
 				_RoadsActors[UName]->Destroy();
 			}
 		}
@@ -71,7 +72,7 @@ void SplineRoad::DestroyRoads() {
 
 void SplineRoad::CleanUp() {
 	DestroyRoads();
-	if (_roadsActor) {
+	if (_roadsActor && IsValid(_roadsActor)) {
 		_roadsActor->Destroy();
 	}
 	_roadsActor = nullptr;

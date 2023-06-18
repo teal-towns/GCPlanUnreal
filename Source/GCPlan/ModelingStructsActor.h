@@ -147,6 +147,8 @@ struct FModelingBase {
 	FString tagsString;
 	UPROPERTY()
 	TArray<FString> tags;
+	UPROPERTY(EditAnywhere)
+	FString materialKey = "";
 
 	// FModelingBase() {};
 };
@@ -168,8 +170,8 @@ struct FProceduralModelBase {
 	FString name;
 	UPROPERTY(EditAnywhere)
 	FVector size;
-	UPROPERTY(EditAnywhere)
-	FVector vertices;
+	// UPROPERTY(EditAnywhere)
+	// FVector vertices;
 	UPROPERTY(EditAnywhere)
 	int32 sidesSegmentCount;
 	UPROPERTY(EditAnywhere)
@@ -182,6 +184,8 @@ struct FProceduralModelBase {
 	FString tagsString;
 	UPROPERTY()
 	TArray<FString> tags;
+	UPROPERTY(EditAnywhere)
+	FString materialKey = "";
 };
 
 USTRUCT()
@@ -203,10 +207,10 @@ struct FLayoutModelBaseParams {
 	FString name;
 	UPROPERTY(EditAnywhere)
 	FVector size;
-	// UPROPERTY(EditAnywhere)
-	// FVector vertices;
 	UPROPERTY(EditAnywhere)
 	FString tagsString;
 	UPROPERTY()
 	TArray<FString> tags;
+	UPROPERTY(EditAnywhere)
+	FString materialKey = "";
 };

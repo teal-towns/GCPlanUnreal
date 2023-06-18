@@ -45,7 +45,12 @@ UWorld* ModelBase::GetWorld() {
 
 void ModelBase::DestroyActors() {
 	for (auto& Elem : _spawnedActors) {
-		Elem.Value->Destroy();
+		if (IsValid(Elem.Value)) {
+			Elem.Value->Destroy();
+			// UE_LOG(LogTemp, Display, TEXT("destroying %s"), *Elem.Key);
+		} else {
+			UE_LOG(LogTemp, Display, TEXT("NOT destroying %s"), *Elem.Key);
+		}
 	}
 	_spawnedActors.Empty();
 }
@@ -58,7 +63,7 @@ void ModelBase::SetInputs(FModelingBase modelingBase) {
 	_modelingBase = modelingBase;
 }
 
-FModelingBase ModelBase::GetInputs(FString defaultName, FVector defaultSize) {
+std::tuple<FModelingBase, FModelParams> ModelBase::GetInputs(FString defaultName, FVector defaultSize) {
 	FModelingBase modelingBase = _modelingBase;
 	if (modelingBase.name.Len() < 1) {
 		modelingBase.name = defaultName;
@@ -76,7 +81,13 @@ FModelingBase ModelBase::GetInputs(FString defaultName, FVector defaultSize) {
 		modelingBase.size.Z = defaultSize.Z;
 	}
 
-	return modelingBase;
+	FModelParams modelParams;
+	if (modelingBase.materialKey.Len() > 0) {
+		LoadContent* loadContent = LoadContent::GetInstance();
+		modelParams.materialPath = loadContent->Material(modelingBase.materialKey);
+	}
+
+	return { modelingBase, modelParams };
 }
 
 void ModelBase::Create() { 
@@ -156,7 +167,14 @@ AStaticMeshActor* ModelBase::CreateActor(FString name, FVector location, FRotato
 		return (AStaticMeshActor*)actor1;
 	}
 
+	if (modelParams.rotation.X != 0 || modelParams.rotation.Y != 0 || modelParams.rotation.Z != 0) {
+		rotation = FRotator(modelParams.rotation.Y, modelParams.rotation.Z, modelParams.rotation.X);
+	}
 	spawnParams.Name = FName(name);
+	if (location.X == 0 && location.Y == 0 && location.Z == 0 && (modelParams.location.X != 0 ||
+		modelParams.location.Y != 0 || modelParams.location.Z != 0)) {
+		location = modelParams.location;
+	}
 	AStaticMeshActor* actor = (AStaticMeshActor*)World->SpawnActor<AStaticMeshActor>(
 		AStaticMeshActor::StaticClass(), location * unrealGlobal->GetScale(), rotation, spawnParams);
 	_spawnedActors.Add(name, actor);
@@ -205,4 +223,17 @@ AStaticMeshActor* ModelBase::CreateActor(FString name, FVector location, FRotato
 		actor->AttachToComponent(modelParams.parent, FAttachmentTransformRules::KeepRelativeTransform);
 	}
 	return actor;
+}
+
+void ModelBase::SetTransform(AActor* actor, FVector location, FVector rotation, FVector scale) {
+	if (location.X != 0 || location.Y != 0 || location.Z != 0) {
+		UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+		actor->SetActorLocation(location * unrealGlobal->GetScale());
+	}
+	if (rotation.X != 0 || rotation.Y != 0 || rotation.Z != 0) {
+		actor->SetActorRotation(FRotator(rotation.Y, rotation.Z, rotation.X));
+	}
+	if (scale.X != 1 || scale.Y != 1 || scale.Z != 1) {
+		actor->SetActorScale3D(scale);
+	}
 }

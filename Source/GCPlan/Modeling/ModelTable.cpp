@@ -17,7 +17,7 @@ ModelTable::~ModelTable() {
 void ModelTable::Create() {
 	ModelBase* modelBase = ModelBase::GetInstance();
 	UWorld* World = modelBase->GetWorld();
-	FModelingBase modelingBase = modelBase->GetInputs("Table1", FVector(3,2,1.5));
+	auto [modelingBase, modelParams] = modelBase->GetInputs("Table1", FVector(3,2,1.5));
 	FString name = modelingBase.name;
 	FVector size = modelingBase.size;
 	TArray<FString> tags = modelingBase.tags;
@@ -37,7 +37,6 @@ void ModelTable::Create() {
 	FString materialPathMetal = loadContent->Material("black");
 	FString meshPath = loadContent->Mesh("cube");
 	FString meshPathCylinder = loadContent->Mesh("cylinder");
-	FModelParams modelParams;
 	modelParams.parent = parent;
 	modelParams.meshPath = meshPath;
 	modelParams.materialPath = materialPath;

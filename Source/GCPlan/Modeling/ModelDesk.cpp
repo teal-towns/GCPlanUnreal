@@ -17,7 +17,7 @@ ModelDesk::~ModelDesk() {
 void ModelDesk::Create() {
 	ModelBase* modelBase = ModelBase::GetInstance();
 	UWorld* World = modelBase->GetWorld();
-	FModelingBase modelingBase = modelBase->GetInputs("Desk1", FVector(4,2,3));
+	auto [modelingBase, modelParams] = modelBase->GetInputs("Desk1", FVector(4,2,3));
 	FString name = modelingBase.name;
 	FVector size = modelingBase.size;
 	TArray<FString> tags = modelingBase.tags;
@@ -36,7 +36,6 @@ void ModelDesk::Create() {
 	FString materialPathDesk = loadContent->Material("wood");
 	FString materialPathLegs = loadContent->Material("black");
 	FString meshPath = loadContent->Mesh("cube");
-	FModelParams modelParams;
 	modelParams.meshPath = meshPath;
 	modelParams.parent = parent;
 
@@ -142,7 +141,7 @@ ModelMonitor::~ModelMonitor() {
 void ModelMonitor::Create(FVector defLocation) {
 	ModelBase* modelBase = ModelBase::GetInstance();
 	UWorld* World = modelBase->GetWorld();
-	FModelingBase modelingBase = modelBase->GetInputs("Monitor1", FVector(1, 0.05, 0.8));
+	auto [modelingBase, modelParams] = modelBase->GetInputs("Monitor1", FVector(1, 0.05, 0.8));
 	FString name = modelingBase.name;
 	FVector size = modelingBase.size;
 	TArray<FString> tags = modelingBase.tags;
@@ -160,7 +159,6 @@ void ModelMonitor::Create(FVector defLocation) {
 	LoadContent* loadContent = LoadContent::GetInstance();
 	FString meshPath = loadContent->Mesh("cube");
 	FString materialPath = loadContent->Material("black");
-	FModelParams modelParams;
 	modelParams.meshPath = meshPath;
 	modelParams.materialPath = materialPath;
 	modelParams.parent = parent;
@@ -199,7 +197,7 @@ ModelKeyboard::~ModelKeyboard() {
 void ModelKeyboard::Create(FVector defLocation) {
 	ModelBase* modelBase = ModelBase::GetInstance();
 	UWorld* World = modelBase->GetWorld();
-	FModelingBase modelingBase = modelBase->GetInputs("Keyboard1", FVector(0.5, 0.25, 0.05));
+	auto [modelingBase, modelParams] = modelBase->GetInputs("Keyboard1", FVector(0.5, 0.25, 0.05));
 	FString name = modelingBase.name;
 	FVector size = modelingBase.size;
 	TArray<FString> tags = modelingBase.tags;
@@ -217,7 +215,6 @@ void ModelKeyboard::Create(FVector defLocation) {
 	LoadContent* loadContent = LoadContent::GetInstance();
 	FString meshPath = loadContent->Mesh("cube");
 	FString materialPath = loadContent->Material("grey");
-	FModelParams modelParams;
 	modelParams.meshPath = meshPath;
 	modelParams.materialPath = materialPath;
 	modelParams.parent = parent;
@@ -241,7 +238,7 @@ ModelMouse::~ModelMouse() {
 void ModelMouse::Create(FVector defLocation) {
 	ModelBase* modelBase = ModelBase::GetInstance();
 	UWorld* World = modelBase->GetWorld();
-	FModelingBase modelingBase = modelBase->GetInputs("Mouse1", FVector(0.06, 0.12, 0.05));
+	auto [modelingBase, modelParams] = modelBase->GetInputs("Mouse1", FVector(0.06, 0.12, 0.05));
 	FString name = modelingBase.name;
 	FVector size = modelingBase.size;
 	TArray<FString> tags = modelingBase.tags;
@@ -259,7 +256,6 @@ void ModelMouse::Create(FVector defLocation) {
 	LoadContent* loadContent = LoadContent::GetInstance();
 	FString meshPath = loadContent->Mesh("cube");
 	FString materialPath = loadContent->Material("blue");
-	FModelParams modelParams;
 	modelParams.meshPath = meshPath;
 	modelParams.materialPath = materialPath;
 	modelParams.parent = parent;

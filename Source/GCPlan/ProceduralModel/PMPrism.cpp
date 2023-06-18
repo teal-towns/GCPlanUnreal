@@ -5,6 +5,7 @@
 #include "../Common/UnrealGlobal.h"
 
 #include "PMBase.h"
+#include "../Modeling/ModelBase.h"
 
 PMPrism::PMPrism()
 {
@@ -17,7 +18,7 @@ PMPrism::~PMPrism()
 UStaticMesh *PMPrism::CreateFromInputs()
 {
 	PMBase *pmBase = PMBase::GetInstance();
-	FProceduralModelBase inputs = pmBase->GetInputs("Prism1", FVector(1, 1, 1), FVector(2, 2, 2), 4, 0.0);
+	auto [inputs, modelParams] = pmBase->GetInputs("Prism1", FVector(1, 1, 1), 4, 0.0);
 	return Create(inputs.name, inputs.tags, inputs.sidesSegmentCount, inputs.size.Z, inputs.size.X, inputs.topOffsetWidth, inputs.closeTop, inputs.closeBottom);
 }
 
@@ -61,6 +62,7 @@ UStaticMesh *PMPrism::Create(FString name, TArray<FString> tags, int32 sidesSegm
 	bool doubleSided = true;
 	auto [Vertices, Triangles, Normals, Tangents, UV0s] = InitializeMesh(sidesSegmentCount, closeTop, closeBottom, doubleSided);
 
+	ModelBase* modelBase = ModelBase::GetInstance();
 	PMBase *pmBase = PMBase::GetInstance();
 	UnrealGlobal *unrealGlobal = UnrealGlobal::GetInstance();
 	float scale = unrealGlobal->GetScale();
@@ -71,10 +73,10 @@ UStaticMesh *PMPrism::Create(FString name, TArray<FString> tags, int32 sidesSegm
 	AStaticMeshActor *actor;
 
 	// Parent container
-	actor = pmBase->CreateActor(name, location, rotation, spawnParams);
+	actor = modelBase->CreateActor(name, location, rotation, FVector(1,1,1), spawnParams);
 	USceneComponent *parent = actor->FindComponentByClass<USceneComponent>();
 	UObject *parentObject = (UObject *)actor;
-	UProceduralMeshComponent *ProceduralMesh = PMBase::CreateMesh(parentObject, parent, "Prism1");
+	UProceduralMeshComponent *ProceduralMesh = PMBase::CreateMesh("Prism1", parentObject);
 
 	// -------------------------------------------------------
 	// Make a column
@@ -279,9 +281,10 @@ UStaticMesh *PMPrism::Create(FString name, TArray<FString> tags, int32 sidesSegm
 	{
 		PMBase::AddMesh(actor, mesh);
 	}
-	else
-	{
-		actor->Destroy();
+	else {
+		if (IsValid(actor)) {
+			actor->Destroy();
+		}
 	}
 	return mesh;
 }

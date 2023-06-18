@@ -16,7 +16,7 @@ ModelStand::~ModelStand() {
 void ModelStand::Create() {
 	ModelBase* modelBase = ModelBase::GetInstance();
 	UWorld* World = modelBase->GetWorld();
-	FModelingBase modelingBase = modelBase->GetInputs("Stand1", FVector(3,1,1));
+	auto [modelingBase, modelParams] = modelBase->GetInputs("Stand1", FVector(3,1,1));
 	FString name = modelingBase.name;
 	FVector size = modelingBase.size;
 	TArray<FString> tags = modelingBase.tags;

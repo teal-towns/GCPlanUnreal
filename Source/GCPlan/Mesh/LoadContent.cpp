@@ -57,7 +57,7 @@ void LoadContent::LoadMeshes(FString defaultMeshPath) {
 			meshPath = Elem.Value.path;
 			materialPath = Elem.Value.materialPath;
 			mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL, *meshPath));
-			UE_LOG(LogTemp, Display, TEXT("meshPath %s"), *meshPath);
+			// UE_LOG(LogTemp, Display, TEXT("meshPath %s"), *meshPath);
 			if (!mesh) {
 				UE_LOG(LogTemp, Display, TEXT("LoadContent.LoadMeshes not found, using defaultMeshPath %s"), *name);
 				meshPath = defaultMeshPath;
