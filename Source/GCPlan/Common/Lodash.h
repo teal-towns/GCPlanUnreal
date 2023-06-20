@@ -14,4 +14,5 @@ public:
 	static FString ToFixed(float value, int digits = 2);
 	// static T Max(TArray<T> values);
 	// static T Min(TArray<T> values);
+	static TMap<FString, float> Object(TMap<FString, float> values, TMap<FString, float> defaults);
 };

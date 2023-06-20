@@ -24,7 +24,7 @@ AActor* ModelDesk::CreateFromInputs() {
 }
 
 AActor* ModelDesk::Create(FVector size, FModelParams modelParams,
-	FModelCreateParams createParamsIn, TArray<FString> tags, TMap<FString, float> dimensions) {
+	FModelCreateParams createParamsIn, TArray<FString> tags, TMap<FString, float> sizes) {
 	ModelBase* modelBase = ModelBase::GetInstance();
 	FString name = Lodash::GetInstanceId("Desk_");
 	FVector rotation = FVector(0,0,0), location = FVector(0,0,0), scale = FVector(1,1,1);
@@ -34,10 +34,10 @@ AActor* ModelDesk::Create(FVector size, FModelParams modelParams,
 	modelParams.meshKey = "cube";
 	modelParams.materialKey = "wood";
 	FActorSpawnParameters spawnParams;
-	if (!dimensions.Contains("woodThickness")) {
-		dimensions.Add("woodThickness", 0.05);
+	if (!sizes.Contains("woodThickness")) {
+		sizes.Add("woodThickness", 0.05);
 	}
-	float thick = dimensions["woodThickness"];
+	float thick = sizes["woodThickness"];
 
 	location = FVector(0, 0, size.Z);
 	scale = FVector(size.X, size.Y, thick);

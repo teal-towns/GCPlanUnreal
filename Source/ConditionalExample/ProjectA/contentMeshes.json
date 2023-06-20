@@ -19,11 +19,15 @@
 	},
 	"materials": {
 		"wood": "/Script/Engine.Material'/Game/Conditional/Nature1/Wood/wood-pale-material.wood-pale-material'",
-		"black": "/Script/Engine.Material'/Game/Material/Black_M.Black_M'",
-		"white": "/Script/Engine.Material'/Game/Material/White_M.White_M'",
-		"grey": "/Script/Engine.Material'/Game/Material/Grey_M.Grey_M'",
-		"blue": "/Script/Engine.Material'/Game/Material/Blue_M.Blue_M'",
-		"red": "/Script/Engine.Material'/Game/Material/Red_M.Red_M'"
+		"black": "/Script/Engine.MaterialInstanceConstant'/Game/Material/Color/DynamicColor_M_Inst_Black.DynamicColor_M_Inst_Black'",
+		"blue": "/Script/Engine.MaterialInstanceConstant'/Game/Material/Color/DynamicColor_M_Inst_Blue.DynamicColor_M_Inst_Blue'",
+		"green": "/Script/Engine.MaterialInstanceConstant'/Game/Material/Color/DynamicColor_M_Inst_Green.DynamicColor_M_Inst_Green'",
+		"grey": "/Script/Engine.MaterialInstanceConstant'/Game/Material/Color/DynamicColor_M_Inst_Grey.DynamicColor_M_Inst_Grey'",
+		"orange": "/Script/Engine.MaterialInstanceConstant'/Game/Material/Color/DynamicColor_M_Inst_Orange.DynamicColor_M_Inst_Orange'",
+		"purple": "/Script/Engine.MaterialInstanceConstant'/Game/Material/Color/DynamicColor_M_Inst_Purple.DynamicColor_M_Inst_Purple'",
+		"red": "/Script/Engine.MaterialInstanceConstant'/Game/Material/Color/DynamicColor_M_Inst_Red.DynamicColor_M_Inst_Red'",
+		"white": "/Script/Engine.MaterialInstanceConstant'/Game/Material/Color/DynamicColor_M_Inst_White.DynamicColor_M_Inst_White'",
+		"yellow": "/Script/Engine.MaterialInstanceConstant'/Game/Material/Color/DynamicColor_M_Inst_Yellow.DynamicColor_M_Inst_Yellow'"
 	},
 	"textures": {
 	}

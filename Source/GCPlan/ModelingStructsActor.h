@@ -24,18 +24,18 @@ UENUM()
 enum ModelingCategory {
 	ANIMAL,
 	ARCHITECTURE,
-	CLOTHES,
 	ELECTRONICS,
 	FOOD,
 	FURNITURE,
 	PLANTS,
-	SPORTS,
+	// SPORTS,
 	TOOLS,
 	VEHICLE
 };
 
 UENUM()
 enum ModelingSubCategoryAnimal {
+	DOG
 };
 
 UENUM()
@@ -46,10 +46,6 @@ enum ModelingSubCategoryArchitecture {
 	STAIRS,
 	STREETLIGHT,
 	TRASH_CAN
-};
-
-UENUM()
-enum ModelingSubCategoryClothes {
 };
 
 UENUM()
@@ -91,12 +87,13 @@ enum ModelingSubCategoryFurniture {
 UENUM()
 enum ModelingSubCategoryPlants {
 	BUSH,
+	LEAVES,
 	TREE
 };
 
-UENUM()
-enum ModelingSubCategorySports {
-};
+// UENUM()
+// enum ModelingSubCategorySports {
+// };
 
 UENUM()
 enum ModelingSubCategoryTools {
@@ -124,8 +121,6 @@ struct FModelingBase {
 	TEnumAsByte<ModelingSubCategoryAnimal> subCategoryAnimal;
 	UPROPERTY(EditAnywhere, meta = (EditCondition = "category == ModelingCategory::ARCHITECTURE", EditConditionHides))
 	TEnumAsByte<ModelingSubCategoryArchitecture> subCategoryArchitecture;
-	UPROPERTY(EditAnywhere, meta = (EditCondition = "category == ModelingCategory::CLOTHES", EditConditionHides))
-	TEnumAsByte<ModelingSubCategoryClothes> subCategoryClothes;
 	UPROPERTY(EditAnywhere, meta = (EditCondition = "category == ModelingCategory::ELECTRONICS", EditConditionHides))
 	TEnumAsByte<ModelingSubCategoryElectronics> subCategoryElectronics;
 	UPROPERTY(EditAnywhere, meta = (EditCondition = "category == ModelingCategory::FOOD", EditConditionHides))
@@ -134,8 +129,8 @@ struct FModelingBase {
 	TEnumAsByte<ModelingSubCategoryFurniture> subCategoryFurniture;
 	UPROPERTY(EditAnywhere, meta = (EditCondition = "category == ModelingCategory::PLANTS", EditConditionHides))
 	TEnumAsByte<ModelingSubCategoryPlants> subCategoryPlants;
-	UPROPERTY(EditAnywhere, meta = (EditCondition = "category == ModelingCategory::SPORTS", EditConditionHides))
-	TEnumAsByte<ModelingSubCategorySports> subCategorySports;
+	// UPROPERTY(EditAnywhere, meta = (EditCondition = "category == ModelingCategory::SPORTS", EditConditionHides))
+	// TEnumAsByte<ModelingSubCategorySports> subCategorySports;
 	UPROPERTY(EditAnywhere, meta = (EditCondition = "category == ModelingCategory::TOOLS", EditConditionHides))
 	TEnumAsByte<ModelingSubCategoryTools> subCategoryTools;
 	UPROPERTY(EditAnywhere, meta = (EditCondition = "category == ModelingCategory::VEHICLE", EditConditionHides))

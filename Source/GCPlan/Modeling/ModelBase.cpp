@@ -18,6 +18,7 @@
 #include "Furniture/ModelStand.h"
 #include "Furniture/ModelTable.h"
 #include "Plants/ModelBush.h"
+#include "Plants/ModelLeaves.h"
 #include "Plants/ModelTree.h"
 #include "ModelStreetLight.h"
 #include "ModelEVCharger.h"
@@ -103,8 +104,6 @@ void ModelBase::Create() {
 		_modelingBase.subCategory = *UEnum::GetValueAsString(_modelingBase.subCategoryAnimal);
 	} else if (_modelingBase.category == ModelingCategory::ARCHITECTURE) {
 		_modelingBase.subCategory = *UEnum::GetValueAsString(_modelingBase.subCategoryArchitecture);
-	} else if (_modelingBase.category == ModelingCategory::CLOTHES) {
-		_modelingBase.subCategory = *UEnum::GetValueAsString(_modelingBase.subCategoryClothes);
 	} else if (_modelingBase.category == ModelingCategory::ELECTRONICS) {
 		_modelingBase.subCategory = *UEnum::GetValueAsString(_modelingBase.subCategoryElectronics);
 	} else if (_modelingBase.category == ModelingCategory::FOOD) {
@@ -113,8 +112,8 @@ void ModelBase::Create() {
 		_modelingBase.subCategory = *UEnum::GetValueAsString(_modelingBase.subCategoryFurniture);
 	} else if (_modelingBase.category == ModelingCategory::PLANTS) {
 		_modelingBase.subCategory = *UEnum::GetValueAsString(_modelingBase.subCategoryPlants);
-	} else if (_modelingBase.category == ModelingCategory::SPORTS) {
-		_modelingBase.subCategory = *UEnum::GetValueAsString(_modelingBase.subCategorySports);
+	// } else if (_modelingBase.category == ModelingCategory::SPORTS) {
+	// 	_modelingBase.subCategory = *UEnum::GetValueAsString(_modelingBase.subCategorySports);
 	} else if (_modelingBase.category == ModelingCategory::TOOLS) {
 		_modelingBase.subCategory = *UEnum::GetValueAsString(_modelingBase.subCategoryTools);
 	} else if (_modelingBase.category == ModelingCategory::VEHICLE) {
@@ -137,6 +136,8 @@ void ModelBase::Create() {
 		ModelEVCharger::Create();
 	// } else if (_modelingBase.subCategory == "KEYBOARD") {
 	// 	ModelComputer::Keyboard();
+	} else if (_modelingBase.subCategory == "LEAVES") {
+		ModelLeaves::CreateFromInputs();
 	} else if (_modelingBase.subCategory == "LIGHT") {
 		ModelLight::CreateFromInputs();
 	} else if (_modelingBase.subCategory == "MONITOR") {

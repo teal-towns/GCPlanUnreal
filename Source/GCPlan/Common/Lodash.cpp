@@ -151,3 +151,14 @@ FString Lodash::ToFixed(float value, int digits) {
 // 	}
 // 	return val;
 // }
+
+// TODO - allow any type.
+// template <typename T> TMap<FString, T> Lodash::Object(TMap<FString, T> values, TMap<FString, T> defaults) {
+TMap<FString, float> Lodash::Object(TMap<FString, float> values, TMap<FString, float> defaults) {
+	for (auto& Elem : defaults) {
+		if (!values.Contains(Elem.Key)) {
+			values.Add(Elem.Key, Elem.Value);
+		}
+	}
+	return values;
+}

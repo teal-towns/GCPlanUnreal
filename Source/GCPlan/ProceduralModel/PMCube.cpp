@@ -1,7 +1,6 @@
 #include "PMCube.h"
 
 #include "Engine/StaticMeshActor.h"
-#include "ProceduralMeshComponent.h"
 
 #include "../Common/Lodash.h"
 #include "../Common/UnrealGlobal.h"
@@ -46,7 +45,6 @@ void PMCube::Create(FString name, FVector size, TArray<FString> tags, FModelPara
 	AStaticMeshActor* actor = modelBase->CreateActor(name);
 	USceneComponent* parent = actor->FindComponentByClass<USceneComponent>();
 	// UObject* parentObject = (UObject*)actor;
-	// UProceduralMeshComponent* proceduralMesh = PMBase::CreateMesh("Cube1", parentObject);
 
 	// float x;
 	// TArray<FVector> Vertices = {};
@@ -83,8 +81,6 @@ void PMCube::Create(FString name, FVector size, TArray<FString> tags, FModelPara
 	// }
 
 	// // TODO - other sides
-
-	// PMBase::AddMeshSection(proceduralMesh, Vertices, UV0, Triangles);
 
 	TArray<FPlaneOffsets> xOffsets = {
 		{ FPlaneOffsets(0, 0, 0, 0) },
@@ -184,9 +180,6 @@ AStaticMeshActor* PMCube::RoundedTop(FString name, FVector size, TArray<FString>
 	createParams.parentActor = actor;
 	createParams.parent = parent;
 
-	// UObject* parentObject = (UObject*)createParams.parentActor;
-	// createParams.proceduralMesh = PMBase::CreateMesh(name + "_RoundedTop", parentObject);
-
 	createParams.triangleSide = -1;
 	PMPlane::Create(name + "_Bottom", size, offsetsFlat, offsetsFlat, "xy", tags, createParams, modelParams);
 	createParams.triangleSide = 1;
@@ -223,7 +216,6 @@ void PMCube::RoundedTopSide(FVector size, TArray<FString> tags, FModelCreatePara
 	// FModelParams modelParams;
 	modelParams.parent = createParams.parent;
 	FString name;
-	UProceduralMeshComponent* proceduralMesh;
 
 	// Use different parent for cloner.
 	AStaticMeshActor* clonerActor = modelBase->CreateActor(Lodash::GetInstanceId("Cloner_"), -1 * createParams.offset);
@@ -240,7 +232,6 @@ void PMCube::RoundedTopSide(FVector size, TArray<FString> tags, FModelCreatePara
 	// Create instance with ZERO rotation or offset, since will be cloning it.
 	clonerCreateParams.UVScale = FVector2D(0.01, 0.01);
 	actorBase = PMCorner::Create(sizeCorner, tags, clonerCreateParams, clonerModelParams);
-	// actorBase = PMBase::MeshToActor(Lodash::GetInstanceId("Corner_"), proceduralMesh, clonerCreateParams, clonerModelParams);
 	spawnParams.Template = actorBase;
 	name = actorBase->GetName();
 	float xBack = -1 * size.X / 2 + sizeCorner.X / 2;
@@ -274,7 +265,6 @@ void PMCube::RoundedTopSide(FVector size, TArray<FString> tags, FModelCreatePara
 	tagsEdge += { "oneSide" };
 	clonerCreateParams.UVScale = FVector2D(0.01, 1);
 	actorBase = PMCorner::Create(sizeEdge, tagsEdge, clonerCreateParams, clonerModelParams);
-	// actorBase = PMBase::MeshToActor(Lodash::GetInstanceId("Edge_"), proceduralMesh, clonerCreateParams, clonerModelParams);
 	spawnParams.Template = actorBase;
 	name = actorBase->GetName();
 
