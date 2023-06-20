@@ -15,6 +15,7 @@
 #include "../Mesh/LoadContent.h"
 #include "../Modeling/ModelBase.h"
 #include "../ProceduralModel/PMBase.h"
+#include "../ProceduralModel/PMSpline.h"
 
 SplineRoad* SplineRoad::pinstance_{nullptr};
 std::mutex SplineRoad::mutex_;
@@ -122,6 +123,11 @@ void SplineRoad::DrawRoads(bool addPlants, bool carveLand) {
 	bool saveHeightMap = false;
 	TMap<FString, FImagePixelValue> newHeightImageValues = {};
 
+	FModelParams modelParams;
+	modelParams.meshPath = loadContent->Mesh("roadSegment1");
+	modelParams.materialPath = "/Script/Engine.Material'/Game/Landscape/Asphalt_M.Asphalt_M'";
+	FModelCreateParams createParams;
+
 	for (auto& Elem1 : _RoadsByType) {
 		FString type = Elem1.Key;
 
@@ -155,6 +161,10 @@ void SplineRoad::DrawRoads(bool addPlants, bool carveLand) {
 			// Apparently defaults to 2 points, so remove them.
 			spline->ClearSplinePoints();
 
+			modelParams.parent = parent;
+			createParams.parentActor = actor;
+			createParams.parent = modelParams.parent;
+
 			verticesCount = vertices.Num();
 			int pointCount = 0;
 			for (int vv = 0; vv < verticesCount; vv++) {
@@ -167,7 +177,6 @@ void SplineRoad::DrawRoads(bool addPlants, bool carveLand) {
 					// UE_LOG(LogTemp, Display, TEXT("pre-point %s prev %s cur %s"), *pointToUse.ToString(), *vertices[(vv-1)].ToString(), *vertices[vv].ToString());
 					point = FSplinePoint((float)pointCount, pointToUse * unrealGlobal->GetScale());
 					spline->AddPoint(point, false);
-					// AddSplineMesh(UName, pointCount, parentObject, parent, widthMeters, spline);
 					pointCount += 1;
 				}
 
@@ -175,7 +184,6 @@ void SplineRoad::DrawRoads(bool addPlants, bool carveLand) {
 				point = FSplinePoint((float)pointCount, vertices[vv] * unrealGlobal->GetScale());
 				// point = FSplinePoint((float)vv, vertices[vv] * unrealGlobal->GetScale());
 				spline->AddPoint(point, false);
-				// AddSplineMesh(UName, pointCount, parentObject, parent, widthMeters, spline);
 				pointCount += 1;
 
 				// Add point after the vertex for flattening out to align at intersection.
@@ -187,7 +195,6 @@ void SplineRoad::DrawRoads(bool addPlants, bool carveLand) {
 					// UE_LOG(LogTemp, Display, TEXT("post-point %s cur %s next %s"), *pointToUse.ToString(), *vertices[vv].ToString(), *vertices[(vv+1)].ToString());
 					point = FSplinePoint((float)pointCount, pointToUse * unrealGlobal->GetScale());
 					spline->AddPoint(point, false);
-					// AddSplineMesh(UName, pointCount, parentObject, parent, widthMeters, spline);
 					pointCount += 1;
 				}
 
@@ -226,7 +233,7 @@ void SplineRoad::DrawRoads(bool addPlants, bool carveLand) {
 				// 	pathLine = vertices[(verticesCount - 1)] - vertices[(verticesCount - 2)];
 				// 	tangentEnd = FVector(pathLine.X, pathLine.Y, 0);
 				// }
-				AddSplineMesh(UName, ii, parentObject, parent, widthMeters, spline,
+				PMSpline::AddSplineMesh(UName, ii, modelParams, createParams, widthMeters, spline,
 					tangentStart, tangentEnd);
 			}
 
@@ -252,56 +259,4 @@ void SplineRoad::DrawRoads(bool addPlants, bool carveLand) {
 		// heightMap->SaveImage();
 		heightMap->SetImageValues(newHeightImageValues);
 	}
-}
-
-void SplineRoad::AddSplineMesh(FString UName, int pointCount, UObject* parentObject,
-	USceneComponent* parent, float widthMeters, USplineComponent* spline,
-	FVector tangentStart, FVector tangentEnd) {
-	// After have at least 2 points, add mesh between this point and past point.
-	if (pointCount > 0) {
-		FVector pointLocationStart, pointTangentStart, pointLocationEnd, pointTangentEnd;
-		FString nameTemp = UName + "_SplineMesh_" + FString::FromInt(pointCount);
-		USplineMeshComponent* SplineMesh = InitMesh(nameTemp, parentObject, parent, widthMeters);
-		spline->GetLocalLocationAndTangentAtSplinePoint((pointCount - 1), pointLocationStart, pointTangentStart);
-		spline->GetLocalLocationAndTangentAtSplinePoint((pointCount), pointLocationEnd, pointTangentEnd);
-		// UE_LOG(LogTemp, Display, TEXT("mesh tangents start %s end %s locStart %s locEnd %s"), *pointTangentStart.ToString(), *pointTangentEnd.ToString(), *pointLocationStart.ToString(), *pointLocationEnd.ToString());
-		if (tangentStart != FVector(0,0,0)) {
-			UE_LOG(LogTemp, Display, TEXT("tangentStart %s orig %s"), *tangentStart.ToString(), *pointTangentStart.ToString());
-			pointTangentStart = tangentStart;
-		}
-		if (tangentEnd != FVector(0,0,0)) {
-			UE_LOG(LogTemp, Display, TEXT("tangentEnd %s orig %s"), *tangentEnd.ToString(), *pointTangentEnd.ToString());
-			pointTangentEnd = tangentEnd;
-		}
-		SplineMesh->SetStartAndEnd(pointLocationStart, pointTangentStart, pointLocationEnd, pointTangentEnd);
-	}
-}
-
-USplineMeshComponent* SplineRoad::InitMesh(FString nameTemp, UObject* parentObject, USceneComponent* parent, float widthMeters) {
-	USplineMeshComponent* SplineMesh = NewObject<USplineMeshComponent>(parentObject,
-		USplineMeshComponent::StaticClass(), *nameTemp);
-	SplineMesh->CreationMethod = EComponentCreationMethod::Instance;
-	SplineMesh->RegisterComponent();
-	SplineMesh->AttachToComponent(parent, FAttachmentTransformRules::KeepRelativeTransform);
-	// SplineMesh->bCreatedByConstructionScript = true;
-	SplineMesh->SetMobility(EComponentMobility::Movable);
-	// SplineMesh->AttachParent = spline;
-	SplineMesh->bCastDynamicShadow = false;
-
-	LoadContent* loadContent = LoadContent::GetInstance();
-	FString meshPath = loadContent->Mesh("roadSegment1");
-	UStaticMesh* mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL, *meshPath));
-	SplineMesh->SetStaticMesh(mesh);
-
-	FString materialPath = "/Script/Engine.Material'/Game/Landscape/Asphalt_M.Asphalt_M'";
-	UMaterial* material = Cast<UMaterial>(StaticLoadObject(UMaterial::StaticClass(), NULL,
-		*materialPath));
-	SplineMesh->SetMaterial(0, material);
-
-	// Width of the mesh
-	float scale = 1;
-	SplineMesh->SetStartScale(FVector2D(scale, scale));
-	SplineMesh->SetEndScale(FVector2D(scale, scale));
-
-	return SplineMesh;
 }

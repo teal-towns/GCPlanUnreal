@@ -17,9 +17,25 @@ struct FModelParams {
 	FString textureBase = "";
 	FString textureNormal = "";
 	FLinearColor textureColor = FLinearColor(1,1,1,1);
-	float textureColorIntensity = 1;
+	// float textureColorIntensity = 1;
 	FVector rotation = FVector(0,0,0);
 	FVector location = FVector(0,0,0);
+
+	// FModelParams() {};
+	// FModelParams(FModelParams input) {
+	// 	meshPath = input.meshPath;
+	// 	meshKey = input.meshKey;
+	// 	materialPath = input.materialPath;
+	// 	materialKey = input.materialKey;
+	// 	mesh = input.mesh;
+	// 	dynamicMaterial = input.dynamicMaterial;
+	// 	parent = input.parent;
+	// 	textureBase = input.textureBase;
+	// 	textureNormal = input.textureNormal;
+	// 	textureColor = input.textureColor;
+	// 	rotation = input.rotation;
+	// 	location = input.location;
+	// };
 };
 
 struct FModelCreateParams {
@@ -29,7 +45,24 @@ struct FModelCreateParams {
 	USceneComponent* parent = nullptr;
 	// UProceduralMeshComponent* proceduralMesh = nullptr;
 	FVector offset = FVector(0,0,0);
-	FString trianglesOrder = "";
+	FVector rotation = FVector(0,0,0);
+	FString triangleOrder = "";
+	int triangleSide = 1;
+	TMap<FString, FString> offsetsCombine = {};
+	FVector2D UVScale = FVector2D(1,1);
+
+	// FModelCreateParams() {};
+	// FModelCreateParams(FModelCreateParams input, AActor parentActor_ = nullptr,
+	// 	USceneComponent* parent_ = nullptr) {
+	// 	parentActor = parentActor_ ? parentActor_ : input.parentActor;
+	// 	parent = parent_ ? parent_ : input.parent;
+	// 	// offset = input.offset;
+	// 	// rotation = input.rotation;
+	// 	// triangleOrder = input.triangleOrder;
+	// 	// triangleSide = input.triangleSide;
+	// 	// offsetsCombine = input.offsetsCombine;
+	// 	// UVScale = input.UVScale;
+	// };
 };
 
 class ModelBase {
@@ -46,9 +79,13 @@ public:
 	UWorld* GetWorld();
 	void Create();
 	void CreateFloor();
+	static FString CheckGetName(FString name = "", FString defaultName = "");
+	AStaticMeshActor* CreateActorEmpty(FString name, FModelParams modelParams);
 	AStaticMeshActor* CreateActor(FString name, FVector location = FVector(0,0,0),
 		FVector rotation = FVector(0,0,0), FVector scale = FVector(1,1,1),
 		FActorSpawnParameters spawnParams = FActorSpawnParameters(), FModelParams = FModelParams());
+	static void SetMeshMaterialFromParams(UStaticMeshComponent* meshComponent, FModelParams modelParams);
+	static void SetTransformFromParams(AActor* actor, FModelCreateParams createParams);
 	static void SetTransform(AActor* actor, FVector location = FVector(0,0,0),
 		FVector rotation = FVector(0,0,0), FVector scale = FVector(1,1,1));
 

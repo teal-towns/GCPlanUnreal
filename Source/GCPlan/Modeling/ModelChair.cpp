@@ -158,6 +158,9 @@ AActor* ModelChair::Create() {
 } // ModelChair
 
 AActor* ModelChair::UChair(FVector size, TArray<FString> tags, FModelParams modelParams) {
+	float seatHeight = 0.5;
+	float seatThickness = 0.05;
+
 	FString name = Lodash::GetInstanceId("UChair_");
 	ModelBase* modelBase = ModelBase::GetInstance();
 	AActor* actor = modelBase->CreateActor(name);
@@ -165,7 +168,6 @@ AActor* ModelChair::UChair(FVector size, TArray<FString> tags, FModelParams mode
 	FActorSpawnParameters spawnParams;
 	modelParams.parent = actor->FindComponentByClass<USceneComponent>();
 
-	float seatHeight = 0.5;
 	FVector scaleLeg = FVector(0.05, 0.05, size.Z - seatHeight);
 	float buffer = 0.2;
 	modelParams.meshKey = "cube";
@@ -188,7 +190,10 @@ AActor* ModelChair::UChair(FVector size, TArray<FString> tags, FModelParams mode
 
 	// Plane map: z, y, x
 	scale = FVector(seatHeight, size.Y, size.X);
-	PMPlaneU::Create(name, scale, createParams, modelParams);
+	createParams.offset = FVector(0, 0, seatHeight);
+	AActor* actorTemp = PMPlaneU::Shape(name, scale, createParams, modelParams, seatThickness);
+	// TODO
+	// ModelBase::SetTransform(actorTemp, offsetParent + FVector(scale.X / 2, scale.Y / 2), FVector(0,90,0));
 
 	return actor;
 }
