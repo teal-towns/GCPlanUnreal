@@ -34,6 +34,11 @@ void AModelingActor::GenerateModel() {
 	ModelBase* modelBase = ModelBase::GetInstance();
 	modelBase->SetInputs(ModelingBase);
 	modelBase->Create();
+}
+
+void AModelingActor::CreateFloor() {
+	Init();
+	ModelBase* modelBase = ModelBase::GetInstance();
 	modelBase->CreateFloor();
 }
 

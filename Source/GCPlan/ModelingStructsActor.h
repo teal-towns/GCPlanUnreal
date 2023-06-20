@@ -56,10 +56,10 @@ UENUM()
 enum ModelingSubCategoryElectronics {
 	CELL_PHONE,
 	COMPUTER,
-	KEYBOARD,
+	// KEYBOARD,
 	LAPTOP,
 	MONITOR,
-	MOUSE,
+	// MOUSE,
 	TV
 };
 
@@ -90,6 +90,8 @@ enum ModelingSubCategoryFurniture {
 
 UENUM()
 enum ModelingSubCategoryPlants {
+	BUSH,
+	TREE
 };
 
 UENUM()

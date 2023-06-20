@@ -7,14 +7,18 @@
 #include "../Common/UnrealGlobal.h"
 #include "../Mesh/LoadContent.h"
 #include "../ModelingStructsActor.h"
+#include "Electronics/ModelComputer.h"
+#include "Electronics/ModelMonitor.h"
 #include "Furniture/ModelBook.h"
+#include "Furniture/ModelBench.h"
+#include "Furniture/ModelChair.h"
 #include "Furniture/ModelCouch.h"
+#include "Furniture/ModelDesk.h"
 #include "Furniture/ModelLight.h"
 #include "Furniture/ModelStand.h"
-#include "ModelBench.h"
-#include "ModelChair.h"
-#include "ModelTable.h"
-#include "ModelDesk.h"
+#include "Furniture/ModelTable.h"
+#include "Plants/ModelBush.h"
+#include "Plants/ModelTree.h"
 #include "ModelStreetLight.h"
 #include "ModelEVCharger.h"
 
@@ -91,8 +95,6 @@ std::tuple<FModelingBase, FModelParams> ModelBase::GetInputs(FString defaultName
 }
 
 void ModelBase::Create() { 
-	FVector defLocation = FVector(0, 0, 0);
-
 	if (_modelingBase.tagsString.Len() > 0) {
 		_modelingBase.tagsString.ParseIntoArray(_modelingBase.tags, TEXT(","), true);
 	}
@@ -120,31 +122,35 @@ void ModelBase::Create() {
 	}
 
 	if (_modelingBase.subCategory == "BENCH") {
-		ModelBench::Create();
+		ModelBench::CreateFromInputs();
 	} else if (_modelingBase.subCategory == "BOOK") {
-		ModelBook::Create();
+		ModelBook::CreateFromInputs();
+	} else if (_modelingBase.subCategory == "BUSH") {
+		ModelBush::CreateFromInputs();
 	} else if (_modelingBase.subCategory == "CHAIR") {
-		ModelChair::Create();
+		ModelChair::CreateFromInputs();
 	} else if (_modelingBase.subCategory == "COUCH") {
 		ModelCouch::CreateFromInputs();
 	} else if (_modelingBase.subCategory == "DESK") {
-		ModelDesk::Create();
+		ModelDesk::CreateFromInputs();
 	} else if (_modelingBase.subCategory == "EVCHARGER") {
 		ModelEVCharger::Create();
-	} else if (_modelingBase.subCategory == "KEYBOARD") {
-		ModelKeyboard::Create(defLocation);
+	// } else if (_modelingBase.subCategory == "KEYBOARD") {
+	// 	ModelComputer::Keyboard();
 	} else if (_modelingBase.subCategory == "LIGHT") {
-		ModelLight::Create();
+		ModelLight::CreateFromInputs();
 	} else if (_modelingBase.subCategory == "MONITOR") {
-		ModelMonitor::Create(defLocation);
-	} else if (_modelingBase.subCategory == "MOUSE") {
-		ModelMouse::Create(defLocation);
+		ModelMonitor::CreateFromInputs();
+	// } else if (_modelingBase.subCategory == "MOUSE") {
+	// 	ModelComputer::Mouse();
 	} else if (_modelingBase.subCategory == "STAND") {
-		ModelStand::Create();
+		ModelStand::CreateFromInputs();
 	} else if (_modelingBase.subCategory == "STREETLIGHT") {
 		ModelStreetLight::Create();
 	} else if (_modelingBase.subCategory == "TABLE") {
-		ModelTable::Create();
+		ModelTable::CreateFromInputs();
+	} else if (_modelingBase.subCategory == "TREE") {
+		ModelTree::CreateFromInputs();
 	}
 }
 
@@ -187,6 +193,9 @@ AStaticMeshActor* ModelBase::CreateActorEmpty(FString name, FModelParams modelPa
 AStaticMeshActor* ModelBase::CreateActor(FString name, FVector location, FVector rotation,
 	FVector scale, FActorSpawnParameters spawnParams, FModelParams modelParams) {
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+	if (name == "") {
+		name = Lodash::GetInstanceId();
+	}
 
 	// In case of recompile in editor, will lose reference so need to check scene too.
 	AActor* actor1 = unrealGlobal->GetActorByName(name, AStaticMeshActor::StaticClass());

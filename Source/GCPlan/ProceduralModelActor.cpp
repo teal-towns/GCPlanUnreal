@@ -34,8 +34,6 @@ void AProceduralModelActor::GenerateModel() {
 	PMBase* pmBase = PMBase::GetInstance();
 	pmBase->SetInputs(ProceduralModelBase);
 	pmBase->Create();
-	ModelBase* modelBase = ModelBase::GetInstance();
-	modelBase->CreateFloor();
 }
 
 void AProceduralModelActor::DestroyActors() {

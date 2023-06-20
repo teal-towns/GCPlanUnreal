@@ -24,6 +24,8 @@ public:
 	UFUNCTION(CallInEditor)
 	void GenerateModel();
 	UFUNCTION(CallInEditor)
+	void CreateFloor();
+	UFUNCTION(CallInEditor)
 	void DestroyActors();
 	UPROPERTY(EditAnywhere)
 	FModelingBase ModelingBase;

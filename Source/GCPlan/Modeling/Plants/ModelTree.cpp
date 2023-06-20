@@ -1,39 +1,37 @@
-#include "ModelStand.h"
+#include "ModelTree.h"
 
 #include "../ModelBase.h"
-#include "../Common/ModelSide.h"
 #include "../../Common/Lodash.h"
-#include "../../ModelingStructsActor.h"
 
-ModelStand::ModelStand() {
+ModelTree::ModelTree() {
 }
 
-ModelStand::~ModelStand() {
+ModelTree::~ModelTree() {
 }
 
-AActor* ModelStand::CreateFromInputs() {
+AActor* ModelTree::CreateFromInputs() {
 	ModelBase* modelBase = ModelBase::GetInstance();
-	auto [modelingBase, modelParams] = modelBase->GetInputs("Stand", FVector(3,2,1));
+	UWorld* World = modelBase->GetWorld();
+	auto [modelingBase, modelParams] = modelBase->GetInputs("Tree", FVector(1, 1, 20));
 	FString name = modelingBase.name;
 	FVector size = modelingBase.size;
 	TArray<FString> tags = modelingBase.tags;
 	return Create(size, modelParams, FModelCreateParams(), tags);
 }
 
-AActor* ModelStand::Create(FVector size, FModelParams modelParams,
+AActor* ModelTree::Create(FVector size, FModelParams modelParams,
 	FModelCreateParams createParamsIn, TArray<FString> tags) {
 	ModelBase* modelBase = ModelBase::GetInstance();
-	FString name = Lodash::GetInstanceId("Stand_");
+	FString name = Lodash::GetInstanceId("Tree_");
 	FVector rotation = FVector(0,0,0), location = FVector(0,0,0), scale = FVector(1,1,1);
 	AActor* actor = modelBase->CreateActorEmpty(name, modelParams);
 	modelParams.parent = actor->FindComponentByClass<USceneComponent>();
 
-	modelParams.meshKey = "cube";
-	modelParams.materialKey = "metalChrome";
-	scale = FVector(0.1,0.1,0.1);
-	ModelSide::Right(name, size, scale, modelParams);
-	ModelSide::Left(name, size, scale, modelParams);
-	ModelSide::Top(name, size, scale, modelParams);
+	// TODO
+	FActorSpawnParameters spawnParams;
+	modelParams.meshKey = "cylinder";
+	modelParams.materialKey = "wood";
+	modelBase->CreateActor(name + "_Trunk", location, rotation, size, spawnParams, modelParams);
 
 	ModelBase::SetTransformFromParams(actor, createParamsIn);
 	return actor;
