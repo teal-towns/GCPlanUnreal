@@ -9,6 +9,16 @@
 
 struct FPlaneOffsets {
 	float ratioFromStart;
+	// TMap<FString, float> offsetRatios = {
+	// 	{ "x": 0 },
+	// 	{ "y": 0 },
+	// 	{ "z": 0 },
+	// };
+	// TMap<FString, float> offsets = {
+	// 	{ "x": 0 },
+	// 	{ "y": 0 },
+	// 	{ "z": 0 },
+	// };
 	float offsetXRatio = 0;
 	float offsetYRatio = 0;
 	float offsetZRatio = 0;
@@ -27,6 +37,16 @@ struct FPlaneOffsets {
 		offsetY = offsetY_;
 		offsetZ = offsetZ_;
 	};
+	FPlaneOffsets(float ratioFromStart_, float offsetRatio_ = 0, TArray<FString> offsetRatioKeys_ = {},
+		float offset_ = 0, TArray<FString> offsetKeys_ = {}) {
+		ratioFromStart = ratioFromStart_;
+		offsetXRatio = offsetRatioKeys_.Contains("x") ? offsetRatio_ : 0;
+		offsetYRatio = offsetRatioKeys_.Contains("y") ? offsetRatio_ : 0;
+		offsetZRatio = offsetRatioKeys_.Contains("z") ? offsetRatio_ : 0;
+		offsetX = offsetKeys_.Contains("x") ? offset_ : 0;
+		offsetY = offsetKeys_.Contains("y") ? offset_ : 0;
+		offsetZ = offsetKeys_.Contains("z") ? offset_ : 0;
+	}
 };
 
 class PMBase {

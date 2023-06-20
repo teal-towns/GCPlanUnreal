@@ -131,3 +131,23 @@ FString Lodash::ToFixed(float value, int digits) {
 	NumberFormat.MaximumFractionalDigits = digits;
 	return FText::AsNumber(value, &NumberFormat).ToString();
 }
+
+// T Lodash::Max(TArray<T> values) {
+// 	T val = values[0];
+// 	for (int ii = 0; ii < values.Num(); ii++) {
+// 		if (values[ii] > val) {
+// 			val = values[ii];
+// 		}
+// 	}
+// 	return val;
+// }
+
+// T Lodash::Min(TArray<T> values) {
+// 	T val = values[0];
+// 	for (int ii = 0; ii < values.Num(); ii++) {
+// 		if (values[ii] < val) {
+// 			val = values[ii];
+// 		}
+// 	}
+// 	return val;
+// }

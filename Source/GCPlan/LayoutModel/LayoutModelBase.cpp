@@ -80,6 +80,6 @@ void LayoutModelBase::Create() {
 	UE_LOG(LogTemp, Display, TEXT("subCategory %s"), *_layoutParams.subCategory);
 
 	if (_layoutParams.subCategory == "lobby") {
-		LMLobby::Create();
+		LMLobby::CreateFromInputs();
 	}
 }

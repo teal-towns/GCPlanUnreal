@@ -29,8 +29,8 @@ void ALayoutModelActor::GenerateModel() {
 	LayoutModelBase* layoutModelBase = LayoutModelBase::GetInstance();
 	layoutModelBase->SetInputs(LayoutParams);
 	layoutModelBase->Create();
-	ModelBase* modelBase = ModelBase::GetInstance();
-	modelBase->CreateFloor();
+	// ModelBase* modelBase = ModelBase::GetInstance();
+	// modelBase->CreateFloor();
 }
 
 void ALayoutModelActor::DestroyActors() {

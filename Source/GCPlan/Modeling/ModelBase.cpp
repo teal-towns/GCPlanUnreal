@@ -126,7 +126,7 @@ void ModelBase::Create() {
 	} else if (_modelingBase.subCategory == "CHAIR") {
 		ModelChair::Create();
 	} else if (_modelingBase.subCategory == "COUCH") {
-		ModelCouch::Create();
+		ModelCouch::CreateFromInputs();
 	} else if (_modelingBase.subCategory == "DESK") {
 		ModelDesk::Create();
 	} else if (_modelingBase.subCategory == "EVCHARGER") {
@@ -156,6 +156,32 @@ void ModelBase::CreateFloor() {
 	modelParams.materialKey = "marbleTile";
 	CreateActor(Lodash::GetInstanceId("Floor_"), FVector(0,0,-1), FVector(0,0,0), FVector(10,10,1),
 		FActorSpawnParameters(), modelParams);
+}
+
+FString ModelBase::CheckGetName(FString name, FString defaultName) {
+	if (name == "") {
+		return Lodash::GetInstanceId(defaultName);
+	}
+	return name;
+}
+
+AStaticMeshActor* ModelBase::CreateActorEmpty(FString name, FModelParams modelParams) {
+	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+	// In case of recompile in editor, will lose reference so need to check scene too.
+	AActor* actor1 = unrealGlobal->GetActorByName(name, AStaticMeshActor::StaticClass());
+	if (actor1) {
+		return (AStaticMeshActor*)actor1;
+	}
+	FActorSpawnParameters spawnParams;
+	AStaticMeshActor* actor = (AStaticMeshActor*)World->SpawnActor<AStaticMeshActor>(
+		AStaticMeshActor::StaticClass(), FVector(0,0,0), FRotator(0,0,0), spawnParams);
+	_spawnedActors.Add(name, actor);
+	unrealGlobal->SetActorFolder(actor);
+	actor->SetActorLabel(name);
+	if (modelParams.parent) {
+		actor->AttachToComponent(modelParams.parent, FAttachmentTransformRules::KeepRelativeTransform);
+	}
+	return actor;
 }
 
 AStaticMeshActor* ModelBase::CreateActor(FString name, FVector location, FVector rotation,
@@ -189,19 +215,23 @@ AStaticMeshActor* ModelBase::CreateActor(FString name, FVector location, FVector
 	}
 
 	LoadContent* loadContent = LoadContent::GetInstance();
-	UStaticMeshComponent* meshComponent = nullptr;
+	UStaticMeshComponent* meshComponent = actor->FindComponentByClass<UStaticMeshComponent>();
+	SetMeshMaterialFromParams(meshComponent, modelParams);
+
+	if (modelParams.parent) {
+		actor->AttachToComponent(modelParams.parent, FAttachmentTransformRules::KeepRelativeTransform);
+	}
+	return actor;
+}
+
+void ModelBase::SetMeshMaterialFromParams(UStaticMeshComponent* meshComponent, FModelParams modelParams) {
+	LoadContent* loadContent = LoadContent::GetInstance();
 	if (modelParams.meshPath.Len() < 1 && modelParams.meshKey.Len() > 0) {
 		modelParams.meshPath = loadContent->Mesh(modelParams.meshKey);
 	}
 	if (modelParams.mesh) {
-		if (!meshComponent) {
-			meshComponent = actor->FindComponentByClass<UStaticMeshComponent>();
-		}
 		meshComponent->SetStaticMesh(modelParams.mesh);
 	} else if (modelParams.meshPath.Len() > 0) {
-		if (!meshComponent) {
-			meshComponent = actor->FindComponentByClass<UStaticMeshComponent>();
-		}
 		UStaticMesh* mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL,
 			*modelParams.meshPath));
 		meshComponent->SetStaticMesh(mesh);
@@ -211,14 +241,8 @@ AStaticMeshActor* ModelBase::CreateActor(FString name, FVector location, FVector
 		modelParams.materialPath = loadContent->Material(modelParams.materialKey);
 	}
 	if (modelParams.dynamicMaterial) {
-		if (!meshComponent) {
-			meshComponent = actor->FindComponentByClass<UStaticMeshComponent>();
-		}
 		meshComponent->SetMaterial(0, modelParams.dynamicMaterial);
 	} else if (modelParams.materialPath.Len() > 0) {
-		if (!meshComponent) {
-			meshComponent = actor->FindComponentByClass<UStaticMeshComponent>();
-		}
 		if (modelParams.materialPath.Contains(".MaterialInstance")) {
 			UMaterialInstance* material = Cast<UMaterialInstance>(StaticLoadObject(UMaterialInstance::StaticClass(), NULL,
 				*modelParams.materialPath));
@@ -229,22 +253,22 @@ AStaticMeshActor* ModelBase::CreateActor(FString name, FVector location, FVector
 			meshComponent->SetMaterial(0, material);
 		}
 	}
+}
 
-	if (modelParams.parent) {
-		actor->AttachToComponent(modelParams.parent, FAttachmentTransformRules::KeepRelativeTransform);
-	}
-	return actor;
+void ModelBase::SetTransformFromParams(AActor* actor, FModelCreateParams createParams) {
+	SetTransform(actor, createParams.offset, createParams.rotation);
 }
 
 void ModelBase::SetTransform(AActor* actor, FVector location, FVector rotation, FVector scale) {
-	if (location.X != 0 || location.Y != 0 || location.Z != 0) {
-		UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
-		actor->SetActorLocation(location * unrealGlobal->GetScale());
-	}
+	// Order matters? Do rotation first.
 	if (rotation.X != 0 || rotation.Y != 0 || rotation.Z != 0) {
 		actor->SetActorRotation(FRotator(rotation.Y, rotation.Z, rotation.X));
 	}
 	if (scale.X != 1 || scale.Y != 1 || scale.Z != 1) {
 		actor->SetActorScale3D(scale);
+	}
+	if (location.X != 0 || location.Y != 0 || location.Z != 0) {
+		UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+		actor->SetActorLocation(location * unrealGlobal->GetScale());
 	}
 }

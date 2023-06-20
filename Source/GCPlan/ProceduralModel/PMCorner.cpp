@@ -16,7 +16,6 @@ PMCorner::~PMCorner() {
 
 AActor* PMCorner::Create(FVector size, TArray<FString> tags, FModelCreateParams createParams,
 	FModelParams modelParams, TArray<FPlaneOffsets> xOffsets, TArray<FPlaneOffsets> yOffsets) {
-	float UVScale = 1;
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	TArray<FVector> Vertices = {};
 	TArray<FVector2D> UV0 = {};
@@ -37,8 +36,8 @@ AActor* PMCorner::Create(FVector size, TArray<FString> tags, FModelCreateParams 
 	if (yOffsets.Num() < 1) {
 		if (tags.Contains("oneSide")) {
 			yOffsets = {
-				{ FPlaneOffsets(0) },
-				{ FPlaneOffsets(1) }
+				{ FPlaneOffsets(0, 0, 0, 0) },
+				{ FPlaneOffsets(1, 0, 0, 0) }
 			};
 		} else {
 			yOffsets = xOffsets;
@@ -72,7 +71,7 @@ AActor* PMCorner::Create(FVector size, TArray<FString> tags, FModelCreateParams 
 			vertex = (FVector(xVal, yVal, zVal) + FVector(xStart, yStart, zStart) + offsetCorner + createParams.offset) * unrealGlobal->GetScale();
 			Vertices.Add(vertex);
 
-			UV0.Add(FVector2D((float)xx * UVScale, (float)yy * UVScale));
+			UV0.Add(FVector2D((float)xx * createParams.UVScale.X, (float)yy * createParams.UVScale.Y));
 
 			// Do 1 quad (6 triangles, 2 vertices) at a time.
 			if (yy > 0 && xx < (verticesCount.X - 1)) {
@@ -82,7 +81,7 @@ AActor* PMCorner::Create(FVector size, TArray<FString> tags, FModelCreateParams 
 				vertexTopRightIndex = ((xx + 1) * verticesCount.Y) + yy;
 				vertexTopLeftIndex = vertexTopRightIndex - 1;
 
-				if (createParams.trianglesOrder == "counterClockwiseBottomRight") {
+				if (createParams.triangleOrder == "counterClockwiseBottomRight") {
 					Triangles.Add(vertexBottomLeftIndex);
 					Triangles.Add(vertexBottomRightIndex);
 					Triangles.Add(vertexTopLeftIndex);

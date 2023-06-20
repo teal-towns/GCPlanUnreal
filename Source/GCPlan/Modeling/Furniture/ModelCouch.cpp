@@ -17,9 +17,9 @@ ModelCouch::ModelCouch() {
 ModelCouch::~ModelCouch() {
 }
 
-AStaticMeshActor* ModelCouch::Create() {
+AActor* ModelCouch::CreateFromInputs() {
 	ModelBase* modelBase = ModelBase::GetInstance();
-	auto [modelingBase, modelParams] = modelBase->GetInputs("Couch1", FVector(1.3,2.3,1));
+	auto [modelingBase, modelParams] = modelBase->GetInputs("Couch", FVector(1,2.3,1));
 	FString name = modelingBase.name;
 	FVector size = modelingBase.size;
 	TArray<FString> tags = modelingBase.tags;
@@ -27,12 +27,18 @@ AStaticMeshActor* ModelCouch::Create() {
 	if (tags.Contains("3Cushions")) {
 		cushionCount = 3;
 	}
+	return Create(size, modelParams, FModelCreateParams(), cushionCount, name);
+}
 
+AActor* ModelCouch::Create(FVector size, FModelParams modelParams,
+	FModelCreateParams createParamsIn, int cushionCount, FString name) {
+	ModelBase* modelBase = ModelBase::GetInstance();
+	name = ModelBase::CheckGetName(name);
 	FVector rotation = FVector(0,0,0);
 	FActorSpawnParameters spawnParams;
 	FVector location = FVector(0,0,0);
 	FVector scale = FVector(1,1,1);
-	AStaticMeshActor* actor;
+	AActor* actor;
 
 	// Parent container
 	actor = modelBase->CreateActor(name, location, rotation, scale, spawnParams);
@@ -122,5 +128,6 @@ AStaticMeshActor* ModelCouch::Create() {
 		locationBottom.Y += spacing.Y + scaleCushionBottom.Y;
 	}
 
+	ModelBase::SetTransformFromParams(actor, createParamsIn);
 	return actor;
 }
