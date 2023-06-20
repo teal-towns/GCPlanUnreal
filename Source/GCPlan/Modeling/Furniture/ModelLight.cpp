@@ -13,19 +13,24 @@ ModelLight::ModelLight() {
 ModelLight::~ModelLight() {
 }
 
-AActor* ModelLight::Create() {
+AActor* ModelLight::CreateFromInputs() {
 	ModelBase* modelBase = ModelBase::GetInstance();
 	auto [modelingBase, modelParams] = modelBase->GetInputs("Light", FVector(0.3,0.3,1));
 	FString name = modelingBase.name;
 	FVector size = modelingBase.size;
 	TArray<FString> tags = modelingBase.tags;
+	return Create(size, modelParams, FModelCreateParams(), tags);
+}
 
-	AActor* actor = modelBase->CreateActor(name);
+AActor* ModelLight::Create(FVector size, FModelParams modelParams,
+	FModelCreateParams createParamsIn, TArray<FString> tags) {
+	ModelBase* modelBase = ModelBase::GetInstance();
+	FString name = Lodash::GetInstanceId("Light_");
+	FVector rotation = FVector(0,0,0), location = FVector(0,0,0), scale = FVector(1,1,1);
+	AActor* actor = modelBase->CreateActorEmpty(name, modelParams);
 	modelParams.parent = actor->FindComponentByClass<USceneComponent>();
 
-	FVector scale = FVector(1,1,1), rotation = FVector(0,0,0), location = FVector(0,0,0);
 	FActorSpawnParameters spawnParams;
-
 	float lightHeight = size.X;
 	float cordHeight = size.Z - lightHeight;
 	// Cord
@@ -53,5 +58,6 @@ AActor* ModelLight::Create() {
 	light->AttachToComponent(parent, FAttachmentTransformRules::KeepRelativeTransform);
 	light->SetSourceRadius(lightHeight);
 
+	ModelBase::SetTransformFromParams(actor, createParamsIn);
 	return actor;
 }

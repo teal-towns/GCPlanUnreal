@@ -5,6 +5,7 @@
 #include "../ModelBase.h"
 #include "../Common/ModelLeg.h"
 #include "../Common/ModelSide.h"
+#include "../../Common/Lodash.h"
 #include "../../Mesh/DynamicMaterial.h"
 #include "../../Mesh/LoadContent.h"
 #include "../../ModelingStructsActor.h"
@@ -23,25 +24,16 @@ AActor* ModelCouch::CreateFromInputs() {
 	FString name = modelingBase.name;
 	FVector size = modelingBase.size;
 	TArray<FString> tags = modelingBase.tags;
-	int cushionCount = 2;
-	if (tags.Contains("3Cushions")) {
-		cushionCount = 3;
-	}
-	return Create(size, modelParams, FModelCreateParams(), cushionCount, name);
+	return Create(size, modelParams, FModelCreateParams(), tags, name);
 }
 
 AActor* ModelCouch::Create(FVector size, FModelParams modelParams,
-	FModelCreateParams createParamsIn, int cushionCount, FString name) {
-	ModelBase* modelBase = ModelBase::GetInstance();
+	FModelCreateParams createParamsIn, TArray<FString> tags, FString name) {
 	name = ModelBase::CheckGetName(name);
-	FVector rotation = FVector(0,0,0);
-	FActorSpawnParameters spawnParams;
-	FVector location = FVector(0,0,0);
-	FVector scale = FVector(1,1,1);
-	AActor* actor;
-
-	// Parent container
-	actor = modelBase->CreateActor(name, location, rotation, scale, spawnParams);
+	int cushionCount = tags.Contains("3Cushions") ? 3 : 2;
+	ModelBase* modelBase = ModelBase::GetInstance();
+	FVector rotation = FVector(0,0,0), location = FVector(0,0,0), scale = FVector(1,1,1);
+	AActor* actor = modelBase->CreateActorEmpty(name, modelParams);
 	USceneComponent* parent = actor->FindComponentByClass<USceneComponent>();
 
 	LoadContent* loadContent = LoadContent::GetInstance();

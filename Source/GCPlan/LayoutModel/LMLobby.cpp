@@ -5,7 +5,7 @@
 #include "LayoutModelBase.h"
 #include "../Common/Lodash.h"
 #include "../Modeling/ModelBase.h"
-// #include "../Modeling/Furniture/ModelCouch.h"
+#include "../Modeling/Furniture/ModelTable.h"
 #include "../Mesh/DynamicMaterial.h"
 #include "../Mesh/LoadContent.h"
 #include "../ModelingStructsActor.h"
@@ -37,23 +37,24 @@ AActor* LMLobby::Create(FVector size, FModelParams modelParams,
 	FVector scale = FVector(1,1,1);
 	AStaticMeshActor* actor;
 
-	// Parent container
 	actor = modelBase->CreateActor(name, location, rotation, scale, spawnParams);
 	USceneComponent* parent = actor->FindComponentByClass<USceneComponent>();
 	modelParams.parent = parent;
 
-	// Floor
 	modelParams.meshKey = "cube";
 	modelParams.materialKey = "marbleTile";
 	scale = FVector(size.X, size.Y, 0.2);
 	modelBase->CreateActor(name + "_Floor", FVector(0,0, -1 * scale.Z), rotation, scale, spawnParams, modelParams);
 
-	// Ceiling
+	// Ceiling with lights
 	// TODO
 
 	scale = FVector(size.X / 2, size.Y / 2, -1);
 	LMLobby::CouchesCoffeeTables(scale, modelParams, createParamsIn);
 
+	// Stand with books
+
+	// Plants near walls
 	// TODO
 
 	ModelBase::SetTransformFromParams(actor, createParamsIn);
@@ -84,7 +85,19 @@ AActor* LMLobby::CouchesCoffeeTables(FVector size, FModelParams modelParams,
 	modelParams.meshKey = "couch3Cushions";
 	modelBase->CreateActor(name + "_Couch3Cushions", FVector(-3, 0, 0), FVector(0,0,0), scale, spawnParams, modelParams);
 
-	// TODO - tables, chairs
+	FModelParams modelParamsTable;
+	modelParamsTable.parent = modelParams.parent;
+	scale = FVector(1,1,0.7);
+	createParams.offset = FVector(0,0,0);
+	ModelTable::RoundShort(scale, modelParamsTable, createParams, {});
+
+	scale = FVector(0.4,0.4,0.7);
+	createParams.offset = FVector(-1,-1,0);
+	ModelTable::RoundShort(scale, modelParamsTable, createParams, {});
+	createParams.offset = FVector(-0.5,2,0);
+	ModelTable::RoundShort(scale, modelParamsTable, createParams, {});
+
+	// TODO - chair(s)
 
 	ModelBase::SetTransformFromParams(actor, createParamsIn);
 	return actor;

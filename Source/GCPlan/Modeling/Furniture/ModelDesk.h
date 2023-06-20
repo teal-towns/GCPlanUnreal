@@ -2,13 +2,13 @@
 
 #include "../ModelBase.h"
 
-class ModelCouch {
+class ModelDesk {
 public:
-	ModelCouch();
-	~ModelCouch();
+	ModelDesk();
+	~ModelDesk();
 
 	static AActor* CreateFromInputs();
 	static AActor* Create(FVector size, FModelParams modelParams = FModelParams(),
 		FModelCreateParams createParams = FModelCreateParams(), TArray<FString> tags = {},
-		FString name = "");
+		TMap<FString, float> dimensions = {});
 };

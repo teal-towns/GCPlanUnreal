@@ -2,14 +2,14 @@
 
 #include "../ModelBase.h"
 
-class ModelBook {
+class ModelTable {
 public:
-	ModelBook();
-	~ModelBook();
+	ModelTable();
+	~ModelTable();
 
 	static AActor* CreateFromInputs();
 	static AActor* Create(FVector size, FModelParams modelParams = FModelParams(),
 		FModelCreateParams createParams = FModelCreateParams(), TArray<FString> tags = {});
-	static AActor* Books(FVector size, FModelParams modelParams = FModelParams(),
+	static AActor* RoundShort(FVector size, FModelParams modelParams = FModelParams(),
 		FModelCreateParams createParams = FModelCreateParams(), TArray<FString> tags = {});
 };
