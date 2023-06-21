@@ -3,8 +3,12 @@
 #include "Engine/StaticMeshActor.h"
 #include "Components/StaticMeshComponent.h"
 
+#include "../Common/DataConvert.h"
 #include "../Common/Lodash.h"
+#include "../Common/MathVector.h"
 #include "../Common/UnrealGlobal.h"
+#include "../Mesh/DynamicMaterial.h"
+#include "../Mesh/InstancedMesh.h"
 #include "../Mesh/LoadContent.h"
 #include "../ModelingStructsActor.h"
 #include "Electronics/ModelComputer.h"
@@ -15,6 +19,7 @@
 #include "Furniture/ModelCouch.h"
 #include "Furniture/ModelDesk.h"
 #include "Furniture/ModelLight.h"
+#include "Furniture/ModelPlanterBox.h"
 #include "Furniture/ModelStand.h"
 #include "Furniture/ModelTable.h"
 #include "Plants/ModelBush.h"
@@ -144,6 +149,8 @@ void ModelBase::Create() {
 		ModelMonitor::CreateFromInputs();
 	// } else if (_modelingBase.subCategory == "MOUSE") {
 	// 	ModelComputer::Mouse();
+	} else if (_modelingBase.subCategory == "PLANTER_BOX") {
+		ModelPlanterBox::CreateFromInputs();
 	} else if (_modelingBase.subCategory == "STAND") {
 		ModelStand::CreateFromInputs();
 	} else if (_modelingBase.subCategory == "STREETLIGHT") {
@@ -263,6 +270,70 @@ void ModelBase::SetMeshMaterialFromParams(UStaticMeshComponent* meshComponent, F
 			meshComponent->SetMaterial(0, material);
 		}
 	}
+}
+
+std::tuple<FVector, FVector, FVector> ModelBase::PairsToTransform(TMap<FString, FString> pairs, FVector scale) {
+	FVector rotation = FVector(0,0,0), location = FVector(0,0,0);
+	if (pairs.Contains("scale")) {
+		scale = DataConvert::StringToVector(pairs["scale"]);
+	}
+	if (pairs.Contains("rot")) {
+		rotation = DataConvert::StringToVector(pairs["rot"]);
+	}
+	if (pairs.Contains("loc")) {
+		location = DataConvert::StringToVector(pairs["loc"]);
+	}
+	return { location, rotation, scale };
+}
+
+// E.g. pairsString = "mesh=couch2Cushions&dMat=leather&dMatColor=beige";
+std::tuple<FString, FModelParams> ModelBase::ModelParamsFromPairs(TMap<FString, FString> pairs) {
+	FModelParams modelParams;
+	FString key = "";
+	bool hasMesh = false;
+	if (pairs.Contains("mesh")) {
+		modelParams.meshKey = pairs["mesh"];
+		key = pairs["mesh"];
+		hasMesh = true;
+	}
+	if (pairs.Contains("dMat")) {
+		FString materialName = pairs["dMat"];
+		key += "_" + pairs["dMat"];
+		DynamicMaterial* dynamicMaterial = DynamicMaterial::GetInstance();
+		LoadContent* loadContent = LoadContent::GetInstance();
+		FString texturePathBase = loadContent->Texture(pairs["dMat"] + "_base");
+		FString texturePathNormal = loadContent->Texture(pairs["dMat"] + "_normal");
+		FString colorKey = "";
+		if (pairs.Contains("dMatColor")) {
+			colorKey = pairs["dMatColor"];
+			materialName += "_" + pairs["dMatColor"];
+			key += "_" + pairs["dMatColor"];
+		}
+		modelParams.dynamicMaterial = dynamicMaterial->CreateTextureColor(materialName, texturePathBase,
+			texturePathNormal, DynamicMaterial::GetColor(colorKey));
+	}
+	// Invalid without a mesh.
+	if (!hasMesh) {
+		key = "";
+	}
+	return { key, modelParams };
+}
+
+FString ModelBase::InstancedMeshFromPairs(TMap<FString, FString> pairs) {
+	InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
+	auto [key, modelParams] = ModelParamsFromPairs(pairs);
+	if (key.Len() > 0) {
+		instancedMesh->AddMesh(key, "", "", modelParams);
+	}
+	return key;
+}
+
+FString ModelBase::AddRotationString(FVector rotationParent, FVector rotation) {
+	FVector newRotation = MathVector::ConstrainRotation(rotation + rotationParent);
+	if (newRotation != FVector(0,0,0)) {
+		return "&rot=" + DataConvert::VectorToString(newRotation);
+	}
+	return "";
 }
 
 void ModelBase::SetTransformFromParams(AActor* actor, FModelCreateParams createParams) {

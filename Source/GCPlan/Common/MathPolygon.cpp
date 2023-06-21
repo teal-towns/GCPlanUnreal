@@ -9,6 +9,16 @@ MathPolygon::MathPolygon() {
 MathPolygon::~MathPolygon() {
 }
 
+TArray<FVector> MathPolygon::PointToBox(FVector point, FVector range) {
+	TArray<FVector> vertices = {
+		FVector(point.X - range.X / 2, point.Y - range.Y / 2, point.Z),
+		FVector(point.X - range.X / 2, point.Y + range.Y / 2, point.Z),
+		FVector(point.X + range.X / 2, point.Y + range.Y / 2, point.Z),
+		FVector(point.X + range.X / 2, point.Y - range.Y / 2, point.Z)
+	};
+	return vertices;
+}
+
 TArray<FVector> MathPolygon::Bounds(TArray<FVector> Vertices) {
 	FVector min = FVector(0,0,0);
 	FVector max = FVector(0,0,0);

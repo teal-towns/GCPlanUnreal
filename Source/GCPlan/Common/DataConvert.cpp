@@ -108,6 +108,10 @@ FRotator DataConvert::VectorToRotator(FVector vector) {
 	return FRotator(vector.Y, vector.Z, vector.X);
 }
 
+float DataConvert::Float(FString input) {
+	return static_cast<float>(FCString::Atof(*input));
+}
+
 // TArray<float> DataConvert::VectorToArray(FVector vector) {
 // 	return TArray<float> { vector.X, vector.Y, vector.Z };
 // }

@@ -3,7 +3,7 @@
 #include <mutex>
 #include "Engine/StaticMeshActor.h"
 
-// #include "../ModelingStructsActor.h"
+#include "../Modeling/ModelBase.h"
 
 class InstancedMesh {
 public:
@@ -19,7 +19,9 @@ public:
 	// UWorld* GetWorld();
 	void CleanUp();
 	void InitMeshes();
-	void AddMesh(FString name, FString meshPath = "", FString materialPath = "");
+	// bool MeshExists(FString name);
+	void AddMesh(FString name, FString meshPath = "", FString materialPath = "",
+		FModelParams modelParams = FModelParams());
 	int CreateInstance(FString uName, FVector Translation, FRotator Rotation = FRotator(0,0,0), FVector Scale = FVector(1,1,1),
 		bool unrealScaleTranslation = true);
 	int UpdateInstance(FString uName, int, FVector Translation, FRotator Rotation = FRotator(0,0,0), FVector Scale = FVector(1,1,1),

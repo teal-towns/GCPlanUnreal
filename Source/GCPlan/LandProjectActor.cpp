@@ -2,31 +2,19 @@
 #include "JsonObjectConverter.h"
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
-#include "LandscapeComponent.h"
 
 #include "BuildingStructsActor.h"
 #include "DataStructsActor.h"
 #include "SocketActor.h"
 
-#include "Building/BuildingRing.h"
-#include "Building/BuildingRoad.h"
-#include "Building/BuildingFlowerHomes.h"
-#include "Common/MathPolygon.h"
 #include "Common/UnrealGlobal.h"
 #include "Draw/DrawVertices.h"
-// #include "Landscape/HeightMap.h"
-#include "Landscape/LandNature.h"
-#include "Landscape/MeshTerrain.h"
 #include "Landscape/SplineRoad.h"
 #include "Landscape/VerticesEdit.h"
-#include "Layout/LayoutPolygon.h"
-#include "Layout/LayoutPolyLine.h"
 #include "Mesh/InstancedMesh.h"
-#include "Mesh/LoadContent.h"
-// #include "Modeling/ModelBase.h"
 #include "Plot/PlotBuild.h"
-#include "Plot/PlotDivide.h"
-// #include "ProceduralModel/PMBase.h"
+
+#include "LayoutModel/LMLobby.h"
 
 ALandProjectActor::ALandProjectActor()
 {
@@ -115,7 +103,7 @@ void ALandProjectActor::GetProject(FString UName) {
 	unrealGlobal->SocketActor->Emit("projectGetByUName", Data);
 }
 
-void ALandProjectActor::EditorTakeAction() {
+void ALandProjectActor::TakeAction() {
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	unrealGlobal->InitAll(GetWorld());
 
@@ -127,7 +115,7 @@ void ALandProjectActor::EditorTakeAction() {
 	}
 }
 
-void ALandProjectActor::EditorClear() {
+void ALandProjectActor::Clear() {
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	unrealGlobal->InitAll(GetWorld());
 
@@ -142,7 +130,7 @@ void ALandProjectActor::EditorClear() {
 	// GEngine->ForceGarbageCollection(true);
 }
 
-void ALandProjectActor::EditorGenerate() {
+void ALandProjectActor::DrawVertices() {
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	unrealGlobal->InitAll(GetWorld());
 
@@ -150,4 +138,18 @@ void ALandProjectActor::EditorGenerate() {
 	// this->Login();
 
 	DrawVertices::LoadVertices();
+}
+
+void ALandProjectActor::SetVertices() {
+	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+	unrealGlobal->InitAll(GetWorld());
+
+	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
+	verticesEdit->DestroyItems();
+	// Hardcoded - varies by project (usually these are manually drawn / set via UI).
+	FModelParams modelParams;
+	FModelCreateParams createParams;
+	createParams.offset = FVector(-285,20,3);
+	createParams.rotation = FVector(0,0,30);
+	LMLobby::Create(FVector(10,12,4), modelParams, createParams);
 }

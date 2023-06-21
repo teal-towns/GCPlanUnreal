@@ -368,8 +368,10 @@ struct FPolygon {
 	// int closedLoop;
 	// UPROPERTY()
 	// int isPoint;
+	// UPROPERTY()
+	// TArray<FString> tags;
 	UPROPERTY()
-	TArray<FString> tags;
+	FString pairsString;
 	UPROPERTY()
 	FString jsonDataString;
 	UPROPERTY()
@@ -385,7 +387,7 @@ struct FPolygon {
 
 	FPolygon() {};
 	FPolygon(FString id_, FString uName_, TArray<FVector> vertices_, FVector posCenter_,
-		FString type_ = "", FString shape_ = "", TArray<FString> tags_ = {},
+		FString type_ = "", FString shape_ = "", FString pairsString_ = "",
 		FString jsonDataString_ = "", float squareMeters_ = -1,
 		FString parentUName_ = "", TArray<FString> childUNames_ = {}, float verticesBuffer_ = -25,
 		float averageChildDiameter_ = 100) {
@@ -397,7 +399,7 @@ struct FPolygon {
 		// closedLoop = closedLoop_;
 		// isPoint = isPoint_;
 		shape = shape_;
-		tags = tags_;
+		pairsString = pairsString_;
 		jsonDataString = jsonDataString_;
 		squareMeters = squareMeters_;
 		parentUName = parentUName_;
@@ -424,7 +426,7 @@ struct FPolygonSimplified {
 	UPROPERTY()
 	FString shape;
 	UPROPERTY()
-	TArray<FString> tags;
+	FString pairsString;
 	UPROPERTY()
 	FString jsonDataString;
 	UPROPERTY()
@@ -440,7 +442,7 @@ struct FPolygonSimplified {
 
 	FPolygonSimplified() {};
 	FPolygonSimplified(FString id_, FString uName_, TArray<FString> vertices_, FString posCenter_,
-		FString type_ = "", FString shape_ = "", TArray<FString> tags_ = {}, FString jsonDataString_ = "",
+		FString type_ = "", FString shape_ = "", FString pairsString_ = "", FString jsonDataString_ = "",
 		float squareMeters_ = -1, FString parentUName_ = "", TArray<FString> childUNames_ = {},
 		float verticesBuffer_ = -25, float averageChildDiameter_ = 100) {
 		_id = id_;
@@ -449,7 +451,7 @@ struct FPolygonSimplified {
 		posCenter = posCenter_;
 		type = type_;
 		shape = shape_;
-		tags = tags_;
+		pairsString = pairsString_;
 		jsonDataString = jsonDataString_;
 		squareMeters = squareMeters_;
 		parentUName = parentUName_;

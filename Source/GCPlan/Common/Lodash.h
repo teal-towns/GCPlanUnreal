@@ -15,4 +15,5 @@ public:
 	// static T Max(TArray<T> values);
 	// static T Min(TArray<T> values);
 	static TMap<FString, float> Object(TMap<FString, float> values, TMap<FString, float> defaults);
+	static TMap<FString, FString> PairsStringToObject(FString pairsString);
 };

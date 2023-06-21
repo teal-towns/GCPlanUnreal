@@ -242,7 +242,7 @@ void SplineRoad::DrawRoads(bool addPlants, bool carveLand) {
 				placeParamsNature.spacing = 5;
 				placeParamsNature.spacingCrossAxis = 2;
 				placeParamsNature.scaleMin = 0.75;
-				placeParamsNature.scaleMax = 2;
+				placeParamsNature.scaleMax = 1.25;
 				LayoutPolyLine::PlaceOnLineSides(vertices, widthMeters + placingOffset * 2,
 					meshNamesBush, placeParamsNature);
 				placeParamsNature.spacing = 20;

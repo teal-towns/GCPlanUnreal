@@ -39,13 +39,15 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(CallInEditor)
-	void EditorGenerate();
-	UFUNCTION(CallInEditor)
-	void EditorClear();
+	void Clear();
 	UPROPERTY(EditAnywhere)
 	FEditorParamsLP EditorParams;
 	UFUNCTION(CallInEditor)
-	void EditorTakeAction();
+	void TakeAction();
+	UFUNCTION(CallInEditor)
+	void DrawVertices();
+	UFUNCTION(CallInEditor)
+	void SetVertices();
 
 	void Init();
 	void InitSocketOn();

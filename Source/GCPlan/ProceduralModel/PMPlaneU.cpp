@@ -127,11 +127,5 @@ AActor* PMPlaneU::Shape(FString name, FVector size, FModelCreateParams createPar
 	actorTemp = Create(name + "Seat",  scale, groupCreateParams, groupModelParams, "x", xOffsets);
 	ModelBase::SetTransform(actorTemp, FVector(size.Z / 2, 0, size.X), FVector(0,90,0));
 
-	// TESTING
-	// xOffsets = GetOffsetsStart("z");
-	// xOffsets += GetOffsetsEnd("z");
-	// createParams.offsetsCombine = { { "z", "min" } };
-	// Create(name + "Bottom", size, createParams, modelParams, "z", xOffsets);
-
 	return actor;
 }

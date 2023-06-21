@@ -34,6 +34,7 @@ public:
 	static FString RotatorToString(FRotator vector, int precision = 4);
 	static FRotator StringToRotator(FString input);
 	static FRotator VectorToRotator(FVector vector);
+	static float Float(FString input);
 
 	void SetProjectPath(FString);
 	FString FileNameToPath(FString fileName, FString key = "conditional");
