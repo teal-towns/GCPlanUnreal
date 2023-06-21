@@ -5,6 +5,7 @@ public:
 	MathPolygon();
 	~MathPolygon();
 
+	static TArray<FVector> PointToBox(FVector point, FVector range);
 	static TArray<FVector> Bounds(TArray<FVector> Vertices);
 	static std::tuple<float, float> GetAverageRadius(TArray<FVector> vertices, FVector posCenter);
 	static float GetCircleRadiusByArea(float radiusOuter, float innerAreaRatio);

@@ -71,9 +71,9 @@ void UEditVerticesWidget::ChangeTypeActual(const FText& text) {
 
 void UEditVerticesWidget::ChangeTagsStringActual(const FText& text) {
 	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
-	TArray<FString> tags;
-	text.ToString().ParseIntoArray(tags, TEXT(","), true);
-	verticesEdit->SetTags(tags);
+	// TArray<FString> tags;
+	// text.ToString().ParseIntoArray(tags, TEXT(","), true);
+	verticesEdit->SetPairsString(text.ToString());
 }
 
 void UEditVerticesWidget::ChangeFilterTypeActual(const FText& text) {

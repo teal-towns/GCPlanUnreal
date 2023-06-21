@@ -4,7 +4,7 @@
 
 struct FPlaceParams {
 	float scaleMin = 0.75;
-	float scaleMax = 2;
+	float scaleMax = 1.25;
 	float rotMinX = 0;
 	float rotMaxX = 0;
 	float rotMinY = 0;

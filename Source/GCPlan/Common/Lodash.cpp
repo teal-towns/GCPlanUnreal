@@ -162,3 +162,18 @@ TMap<FString, float> Lodash::Object(TMap<FString, float> values, TMap<FString, f
 	}
 	return values;
 }
+
+TMap<FString, FString> Lodash::PairsStringToObject(FString pairsString) {
+	TMap<FString, FString> keyVals;
+	if (pairsString.Len() < 1) {
+		return keyVals;
+	}
+	TArray<FString> keyValsArray;
+	pairsString.ParseIntoArray(keyValsArray, TEXT("&"), true);
+	TArray<FString> tempArray;
+	for (int ii = 0; ii < keyValsArray.Num(); ii++) {
+		keyValsArray[ii].ParseIntoArray(tempArray, TEXT("="), true);
+		keyVals.Add(tempArray[0], tempArray[1]);
+	}
+	return keyVals;
+}

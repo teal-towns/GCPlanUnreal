@@ -78,14 +78,14 @@ void ABuildingStructsActor::BeginPlay()
 FPolygonSimplified ABuildingStructsActor::PolygonToSimplified(FPolygon polygon) {
 	return FPolygonSimplified(polygon._id, polygon.uName, DataConvert::VectorsToStrings(polygon.vertices),
 		DataConvert::VectorToString(polygon.posCenter), polygon.type, polygon.shape,
-		polygon.tags, polygon.jsonDataString, polygon.squareMeters,
+		polygon.pairsString, polygon.jsonDataString, polygon.squareMeters,
 		polygon.parentUName, polygon.childUNames, polygon.verticesBuffer, polygon.averageChildDiameter);
 }
 
 FPolygon ABuildingStructsActor::PolygonFromSimplified(FPolygonSimplified polygonSimplified) {
 	return FPolygon(polygonSimplified._id, polygonSimplified.uName, DataConvert::StringsToVectors(polygonSimplified.vertices),
 		DataConvert::StringToVector(polygonSimplified.posCenter), polygonSimplified.type,
-		polygonSimplified.shape, polygonSimplified.tags,
+		polygonSimplified.shape, polygonSimplified.pairsString,
 		polygonSimplified.jsonDataString, polygonSimplified.squareMeters, polygonSimplified.parentUName,
 		polygonSimplified.childUNames, polygonSimplified.verticesBuffer, polygonSimplified.averageChildDiameter);
 }

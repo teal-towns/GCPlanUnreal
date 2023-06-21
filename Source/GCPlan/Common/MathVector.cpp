@@ -35,3 +35,34 @@ float MathVector::SignedAngle(FVector from, FVector to, FVector axis) {
 	float sign = (value >= 0) ? 1 : -1;
 	return unsignedAngle * sign;
 }
+
+float MathVector::ConstrainDegrees(float degrees) {
+	while (degrees >= 360) {
+		degrees -= 360;
+	}
+	while (degrees <= -360) {
+		degrees += 360;
+	}
+	return degrees;
+}
+
+FVector MathVector::ConstrainRotation(FVector rotation) {
+	rotation.X = ConstrainDegrees(rotation.X);
+	rotation.Y = ConstrainDegrees(rotation.Y);
+	rotation.Z = ConstrainDegrees(rotation.Z);
+	return rotation;
+}
+
+FVector MathVector::RotateVector(FVector vector, FVector rotation) {
+	FRotator rotator = FRotator(rotation.Y, rotation.Z, rotation.X);
+	return rotator.RotateVector(vector);
+}
+
+TArray<FVector> MathVector::RotateVertices(TArray<FVector> vertices, FVector rotation,
+	FVector offset) {
+	FRotator rotator = FRotator(rotation.Y, rotation.Z, rotation.X);
+	for (int ii = 0; ii < vertices.Num(); ii++) {
+		vertices[ii] = rotator.RotateVector(vertices[ii]) + offset;
+	}
+	return vertices;
+}

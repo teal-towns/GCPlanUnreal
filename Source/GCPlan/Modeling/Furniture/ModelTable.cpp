@@ -1,7 +1,5 @@
 #include "ModelTable.h"
 
-#include "Engine/StaticMeshActor.h"
-
 #include "../ModelBase.h"
 #include "../Common/ModelLeg.h"
 #include "../../Common/Lodash.h"
@@ -12,6 +10,20 @@ ModelTable::ModelTable() {
 ModelTable::~ModelTable() {
 }
 
+void ModelTable::Build(TMap<FString, FString> pairs) {
+	auto [key, modelParams] = ModelBase::ModelParamsFromPairs(pairs);
+	auto [location, rotation, scale] = ModelBase::PairsToTransform(pairs, FVector(0,0,0));
+	FModelCreateParams createParams;
+	createParams.offset = location;
+	createParams.rotation = rotation;
+	if (!pairs.Contains("meshRule")) {
+		pairs.Add("meshRule", "");
+	}
+	if (pairs["meshRule"] == "tableRoundShort") {
+		RoundShort(scale, modelParams, createParams);
+	}
+}
+
 AActor* ModelTable::CreateFromInputs() {
 	ModelBase* modelBase = ModelBase::GetInstance();
 	auto [modelingBase, modelParams] = modelBase->GetInputs("Table", FVector(1.5,2.5,1));
@@ -19,7 +31,7 @@ AActor* ModelTable::CreateFromInputs() {
 	FVector size = modelingBase.size;
 	TArray<FString> tags = modelingBase.tags;
 	if (tags.Contains("roundShort")) {
-		return RoundShort(size, modelParams, FModelCreateParams(), tags);
+		return RoundShort(size, modelParams, FModelCreateParams());
 	}
 	return Create(size, modelParams, FModelCreateParams(), tags);
 }
@@ -62,7 +74,10 @@ AActor* ModelTable::Create(FVector size, FModelParams modelParams,
 }
 
 AActor* ModelTable::RoundShort(FVector size, FModelParams modelParams,
-	FModelCreateParams createParamsIn, TArray<FString> tags) {
+	FModelCreateParams createParamsIn) {
+	if (size == FVector(0,0,0)) {
+		size = FVector(1.3,1.3,0.7);
+	}
 	FString name = Lodash::GetInstanceId("TableRoundShort_");
 	ModelBase* modelBase = ModelBase::GetInstance();
 	FVector scale = FVector(1,1,1), rotation = FVector(0,0,0), location = FVector(0,0,0);
@@ -74,9 +89,9 @@ AActor* ModelTable::RoundShort(FVector size, FModelParams modelParams,
 	// Legs: 2 crossed pieces.
 	modelParams.meshKey = "cube";
 	modelParams.materialKey = "metalChrome";
-	scale = FVector(size.X * 0.9, 0.1, size.Z - topHeight);
+	scale = FVector(size.X * 0.9, 0.05, size.Z - topHeight);
 	modelBase->CreateActor(name + "_Leg1", location, rotation, scale, spawnParams, modelParams);
-	scale = FVector(size.Y * 0.9, 0.1, size.Z - topHeight);
+	scale = FVector(size.Y * 0.9, 0.05, size.Z - topHeight);
 	modelBase->CreateActor(name + "_Leg2", location, FVector(0,0,90), scale, spawnParams, modelParams);
 	// Top
 	modelParams.meshKey = "cylinder";

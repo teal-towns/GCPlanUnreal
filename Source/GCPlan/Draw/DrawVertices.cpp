@@ -1,6 +1,9 @@
 #include "DrawVertices.h"
 
 #include "../BuildingStructsActor.h"
+#include "../Building/BuildingRoom.h"
+#include "../Common/DataConvert.h"
+#include "../Common/Lodash.h"
 #include "../Common/UnrealGlobal.h"
 #include "../Landscape/LandNature.h"
 #include "../Landscape/SplineRoad.h"
@@ -10,6 +13,9 @@
 #include "../Layout/LayoutPolyLine.h"
 #include "../Mesh/InstancedMesh.h"
 #include "../Mesh/LoadContent.h"
+#include "../Modeling/ModelBase.h"
+#include "../Modeling/Furniture/ModelPlanterBox.h"
+#include "../Modeling/Furniture/ModelTable.h"
 #include "../Plot/PlotBuild.h"
 #include "../Plot/PlotDivide.h"
 
@@ -42,7 +48,7 @@ void DrawVertices::LoadVertices() {
 		TMap<FString, FRoadPath> roads = {};
 		for (auto& Elem : polygonsRoad) {
 			uName = Elem.Key;
-			roads.Add(uName, FRoadPath(uName, uName, Elem.Value.vertices, 10, 	"road"));
+			roads.Add(uName, FRoadPath(uName, uName, Elem.Value.vertices, 10, "road"));
 		}
 		splineRoad->AddRoads(roads);
 	}
@@ -53,5 +59,67 @@ void DrawVertices::LoadVertices() {
 	// Place nature on land.
 	if (unrealGlobal->_settings->performanceQualityLevel >= 8) {
 		LandNature::PlaceNature();
+	}
+
+	InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
+	TArray<FString> types;
+	TMap<FString, FString> pairs;
+	FString type, meshKey;
+	FVector location;
+	// Buildings - assume all are points.
+	types = { "couch", "chair", "planterBox", "room", "table" };
+	polygons = verticesEdit->FilterByTypes(types);
+	for (auto& Elem : polygons) {
+		pairs = Lodash::PairsStringToObject(Elem.Value.pairsString);
+		location = Elem.Value.vertices[0];
+		pairs.Add("loc", DataConvert::VectorToString(location));
+		if (pairs.Contains("mesh")) {
+			meshKey = ModelBase::InstancedMeshFromPairs(pairs);
+			if (meshKey.Len() > 0) {
+				auto [location1, rotation, scale] = ModelBase::PairsToTransform(pairs);
+				instancedMesh->CreateInstance(meshKey, location,
+					DataConvert::VectorToRotator(rotation), scale);
+			}
+		} else {
+			type = Elem.Value.type;
+			if (type == "planterBox") {
+				ModelPlanterBox::Build(pairs);
+			} else if (type == "room") {
+				BuildingRoom::Build(pairs);
+			} else if (type == "table") {
+				ModelTable::Build(pairs);
+			}
+		}
+	}
+
+	// Plants
+	LoadContent* loadContent = LoadContent::GetInstance();
+	LayoutPolygon* layoutPolygon = LayoutPolygon::GetInstance();
+	FPlaceParams placeParams;
+	TArray<FString> meshNames, meshTypes;
+	types = { "tree", "bush", "flower" };
+	polygons = verticesEdit->FilterByTypes(types);
+	for (auto& Elem : polygons) {
+		pairs = Lodash::PairsStringToObject(Elem.Value.pairsString);
+		meshNames = {};
+		if (pairs.Contains("meshTypes")) {
+			pairs["meshTypes"].ParseIntoArray(meshTypes, TEXT(","), true);
+			meshNames = loadContent->GetMeshNamesByTypes(meshTypes);
+		} else if (pairs.Contains("meshes")) {
+			pairs["meshes"].ParseIntoArray(meshNames, TEXT(","), true);
+		}
+		if (!pairs.Contains("mesh")) {
+			pairs.Add("mesh", "");
+		}
+		if (meshNames.Num() > 0) {
+			for (int ii = 0; ii < meshNames.Num(); ii++) {
+				pairs["mesh"] = meshNames[ii];
+				ModelBase::InstancedMeshFromPairs(pairs);
+			}
+
+			placeParams.offsetAverage = pairs.Contains("placeOffsetAverage") ?
+				DataConvert::Float(pairs["placeOffsetAverage"]) : 10;
+			layoutPolygon->PlaceInPolygon(Elem.Value.vertices, meshNames, placeParams);
+		}
 	}
 }

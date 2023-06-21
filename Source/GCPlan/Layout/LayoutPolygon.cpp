@@ -26,19 +26,13 @@ LayoutPolygon *LayoutPolygon::GetInstance() {
 	return pinstance_;
 }
 
-// void LayoutPolygon::PlaceInPolygon(TArray<FVector> vertices, TArray<FString> meshNames, 
-// 	FVector posCenter, bool snapToGround, float radius, FString shape,
-// 	float offsetAverage, float offsetMaxFactorX, float offsetMaxFactorY,
-// 	float offsetMaxFactorZ, float maxZOffset, float minZOffset,
-// 	float spacing, FString spreadPattern, int maxCount,
-// 	int maxCountMin, int maxCountMax,
-// 	float scaleMin, float scaleMax,
-// 	float rotMinX, float rotMaxX,
-// 	float rotMinY, float rotMaxY, float rotMinZ, float rotMaxZ) {
 bool LayoutPolygon::PlaceInPolygon(TArray<FVector> vertices, TArray<FString> meshNames, 
-	FVector posCenter, FPlaceParams inParams) {
+	FPlaceParams inParams, FVector posCenter) {
 	if (meshNames.Num() < 1) {
 		return false;
+	}
+	if (posCenter == FVector(0,0,0)) {
+		posCenter = MathPolygon::GetPolygonCenter(vertices);
 	}
 	bool snapToGround = inParams.snapToGround;
 	float radius = inParams.radius;
@@ -49,18 +43,6 @@ bool LayoutPolygon::PlaceInPolygon(TArray<FVector> vertices, TArray<FString> mes
 	float offsetMaxFactorZ = inParams.offsetMaxFactorZ;
 	float maxZOffset = inParams.maxZOffset;
 	float minZOffset = inParams.minZOffset;
-	// FString spreadPattern;
-	// int maxCount;
-	// int maxCountMin;
-	// int maxCountMax;
-	// float scaleMin;
-	// float scaleMax;
-	// float rotMinX;
-	// float rotMaxX;
-	// float rotMinY;
-	// float rotMaxY;
-	// float rotMinZ;
-	// float rotMaxZ;
 
 	// Form 2d version (just once for performance).
 	if (inParams.skipPolygons.Num() > 0 && inParams.skipPolygons2D.Num() < 1) {

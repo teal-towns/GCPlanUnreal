@@ -16,7 +16,7 @@ private:
 	FString _currentUName = "";
 	FString _currentType = "";
 	FString _currentShape = "";
-	TArray<FString> _currentTags = {};
+	FString _currentPairsString = "";
 	TArray<FString> _currentFilterTypes = {};
 	FString _mode = "";
 	FVerticesEditSelectedObject* _selectedObject = nullptr;
@@ -48,7 +48,7 @@ public:
 
 	void SetType(FString);
 	void SetShape(FString);
-	void SetTags(TArray<FString>);
+	void SetPairsString(FString);
 	void SetFilterTypes(TArray<FString>);
 	TMap<FString, FPolygon> FilterByTypes(TArray<FString> types);
 	void DestroyItems();
@@ -78,8 +78,9 @@ public:
 	TMap<FString, FPolygon> ExportPolygonsByType(FString type);
 	void LoadFromFiles();
 	void RemoveChildren(FString type, bool save = true);
-	TArray<FString> GetParentTags(FString type, FString childUName);
+	FString GetParentPairsString(FString type, FString childUName);
 	int CheckSubdividePolygons(FString type, bool save = true);
+	void AddAndSave(TMap<FString, FPolygon> polygons);
 	void SaveToFile(FString type);
 	void SavePolygon(FString uName);
 	FPolygon GetByUName(FString uName);

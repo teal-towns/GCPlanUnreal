@@ -78,7 +78,14 @@ void InstancedMesh::InitMeshes() {
 // 	return World;
 // }
 
-void InstancedMesh::AddMesh(FString name, FString meshPath, FString materialPath) {
+// bool InstancedMesh::MeshExists(FString name) {
+// 	if (_instancedMeshActors.Contains(name)) {
+// 		return true;
+// 	}
+// 	return false;
+// }
+
+void InstancedMesh::AddMesh(FString name, FString meshPath, FString materialPath, FModelParams modelParams) {
 	if (!_instancedMeshActors.Contains(name)) {
 		AActor* actor;
 		// If recompile in editor, will not exist in memory, so need to check scene too.
@@ -110,14 +117,42 @@ void InstancedMesh::AddMesh(FString name, FString meshPath, FString materialPath
 			actor->AttachToComponent(meshesParent, FAttachmentTransformRules::KeepRelativeTransform);
 			instancedStaticMesh->SetMobility(EComponentMobility::Static);
 
-			UStaticMesh* mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL,
-				*meshPath));
-			// UStaticMeshComponent* meshComponent = actor->FindComponentByClass<UStaticMeshComponent>();
-			// meshComponent->SetStaticMesh(mesh);
-			instancedStaticMesh->SetStaticMesh(mesh);
-			UMaterial* material = Cast<UMaterial>(StaticLoadObject(UMaterial::StaticClass(), NULL,
-				*materialPath));
-			instancedStaticMesh->SetMaterial(0, material);
+			LoadContent* loadContent = LoadContent::GetInstance();
+			if (modelParams.mesh) {
+				instancedStaticMesh->SetStaticMesh(modelParams.mesh);
+			} else {
+				if (meshPath.Len() < 1) {
+					if (modelParams.meshPath.Len() < 1 && modelParams.meshKey.Len() > 0) {
+						modelParams.meshPath = loadContent->Mesh(modelParams.meshKey);
+					}
+					meshPath = modelParams.meshPath;
+				}
+				UStaticMesh* mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL,
+					*meshPath));
+				// UStaticMeshComponent* meshComponent = actor->FindComponentByClass<UStaticMeshComponent>();
+				// meshComponent->SetStaticMesh(mesh);
+				instancedStaticMesh->SetStaticMesh(mesh);
+			}
+
+			if (modelParams.dynamicMaterial) {
+				instancedStaticMesh->SetMaterial(0, modelParams.dynamicMaterial);
+			} else {
+				if (materialPath.Len() < 1) {
+					if (modelParams.materialPath.Len() < 1 && modelParams.materialKey.Len() > 0) {
+						modelParams.materialPath = loadContent->Material(modelParams.materialKey);
+					}
+					materialPath = modelParams.materialPath;
+				}
+				if (materialPath.Contains(".MaterialInstance")) {
+					UMaterialInstance* material = Cast<UMaterialInstance>(StaticLoadObject(UMaterialInstance::StaticClass(), NULL,
+						*materialPath));
+					instancedStaticMesh->SetMaterial(0, material);
+				} else {
+					UMaterial* material = Cast<UMaterial>(StaticLoadObject(UMaterial::StaticClass(), NULL,
+						*materialPath));
+					instancedStaticMesh->SetMaterial(0, material);
+				}
+			}
 		}
 	} else {
 		// return _instancedMeshActors[name];

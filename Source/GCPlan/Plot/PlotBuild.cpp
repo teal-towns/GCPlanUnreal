@@ -23,16 +23,16 @@ TArray<FLand> PlotBuild::CreateLands(TMap<FString, FPolygon> polygons, float uni
 	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
 	TArray<FLand> lands = {};
 	FBuildingBlueprint blueprint;
-	TArray<FString> tags;
+	FString pairsString;
 	FPolygon polygonTemp;
 	for (auto& Elem : polygons) {
 		polygonTemp = Elem.Value;
 		// Only build if a final one (no children).
 		if (Elem.Value.childUNames.Num() == 0) {
-			tags = Elem.Value.tags;
+			pairsString = Elem.Value.pairsString;
 			// If empty, use parent.
-			tags = verticesEdit->GetParentTags("plot", Elem.Key);
-			if (tags.Contains("flowerHomes")) {
+			pairsString = verticesEdit->GetParentPairsString("plot", Elem.Key);
+			if (pairsString.Contains("buildPattern=flowerHomes")) {
 				float verticesBuffer = polygonTemp.verticesBuffer;
 				// For plants instead of roads, do NOT go all the way (onto road).
 				verticesBuffer = -5;
@@ -83,7 +83,7 @@ void PlotBuild::FlowerHomePlants(TMap<FString, FRoadPath> homePlotPaths) {
 		placeParams.spacing = 2;
 		placeParams.spacingCrossAxis = 2;
 		placeParams.scaleMin = 0.75;
-		placeParams.scaleMax = 2;
+		placeParams.scaleMax = 1.25;
 		LayoutPolyLine::PlaceOnLine(vertices, meshNamesBush, placeParams);
 		placeParams.spacing = 20;
 		placeParams.spacingCrossAxis = 999;
@@ -105,9 +105,9 @@ void PlotBuild::RingPlantsCenter(TArray<FVector> vertices, float unitDiameter, i
 
 	meshNames = loadContent->GetMeshNamesByTypes({ "tree" });
 	placeParams.offsetAverage = 15;
-	layoutPolygon->PlaceInPolygon(verticesInner, meshNames, center, placeParams);
+	layoutPolygon->PlaceInPolygon(verticesInner, meshNames, placeParams, center);
 
 	meshNames = loadContent->GetMeshNamesByTypes({ "bush" });
 	placeParams.offsetAverage = 5;
-	layoutPolygon->PlaceInPolygon(verticesInner, meshNames, center, placeParams);
+	layoutPolygon->PlaceInPolygon(verticesInner, meshNames, placeParams, center);
 }

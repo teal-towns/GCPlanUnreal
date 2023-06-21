@@ -37,8 +37,8 @@ void VerticesEdit::SetShape(FString shape) {
 	_currentShape = shape;
 }
 
-void VerticesEdit::SetTags(TArray<FString> tags) {
-	_currentTags = tags;
+void VerticesEdit::SetPairsString(FString pairsString) {
+	_currentPairsString = pairsString;
 }
 
 void VerticesEdit::SetFilterTypes(TArray<FString> filterTypes) {
@@ -79,7 +79,7 @@ void VerticesEdit::CleanUp() {
 	_mode = "";
 	_currentType = "";
 	_currentShape = "";
-	_currentTags = {};
+	_currentPairsString = "";
 	_currentFilterTypes = {};
 
 	pinstance_ = nullptr;
@@ -271,7 +271,7 @@ std::tuple<FPolygon, bool> VerticesEdit::GetOrCreateCurrent() {
 	_currentUName = Lodash::GetInstanceId("VerticesEdit_");
 	TArray<FVector> vertices = {};
 	_items.Add(_currentUName, FPolygon(_currentUName, _currentUName, vertices, FVector(0,0,0), _currentType,
-		_currentShape, _currentTags));
+		_currentShape, _currentPairsString));
 	_itemsActors.Add(_currentUName, FVerticesEditActor(_currentUName));
 	return { _items[_currentUName], true };
 }
@@ -518,7 +518,7 @@ void VerticesEdit::ImportPolygons(TMap<FString, FPolygon> polygons) {
 			UE_LOG(LogTemp, Warning, TEXT("VerticesEdit.ImportPolygons invalid type %s uName %s"), *Elem.Value.type, *uName);
 		} else {
 			_items.Add(uName, FPolygon(uName, uName, Elem.Value.vertices, Elem.Value.posCenter, Elem.Value.type,
-				Elem.Value.shape, Elem.Value.tags, Elem.Value.jsonDataString, Elem.Value.squareMeters,
+				Elem.Value.shape, Elem.Value.pairsString, Elem.Value.jsonDataString, Elem.Value.squareMeters,
 				Elem.Value.parentUName, Elem.Value.childUNames, Elem.Value.verticesBuffer, Elem.Value.averageChildDiameter));
 			DrawItem(uName);
 		}
@@ -547,7 +547,7 @@ void VerticesEdit::LoadFromFiles() {
 			for (auto& Elem : data.polygons) {
 				uName = Elem.Key;
 				_items.Add(uName, FPolygon(uName, uName, Elem.Value.vertices, Elem.Value.posCenter, Elem.Value.type,
-					Elem.Value.shape, Elem.Value.tags, Elem.Value.jsonDataString, Elem.Value.squareMeters,
+					Elem.Value.shape, Elem.Value.pairsString, Elem.Value.jsonDataString, Elem.Value.squareMeters,
 					Elem.Value.parentUName, Elem.Value.childUNames, Elem.Value.verticesBuffer, Elem.Value.averageChildDiameter));
 				DrawItem(uName);
 			}
@@ -576,17 +576,17 @@ void VerticesEdit::RemoveChildren(FString type, bool save) {
 	}
 }
 
-TArray<FString> VerticesEdit::GetParentTags(FString type, FString childUName) {
-	TArray<FString> tags = {};
+FString VerticesEdit::GetParentPairsString(FString type, FString childUName) {
+	FString pairsString = "";
 	if (_items.Contains(childUName)) {
 		FString uName = _items[childUName].parentUName;
 		while (uName != "" && _items.Contains(uName)) {
-			if (_items[uName].tags.Num() > 0) {
-				return _items[uName].tags;
+			if (_items[uName].pairsString.Len() > 0) {
+				return _items[uName].pairsString;
 			}
 		}
 	}
-	return tags;
+	return pairsString;
 }
 
 int VerticesEdit::CheckSubdividePolygons(FString type, bool save) {
@@ -610,6 +610,23 @@ int VerticesEdit::CheckSubdividePolygons(FString type, bool save) {
 		SaveToFile(type);
 	}
 	return countNew;
+}
+
+void VerticesEdit::AddAndSave(TMap<FString, FPolygon> polygons) {
+	TArray<FString> types = {};
+	FString uName;
+	for (auto& Elem : polygons) {
+		uName = Elem.Key;
+		_items.Add(uName, FPolygon(uName, uName, Elem.Value.vertices, Elem.Value.posCenter, Elem.Value.type,
+			Elem.Value.shape, Elem.Value.pairsString, Elem.Value.jsonDataString, Elem.Value.squareMeters,
+			Elem.Value.parentUName, Elem.Value.childUNames, Elem.Value.verticesBuffer, Elem.Value.averageChildDiameter));
+		if (!types.Contains(Elem.Value.type)) {
+			types.Add(Elem.Value.type);
+		}
+	}
+	for (int ii = 0; ii < types.Num(); ii++) {
+		SaveToFile(types[ii]);
+	}
 }
 
 void VerticesEdit::SaveToFile(FString type) {

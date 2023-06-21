@@ -8,4 +8,9 @@ public:
 	static float SqrMagnitude(FVector);
 	static float Angle(FVector, FVector);
 	static float SignedAngle(FVector, FVector, FVector);
+	static float ConstrainDegrees(float degrees);
+	static FVector ConstrainRotation(FVector rotation);
+	static FVector RotateVector(FVector vector, FVector rotation);
+	static TArray<FVector> RotateVertices(TArray<FVector> vertices, FVector rotation,
+		FVector offset = FVector(0,0,0));
 };

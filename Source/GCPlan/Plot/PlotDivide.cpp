@@ -64,7 +64,7 @@ std::tuple<TMap<FString, FPolygon>, int> PlotDivide::SubdividePlots(TMap<FString
 					vertices2D = MathPolygon::PointsTo2D(spacesVertices[ii]);
 					squareMeters = MathPolygon::PolygonArea(vertices2D);
 					newPolygons.Add(uName, FPolygon(uName, uName, spacesVertices[ii], center,
-						polygonTemp.type, polygonTemp.shape, polygonTemp.tags, "", squareMeters, parentUName, {},
+						polygonTemp.type, polygonTemp.shape, polygonTemp.pairsString, "", squareMeters, parentUName, {},
 						polygonTemp.verticesBuffer, newAverageChildDiameter));
 					// Add this as a child of the existing one too.
 					polygons[parentUName].childUNames.Add(uName);

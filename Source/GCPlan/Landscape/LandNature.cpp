@@ -44,14 +44,12 @@ void LandNature::PlaceNature() {
 
 	placeParams.offsetAverage = 30;
 	for (auto& Elem : polygonsNature) {
-		center = MathPolygon::GetPolygonCenter(Elem.Value.vertices);
-		layoutPolygon->PlaceInPolygon(Elem.Value.vertices, meshNames, center, placeParams);
+		layoutPolygon->PlaceInPolygon(Elem.Value.vertices, meshNames, placeParams);
 	}
 	meshNames = loadContent->GetMeshNamesByTypes({ "bush" });
 	// placeParams.snapToGround = true;
 	placeParams.offsetAverage = 10;
 	for (auto& Elem : polygonsNature) {
-		center = MathPolygon::GetPolygonCenter(Elem.Value.vertices);
-		layoutPolygon->PlaceInPolygon(Elem.Value.vertices, meshNames, center, placeParams);
+		layoutPolygon->PlaceInPolygon(Elem.Value.vertices, meshNames, placeParams);
 	}
 }

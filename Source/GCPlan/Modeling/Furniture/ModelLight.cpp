@@ -32,13 +32,21 @@ AActor* ModelLight::Create(FVector size, FModelParams modelParams,
 
 	FActorSpawnParameters spawnParams;
 	float lightHeight = size.X;
-	float cordHeight = size.Z - lightHeight;
-	// Cord
-	modelParams.meshKey = "cube";
+
 	DynamicMaterial* dynamicMaterial = DynamicMaterial::GetInstance();
 	FLinearColor color = FLinearColor(Lodash::RandomRangeFloat(0,1), Lodash::RandomRangeFloat(0,1),
 		Lodash::RandomRangeFloat(0,1));
 	modelParams.dynamicMaterial = dynamicMaterial->CreateColor(name + "_Cord", FLinearColor(0.5,0.5,0.5,1));
+
+	float attachHeight = 0.05;
+	float attachZ = size.Z - attachHeight;
+	modelParams.meshKey = "cylinder";
+	modelBase->CreateActor(name + "_Attachment", FVector(0,0,attachZ), rotation,
+		FVector(0.1, 0.1, attachHeight), spawnParams, modelParams);
+
+	float cordHeight = size.Z - attachHeight - lightHeight;
+	// Cord
+	modelParams.meshKey = "cube";
 	modelBase->CreateActor(name + "_Cord", FVector(0,0,lightHeight), rotation,
 		FVector(0.02, 0.02, cordHeight), spawnParams, modelParams);
 	modelParams.dynamicMaterial = nullptr;
