@@ -89,7 +89,8 @@ public:
 		FVector scale = FVector(1,1,1));
 	static std::tuple<FString, FModelParams> ModelParamsFromPairs(TMap<FString, FString> pairs);
 	static FString InstancedMeshFromPairs(TMap<FString, FString> pairs);
-	static FString AddRotationString(FVector rotationParent, FVector rotation = FVector(0,0,0));
+	static FString AddRotationString(FVector rotationParent, FVector rotation = FVector(0,0,0),
+		FString meshKey = "");
 	static void SetTransformFromParams(AActor* actor, FModelCreateParams createParams);
 	static void SetTransform(AActor* actor, FVector location = FVector(0,0,0),
 		FVector rotation = FVector(0,0,0), FVector scale = FVector(1,1,1));

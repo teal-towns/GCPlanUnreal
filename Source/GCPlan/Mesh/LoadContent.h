@@ -31,4 +31,6 @@ public:
 	FString Material(FString key);
 	FString Texture(FString key);
 	FString Mesh(FString key);
+	FString MeshScale(FVector scale, FString meshKey = "", TArray<FString> axes = { "x", "y" });
+	FVector MeshRotation(FString meshKey);
 };

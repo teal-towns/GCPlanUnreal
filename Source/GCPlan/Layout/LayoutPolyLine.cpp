@@ -26,16 +26,17 @@ LayoutPolyLine *LayoutPolyLine::GetInstance() {
 	return pinstance_;
 }
 
-bool LayoutPolyLine::PlaceOnLine(TArray<FVector> vertices, TArray<FString> meshNames,
+TMap<FString, FMeshTransform> LayoutPolyLine::PlaceOnLine(TArray<FVector> vertices, TArray<FString> meshNames,
 	FPlaceParams params) {
-	if (meshNames.Num() < 1) {
-		return false;
+	TMap<FString, FMeshTransform> meshes = {};
+	if (!params.skipMesh && meshNames.Num() < 1) {
+		return meshes;
 	}
 
-	TMap<FString, FMeshTransform> meshes = {};
 	HeightMap* heightMap = HeightMap::GetInstance();
+	FVector center = MathPolygon::GetPolygonCenter(vertices);
 
-	FVector pathLine, vertex, vertexNext, currentPoint, crossAxisLine, crossPoint, crossPointEnd;
+	FVector pathLine, vertex, vertexNext, currentPoint, crossAxisLine, crossPoint, crossPointEnd, vertexEnd;
 	int indexNext;
 	float stepDistance, currentAngle, currentAngleCross;
 	int verticesCount = vertices.Num();
@@ -44,8 +45,6 @@ bool LayoutPolyLine::PlaceOnLine(TArray<FVector> vertices, TArray<FString> meshN
 	int iterations, iterationsCross;
 	int maxIterations, maxIterationsCross;
 	int buffer = 5;
-	stepDistance = Lodash::RandomRangeFloat(0, params.spacing * params.spacingFactor);
-	currentPoint = vertices[0] + pathLine.GetClampedToMaxSize(stepDistance);
 	for (int vv = 0; vv < verticesCount; vv++) {
 		if (vv == verticesCount - 1 && params.closedLoop < 1) {
 			break;
@@ -54,8 +53,16 @@ bool LayoutPolyLine::PlaceOnLine(TArray<FVector> vertices, TArray<FString> meshN
 		indexNext = (vv < verticesCount - 1) ? vv + 1 : 0;
 		vertexNext = vertices[indexNext];
 		pathLine = vertexNext - vertex;
+		currentPoint = vertices[vv] + pathLine.GetClampedToMaxSize(params.spacingStart);
+		vertexEnd = vertexNext - pathLine.GetClampedToMaxSize(params.spacingEnd);
+		if (params.spacingCenter > 0) {
+			float lineDistance = (vertexEnd - currentPoint).Size();
+			int itemsCount = floor(lineDistance / (params.spacing - params.spacingFactor));
+			float spacingActual = (float)(lineDistance / (itemsCount + 1));
+			currentPoint += pathLine.GetClampedToMaxSize(spacingActual);
+		}
 
-		currentAngle = MathVector::SignedAngle(pathLine, (vertexNext - currentPoint), FVector(0,0,1));
+		currentAngle = MathVector::SignedAngle(pathLine, (vertexEnd - currentPoint), FVector(0,0,1));
 		iterations = 0;
 		maxIterations = ceil(pathLine.Size() / (params.spacing - params.spacingFactor)) + buffer;
 		while (abs(currentAngle) < 30) {
@@ -74,7 +81,7 @@ bool LayoutPolyLine::PlaceOnLine(TArray<FVector> vertices, TArray<FString> meshN
 				iterationsCross = 0;
 				maxIterationsCross = ceil(params.width / (params.spacingCrossAxis - params.spacingFactorCrossAxis)) + buffer;
 				while (abs(currentAngleCross) < 30) {
-					auto [key1, obj1] = LayoutPlace::PlaceMesh(crossPoint, meshNames, params);
+					auto [key1, obj1] = LayoutPlace::PlaceMesh(crossPoint, meshNames, params, pathLine, center);
 					meshes.Add(key1, obj1);
 
 					stepDistance = params.spacingCrossAxis + Lodash::RandomRangeFloat(-1 * params.spacingCrossAxis * params.spacingFactorCrossAxis,
@@ -91,7 +98,7 @@ bool LayoutPolyLine::PlaceOnLine(TArray<FVector> vertices, TArray<FString> meshN
 				}
 			} else {
 				// If did cross, cross line should have already placed on / near center point, otherwise place in center.
-				auto [key1, obj1] = LayoutPlace::PlaceMesh(currentPoint, meshNames, params);
+				auto [key1, obj1] = LayoutPlace::PlaceMesh(currentPoint, meshNames, params, pathLine, center);
 				meshes.Add(key1, obj1);
 			}
 
@@ -102,7 +109,7 @@ bool LayoutPolyLine::PlaceOnLine(TArray<FVector> vertices, TArray<FString> meshN
 			if (params.snapToGround) {
 				currentPoint.Z = heightMap->GetTerrainHeightAtPoint(FVector(currentPoint.X, currentPoint.Y, 0));
 			}
-			currentAngle = MathVector::SignedAngle(pathLine, (vertexNext - currentPoint), FVector(0,0,1));
+			currentAngle = MathVector::SignedAngle(pathLine, (vertexEnd - currentPoint), FVector(0,0,1));
 			iterations += 1;
 			if (iterations > maxIterations) {
 				UE_LOG(LogTemp, Warning, TEXT("LayoutPolyLine.PlaceOnLine max iterations break %d"), vv);
@@ -111,13 +118,15 @@ bool LayoutPolyLine::PlaceOnLine(TArray<FVector> vertices, TArray<FString> meshN
 	}
 
 	// Place them.
-	InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
-	for (auto& Elem : meshes) {
-		instancedMesh->CreateInstance(Elem.Value.meshName, Elem.Value.location,
-			DataConvert::VectorToRotator(Elem.Value.rotation), Elem.Value.scale);
+	if (!params.skipMesh) {
+		InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
+		for (auto& Elem : meshes) {
+			instancedMesh->CreateInstance(Elem.Value.meshName, Elem.Value.location,
+				DataConvert::VectorToRotator(Elem.Value.rotation), Elem.Value.scale);
+		}
 	}
 
-	return true;
+	return meshes;
 }
 
 bool LayoutPolyLine::PlaceOnLineSides(TArray<FVector> vertices, float width, TArray<FString> meshNames,

@@ -9,38 +9,86 @@ MathPolygon::MathPolygon() {
 MathPolygon::~MathPolygon() {
 }
 
-TArray<FVector> MathPolygon::PointToBox(FVector point, FVector range) {
-	TArray<FVector> vertices = {
-		FVector(point.X - range.X / 2, point.Y - range.Y / 2, point.Z),
-		FVector(point.X - range.X / 2, point.Y + range.Y / 2, point.Z),
-		FVector(point.X + range.X / 2, point.Y + range.Y / 2, point.Z),
-		FVector(point.X + range.X / 2, point.Y - range.Y / 2, point.Z)
-	};
+TArray<FVector> MathPolygon::PointToBox(FVector point, FVector range, FString plane) {
+	TArray<FVector> vertices;
+	if (plane == "xy") {
+		vertices = {
+			FVector(point.X - range.X / 2, point.Y - range.Y / 2, point.Z),
+			FVector(point.X - range.X / 2, point.Y + range.Y / 2, point.Z),
+			FVector(point.X + range.X / 2, point.Y + range.Y / 2, point.Z),
+			FVector(point.X + range.X / 2, point.Y - range.Y / 2, point.Z)
+		};
+	} else if (plane == "xz") {
+		vertices = {
+			FVector(point.X - range.X / 2, point.Y, point.Z - range.Z / 2),
+			FVector(point.X - range.X / 2, point.Y, point.Z + range.Z / 2),
+			FVector(point.X + range.X / 2, point.Y, point.Z + range.Z / 2),
+			FVector(point.X + range.X / 2, point.Y, point.Z - range.Z / 2)
+		};
+	} else if (plane == "yz") {
+		vertices = {
+			FVector(point.X, point.Y - range.Y / 2, point.Z - range.Z / 2),
+			FVector(point.X, point.Y - range.Y / 2, point.Z + range.Z / 2),
+			FVector(point.X, point.Y + range.Y / 2, point.Z + range.Z / 2),
+			FVector(point.X, point.Y + range.Y / 2, point.Z - range.Z / 2)
+		};
+	}
 	return vertices;
 }
 
+TArray<FVector> MathPolygon::MinMaxPoints(TArray<FVector> vertices, FString axis) {
+	FVector min = vertices[0];
+	FVector max = vertices[0];
+	for (int vv = 0; vv < vertices.Num(); vv++) {
+		FVector vertex = vertices[vv];
+		if (axis == "x") {
+			if (vertex.X < min.X) {
+				min = vertex;
+			}
+			if (vertex.X > max.X) {
+				max = vertex;
+			}
+		} else if (axis == "y") {
+			if (vertex.Y < min.Y) {
+				min = vertex;
+			}
+			if (vertex.Y > max.Y) {
+				max = vertex;
+			}
+		} else if (axis == "z") {
+			if (vertex.Z < min.Z) {
+				min = vertex;
+			}
+			if (vertex.Z > max.Z) {
+				max = vertex;
+			}
+		}
+	}
+	return TArray<FVector> { min, max };
+}
+
 TArray<FVector> MathPolygon::Bounds(TArray<FVector> Vertices) {
-	FVector min = FVector(0,0,0);
-	FVector max = FVector(0,0,0);
+	FVector min = Vertices[0];
+	FVector max = Vertices[0];
 	for (int vv = 0; vv < Vertices.Num(); vv++) {
 		// FVector2D bounds = FVector2D(Vertices[vv].X, Vertices[vv].Y);
 		FVector bounds = Vertices[vv];
-		if (min.X == 0 || bounds.X < min.X) {
+		if (bounds.X < min.X) {
 			min.X = bounds.X;
 		}
-		if (max.X == 0 || bounds.X > max.X) {
+		if (bounds.X > max.X) {
 			max.X = bounds.X;
 		}
-		if (min.Y == 0 || bounds.Y < min.Y) {
+		if (bounds.Y < min.Y) {
 			min.Y = bounds.Y;
 		}
-		if (max.Y == 0 || bounds.Y > max.Y) {
+		if (bounds.Y > max.Y) {
 			max.Y = bounds.Y;
 		}
-		if (min.Z == 0 || bounds.Z < min.Z) {
+		if (bounds.Z < min.Z) {
 			min.Z = bounds.Z;
 		}
-		if (max.Z == 0 || bounds.Z > max.Z) {
+		if (bounds.Z > max.Z) {
 			max.Z = bounds.Z;
 		}
 	}
@@ -48,10 +96,16 @@ TArray<FVector> MathPolygon::Bounds(TArray<FVector> Vertices) {
 	return boundsRect;
 }
 
-TArray<FVector2D> MathPolygon::PointsTo2D(TArray<FVector> points) {
+TArray<FVector2D> MathPolygon::PointsTo2D(TArray<FVector> points, FString plane) {
 	TArray<FVector2D> points2D = {};
 	for (int ii = 0; ii < points.Num(); ii++) {
-		points2D.Add(FVector2D(points[ii].X, points[ii].Y));
+		if (plane == "xz") {
+			points2D.Add(FVector2D(points[ii].X, points[ii].Z));
+		} else if (plane == "yz") {
+			points2D.Add(FVector2D(points[ii].Y, points[ii].Z));
+		} else {
+			points2D.Add(FVector2D(points[ii].X, points[ii].Y));
+		}
 	}
 	return points2D;
 }
