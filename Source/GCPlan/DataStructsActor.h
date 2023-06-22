@@ -134,21 +134,26 @@ struct FContentMeshModel {
 	GENERATED_BODY()
 
 	UPROPERTY()
-	TArray<float> size;
+	FString size = "";
 	UPROPERTY()
-	FString type;
+	FString type = "";
 	UPROPERTY()
-	FString path;
+	FString path = "";
 	UPROPERTY()
-	FString materialPath;
+	FString materialPath = "";
+	UPROPERTY()
+	FString rotation = "0,0,0";
+	// UPROPERTY()
+	// FString offset = "";
 
 	FContentMeshModel() {};
-	FContentMeshModel(TArray<float> size_, FString type_, FString path_,
-		FString materialPath_ = "") {
+	FContentMeshModel(FString size_, FString type_, FString path_,
+		FString materialPath_ = "", FString rotation_ = "0,0,0") {
 		size = size_;
 		type = type_;
 		path = path_;
 		materialPath = materialPath_;
+		rotation = rotation_;
 	};
 };
 

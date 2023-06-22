@@ -3,14 +3,13 @@
 #include "../BuildingStructsActor.h"
 #include "../Modeling/ModelBase.h"
 
-class LMLobby {
+class LMConferenceRoom {
 public:
-	LMLobby();
-	~LMLobby();
+	LMConferenceRoom();
+	~LMConferenceRoom();
 
-	static TMap<FString, FPolygon> CreateFromInputs();
 	static TMap<FString, FPolygon> Create(FVector size, FModelParams modelParams = FModelParams(),
 		FModelCreateParams createParamsIn = FModelCreateParams());
-	static TMap<FString, FPolygon> CouchesCoffeeTables(FVector size, FModelParams modelParams,
+	static TMap<FString, FPolygon> TableWithChairs(FVector size, FModelParams modelParams,
 		FModelCreateParams createParamsIn = FModelCreateParams());
 };

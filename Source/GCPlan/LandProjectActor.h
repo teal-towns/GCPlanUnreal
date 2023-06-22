@@ -48,6 +48,8 @@ public:
 	void DrawVertices();
 	UFUNCTION(CallInEditor)
 	void SetVertices();
+	UFUNCTION(CallInEditor)
+	void Test();
 
 	void Init();
 	void InitSocketOn();

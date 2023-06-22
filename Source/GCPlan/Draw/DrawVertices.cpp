@@ -119,6 +119,19 @@ void DrawVertices::LoadVertices() {
 
 			placeParams.offsetAverage = pairs.Contains("placeOffsetAverage") ?
 				DataConvert::Float(pairs["placeOffsetAverage"]) : 10;
+			placeParams.rotMinX = pairs.Contains("placeRotMinX") ?
+				DataConvert::Float(pairs["placeRotMinX"]) : 0;
+			placeParams.rotMaxX = pairs.Contains("placeRotMaxX") ?
+				DataConvert::Float(pairs["placeRotMaxX"]) : 0;
+			placeParams.rotMinY = pairs.Contains("placeRotMinY") ?
+				DataConvert::Float(pairs["placeRotMinY"]) : 0;
+			placeParams.rotMaxY = pairs.Contains("placeRotMaxY") ?
+				DataConvert::Float(pairs["placeRotMaxY"]) : 0;
+			placeParams.rotMinZ = pairs.Contains("placeRotMinZ") ?
+				DataConvert::Float(pairs["placeRotMinZ"]) : 0;
+			placeParams.rotMaxZ = pairs.Contains("placeRotMaxZ") ?
+				DataConvert::Float(pairs["placeRotMaxZ"]) : 360;
+			placeParams.plane = pairs.Contains("placePlane") ? pairs["placePlane"] : "xy";
 			layoutPolygon->PlaceInPolygon(Elem.Value.vertices, meshNames, placeParams);
 		}
 	}

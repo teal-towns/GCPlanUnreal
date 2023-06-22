@@ -328,8 +328,13 @@ FString ModelBase::InstancedMeshFromPairs(TMap<FString, FString> pairs) {
 	return key;
 }
 
-FString ModelBase::AddRotationString(FVector rotationParent, FVector rotation) {
-	FVector newRotation = MathVector::ConstrainRotation(rotation + rotationParent);
+FString ModelBase::AddRotationString(FVector rotationParent, FVector rotation, FString meshKey) {
+	FVector rotationMesh = FVector(0,0,0);
+	if (meshKey.Len() > 0) {
+		LoadContent* loadContent = LoadContent::GetInstance();
+		rotationMesh = loadContent->MeshRotation(meshKey);
+	}
+	FVector newRotation = MathVector::ConstrainRotation(rotation + rotationParent + rotationMesh);
 	if (newRotation != FVector(0,0,0)) {
 		return "&rot=" + DataConvert::VectorToString(newRotation);
 	}

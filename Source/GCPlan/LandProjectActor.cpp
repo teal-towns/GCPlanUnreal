@@ -14,7 +14,10 @@
 #include "Mesh/InstancedMesh.h"
 #include "Plot/PlotBuild.h"
 
+#include "LayoutModel/LMConferenceRoom.h"
 #include "LayoutModel/LMLobby.h"
+
+#include "Layout/LayoutPolygon.h"
 
 ALandProjectActor::ALandProjectActor()
 {
@@ -115,6 +118,30 @@ void ALandProjectActor::TakeAction() {
 	}
 }
 
+void ALandProjectActor::Test() {
+	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+	unrealGlobal->InitAll(GetWorld());
+
+	UE_LOG(LogTemp, Display, TEXT("yes"));
+	LayoutPolygon* layoutPolygon = LayoutPolygon::GetInstance();
+	TArray<FVector> vertices = {
+		// FVector(0,0,0), FVector(0,0,4), FVector(0,3,4), FVector(0,3,0)
+		// FVector(-1,1.5,0), FVector(-1,1.5,4), FVector(1.5,-2,4), FVector(1.5,-2,0)
+		FVector(-1,-2,0), FVector(-1,-2,4), FVector(1.5,1.5,4), FVector(1.5,1.5,0)
+	};
+	TArray<FString> meshNames = { "fern", "solidFern", "cinnamonFern" };
+	FPlaceParams placeParams;
+	placeParams.plane = "yz";
+	placeParams.offsetAverage = 0.3;
+	placeParams.rotMinX = 90;
+	placeParams.rotMaxX = 90;
+	placeParams.rotMinZ = 270;
+	placeParams.rotMaxZ = 270;
+	placeParams.rotMinY = 0;
+	placeParams.rotMaxY = 360;
+	layoutPolygon->PlaceInPolygon(vertices, meshNames, placeParams);
+}
+
 void ALandProjectActor::Clear() {
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	unrealGlobal->InitAll(GetWorld());
@@ -152,4 +179,6 @@ void ALandProjectActor::SetVertices() {
 	createParams.offset = FVector(-285,20,3);
 	createParams.rotation = FVector(0,0,30);
 	LMLobby::Create(FVector(10,12,4), modelParams, createParams);
+	createParams.offset = FVector(-272,20,3);
+	LMConferenceRoom::Create(FVector(10,12,4), modelParams, createParams);
 }

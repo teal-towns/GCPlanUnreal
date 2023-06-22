@@ -118,7 +118,8 @@ void SplineRoad::DrawRoads(bool addPlants, bool carveLand) {
 
 	TArray<FString> roundaboutUNames = {};
 
-	TArray<FString> meshNamesBush = loadContent->GetMeshNamesByTypes({ "bush" });
+	// TArray<FString> meshNamesBush = loadContent->GetMeshNamesByTypes({ "bush" });
+	TArray<FString> meshNamesBush = { "hazel", "rhododendron" };
 	TArray<FString> meshNamesTree = loadContent->GetMeshNamesByTypes({ "tree" });
 	bool saveHeightMap = false;
 	TMap<FString, FImagePixelValue> newHeightImageValues = {};

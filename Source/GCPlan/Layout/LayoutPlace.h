@@ -35,6 +35,13 @@ struct FPlaceParams {
 	float spacingFactor = 0.25;
 	float spacingCrossAxis = 3;
 	float spacingFactorCrossAxis = 0.25;
+	float spacingStart = 0;
+	float spacingEnd = 0;
+	int spacingCenter = 0;
+
+	bool skipMesh = false;
+	bool rotateTowardCenter = false;
+	FString plane = "xy";
 
 	FPlaceParams() {};
 };
@@ -45,5 +52,5 @@ public:
 	~LayoutPlace();
 
 	static std::tuple<FString, FMeshTransform> PlaceMesh(FVector pos, TArray<FString> meshNames,
-		FPlaceParams params);
+		FPlaceParams params, FVector pathLine = FVector(0,0,0), FVector center = FVector(0,0,0));
 };

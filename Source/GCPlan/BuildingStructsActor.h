@@ -106,6 +106,23 @@ struct FBuildingStats {
 	int residentCount = 0;
 };
 
+// USTRUCT()
+// struct FTransformData {
+// 	UPROPERTY()
+// 	FVector location;
+// 	UPROPERTY()
+// 	FVector rotation;
+// 	UPROPERTY()
+// 	FVector scale;
+
+// 	FTransformData() {};
+// 	FTransformData(FVector location_, FVector rotation_, FVector scale_) {
+// 		location = location_;
+// 		rotation = rotation_;
+// 		scale = scale_;
+// 	};
+// }
+
 USTRUCT()
 struct FMeshTransform {
 	GENERATED_BODY()
