@@ -141,9 +141,9 @@ struct FModelingBase {
 	UPROPERTY(EditAnywhere)
 	FVector size;
 	UPROPERTY(EditAnywhere)
-	FString tagsString;
+	FString pairsString;
 	UPROPERTY()
-	TArray<FString> tags;
+	TMap<FString, FString> pairs = {};
 	UPROPERTY(EditAnywhere)
 	FString materialKey = "";
 
@@ -178,9 +178,9 @@ struct FProceduralModelBase {
 	UPROPERTY(EditAnywhere)
 	bool closeBottom; // Closes the bottom face of the prism
 	UPROPERTY(EditAnywhere)
-	FString tagsString;
+	FString pairsString;
 	UPROPERTY()
-	TArray<FString> tags;
+	TMap<FString, FString> pairs = {};
 	UPROPERTY(EditAnywhere)
 	FString materialKey = "";
 };
@@ -205,9 +205,9 @@ struct FLayoutModelBaseParams {
 	UPROPERTY(EditAnywhere)
 	FVector size;
 	UPROPERTY(EditAnywhere)
-	FString tagsString;
+	FString pairsString;
 	UPROPERTY()
-	TArray<FString> tags;
+	TMap<FString, FString> pairs = {};
 	UPROPERTY(EditAnywhere)
 	FString materialKey = "";
 };

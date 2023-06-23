@@ -22,7 +22,6 @@ void ModelStreetLight::Create()
     auto [modelingBase, modelParams] = modelBase->GetInputs("StreetLight1", FVector(1, 1, 5));
     FString name = modelingBase.name;
     FVector size = modelingBase.size;
-    TArray<FString> tags = modelingBase.tags;
 
     FVector rotation = FVector(0,0,0);
     FActorSpawnParameters spawnParams;

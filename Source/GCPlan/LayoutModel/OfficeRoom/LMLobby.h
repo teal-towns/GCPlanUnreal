@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../BuildingStructsActor.h"
-#include "../Modeling/ModelBase.h"
+#include "../../BuildingStructsActor.h"
+#include "../../Modeling/ModelBase.h"
 
 class LMLobby {
 public:

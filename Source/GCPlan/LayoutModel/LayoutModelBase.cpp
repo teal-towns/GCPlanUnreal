@@ -5,7 +5,7 @@
 #include "../Mesh/LoadContent.h"
 #include "../Modeling/ModelBase.h"
 #include "../ModelingStructsActor.h"
-#include "LMLobby.h"
+#include "OfficeRoom/LMLobby.h"
 
 LayoutModelBase* LayoutModelBase::pinstance_{nullptr};
 std::mutex LayoutModelBase::mutex_;
@@ -72,9 +72,9 @@ std::tuple<FLayoutModelBaseParams, FModelParams> LayoutModelBase::GetInputs(FStr
 	return { layoutParams, modelParams };
 }
 
-void LayoutModelBase::Create() { 
-	if (_layoutParams.tagsString.Len() > 0) {
-		_layoutParams.tagsString.ParseIntoArray(_layoutParams.tags, TEXT(","), true);
+void LayoutModelBase::Create() {
+	if (_layoutParams.pairsString.Len() > 0) {
+		_layoutParams.pairs = Lodash::PairsStringToObject(_layoutParams.pairsString);
 	}
 
 	UE_LOG(LogTemp, Display, TEXT("subCategory %s"), *_layoutParams.subCategory);

@@ -18,12 +18,11 @@ AActor* ModelLeaves::CreateFromInputs() {
 	auto [modelingBase, modelParams] = modelBase->GetInputs("Leaves", FVector(0.6, 0.8, 0.7));
 	FString name = modelingBase.name;
 	FVector size = modelingBase.size;
-	TArray<FString> tags = modelingBase.tags;
-	return Create(size, modelParams, FModelCreateParams(), tags);
+	return Create(size, modelParams, FModelCreateParams());
 }
 
 AActor* ModelLeaves::Create(FVector size, FModelParams modelParams,
-	FModelCreateParams createParamsIn, TArray<FString> tags, FModelLeaves params) {
+	FModelCreateParams createParamsIn, FModelLeaves params) {
 	ModelBase* modelBase = ModelBase::GetInstance();
 	FString name = Lodash::GetInstanceId("Leaves_");
 	FVector rotation = FVector(0,0,0), location = FVector(0,0,0), scale = FVector(1,1,1);
@@ -53,7 +52,7 @@ AActor* ModelLeaves::Create(FVector size, FModelParams modelParams,
 			Lodash::RandomRangeFloat(size.Z / 3, size.Z), 0.01);
 		createParams.offset = FVector(0,0,0);
 		createParams.rotation = FVector(0,0,0);
-		actorTemp = PMPlane::Create(name + "_Leaves " + FString::FromInt(ii), scale, {}, {}, "xz", {}, createParams, modelParams);
+		actorTemp = PMPlane::Create(name + "_Leaves " + FString::FromInt(ii), scale, {}, {}, "xz", createParams, modelParams);
 		createParams.offset = FVector(Lodash::RandomRangeFloat(size.X / -2 * params.offsetFactor, size.X / 2 * params.offsetFactor),
 			Lodash::RandomRangeFloat(size.Y / -2 * params.offsetFactor, size.Y / 2 * params.offsetFactor), 0);
 		createParams.rotation = FVector(Lodash::RandomRangeFloat(0, params.rotRangeX),

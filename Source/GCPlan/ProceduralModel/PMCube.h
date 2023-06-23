@@ -10,13 +10,10 @@ public:
 	~PMCube();
 
 	static void CreateFromInputs();
-	static void Create(FString name, FVector size, TArray<FString> tags = {},
-		FModelParams modelParams = FModelParams());
-	// static void RoundedCorner(FString name, FVector size, TArray<FString> tags = {});
-	static AActor* Plane(FString name, FVector size, TArray<FString> tags,
-		FModelParams modelParams);
-	static AStaticMeshActor* RoundedTop(FString name, FVector size, TArray<FString> tags,
+	static void Create(FString name, FVector size, FModelParams modelParams = FModelParams());
+	static AActor* Plane(FString name, FVector size, FModelParams modelParams);
+	static AStaticMeshActor* RoundedTop(FString name, FVector size,
 		float topHeight = 1, FModelParams modelParams = FModelParams());
-	static void RoundedTopSide(FVector size, TArray<FString> tags, FModelCreateParams createParams,
+	static void RoundedTopSide(FVector size, FModelCreateParams createParams,
 		FModelParams modelParams = FModelParams());
 };

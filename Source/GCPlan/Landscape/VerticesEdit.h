@@ -51,6 +51,7 @@ public:
 	void SetPairsString(FString);
 	void SetFilterTypes(TArray<FString>);
 	TMap<FString, FPolygon> FilterByTypes(TArray<FString> types);
+	TMap<FString, FPolygon> FilterByShapes(TArray<FString> shapes);
 	void DestroyItems();
 	void CleanUp();
 	void Hide();

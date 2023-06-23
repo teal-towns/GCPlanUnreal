@@ -15,15 +15,15 @@ AActor* ModelBook::CreateFromInputs() {
 	auto [modelingBase, modelParams] = modelBase->GetInputs("Book", FVector(0.2,0.05,0.3));
 	FString name = modelingBase.name;
 	FVector size = modelingBase.size;
-	TArray<FString> tags = modelingBase.tags;
-	if (tags.Contains("books")) {
-		return Books(size, modelParams, FModelCreateParams(), tags);
+	TMap<FString, FString> pairs = modelingBase.pairs;
+	if (pairs.Contains("books")) {
+		return Books(size, modelParams, FModelCreateParams());
 	}
-	return Create(size, modelParams, FModelCreateParams(), tags);
+	return Create(size, modelParams, FModelCreateParams());
 }
 
 AActor* ModelBook::Create(FVector size, FModelParams modelParams,
-	FModelCreateParams createParamsIn, TArray<FString> tags) {
+	FModelCreateParams createParamsIn) {
 	ModelBase* modelBase = ModelBase::GetInstance();
 	FString name = Lodash::GetInstanceId("Book_");
 	FVector rotation = FVector(0,0,0), location = FVector(0,0,0), scale = FVector(1,1,1);
@@ -44,8 +44,7 @@ AActor* ModelBook::Create(FVector size, FModelParams modelParams,
 	return actor;
 }
 
-AActor* ModelBook::Books(FVector size, FModelParams modelParams, FModelCreateParams createParamsIn,
-	TArray<FString> tags) {
+AActor* ModelBook::Books(FVector size, FModelParams modelParams, FModelCreateParams createParamsIn) {
 	ModelBase* modelBase = ModelBase::GetInstance();
 	FString name = Lodash::GetInstanceId("Books_");
 	FVector rotation = FVector(0,0,0), location = FVector(0,0,0), scale = FVector(1,1,1);

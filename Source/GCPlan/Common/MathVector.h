@@ -13,4 +13,5 @@ public:
 	static FVector RotateVector(FVector vector, FVector rotation);
 	static TArray<FVector> RotateVertices(TArray<FVector> vertices, FVector rotation,
 		FVector offset = FVector(0,0,0));
+	static TArray<FVector> RotateAround(TArray<FVector> vertices, FVector rotation, FVector center);
 };

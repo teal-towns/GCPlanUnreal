@@ -40,12 +40,12 @@ struct FModelParams {
 
 struct FModelCreateParams {
 	// FVector size;
-	// TArray<FString> tags = {};
 	AActor* parentActor = nullptr;
 	USceneComponent* parent = nullptr;
 	// UProceduralMeshComponent* proceduralMesh = nullptr;
 	FVector offset = FVector(0,0,0);
 	FVector rotation = FVector(0,0,0);
+	FVector rotateAround = FVector(0,0,0);
 	FString triangleOrder = "";
 	int triangleSide = 1;
 	TMap<FString, FString> offsetsCombine = {};
@@ -91,6 +91,8 @@ public:
 	static FString InstancedMeshFromPairs(TMap<FString, FString> pairs);
 	static FString AddRotationString(FVector rotationParent, FVector rotation = FVector(0,0,0),
 		FString meshKey = "");
+	static TArray<FVector> Vertices(TArray<FVector> vertices, FModelCreateParams createParams,
+		FVector rotation);
 	static void SetTransformFromParams(AActor* actor, FModelCreateParams createParams);
 	static void SetTransform(AActor* actor, FVector location = FVector(0,0,0),
 		FVector rotation = FVector(0,0,0), FVector scale = FVector(1,1,1));

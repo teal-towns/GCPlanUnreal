@@ -101,8 +101,8 @@ std::tuple<FModelingBase, FModelParams> ModelBase::GetInputs(FString defaultName
 }
 
 void ModelBase::Create() { 
-	if (_modelingBase.tagsString.Len() > 0) {
-		_modelingBase.tagsString.ParseIntoArray(_modelingBase.tags, TEXT(","), true);
+	if (_modelingBase.pairsString.Len() > 0) {
+		_modelingBase.pairs = Lodash::PairsStringToObject(_modelingBase.pairsString);
 	}
 
 	if (_modelingBase.category == ModelingCategory::ANIMAL) {
@@ -339,6 +339,13 @@ FString ModelBase::AddRotationString(FVector rotationParent, FVector rotation, F
 		return "&rot=" + DataConvert::VectorToString(newRotation);
 	}
 	return "";
+}
+
+TArray<FVector> ModelBase::Vertices(TArray<FVector> vertices, FModelCreateParams createParams, FVector rotation) {
+	if (createParams.rotateAround != FVector(0,0,0) && rotation != FVector(0,0,0)) {
+		vertices = MathVector::RotateAround(vertices, rotation, createParams.rotateAround);
+	}
+	return vertices;
 }
 
 void ModelBase::SetTransformFromParams(AActor* actor, FModelCreateParams createParams) {

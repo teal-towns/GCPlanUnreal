@@ -23,14 +23,14 @@ AActor* ModelCouch::CreateFromInputs() {
 	auto [modelingBase, modelParams] = modelBase->GetInputs("Couch", FVector(1,2.3,1));
 	FString name = modelingBase.name;
 	FVector size = modelingBase.size;
-	TArray<FString> tags = modelingBase.tags;
-	return Create(size, modelParams, FModelCreateParams(), tags, name);
+	TMap<FString, FString> pairs = modelingBase.pairs;
+	return Create(size, modelParams, FModelCreateParams(), pairs, name);
 }
 
 AActor* ModelCouch::Create(FVector size, FModelParams modelParams,
-	FModelCreateParams createParamsIn, TArray<FString> tags, FString name) {
+	FModelCreateParams createParamsIn, TMap<FString, FString> pairs, FString name) {
 	name = ModelBase::CheckGetName(name);
-	int cushionCount = tags.Contains("3Cushions") ? 3 : 2;
+	int cushionCount = pairs.Contains("3Cushions") ? 3 : 2;
 	ModelBase* modelBase = ModelBase::GetInstance();
 	FVector rotation = FVector(0,0,0), location = FVector(0,0,0), scale = FVector(1,1,1);
 	AActor* actor = modelBase->CreateActorEmpty(name, modelParams);
@@ -109,10 +109,10 @@ AActor* ModelCouch::Create(FVector size, FModelParams modelParams,
 		// modelBase->CreateActor(name + "_CushionBottom" + FString::FromInt(ii), locationBottom,
 		// 	FVector(0,0,0), scaleCushionBottom, spawnParams, modelParams);
 		modelParamsCushion.location = locationBack;
-		PMCube::RoundedTop(name + "_CushionBack" + FString::FromInt(ii), scaleCushionBack, {},
+		PMCube::RoundedTop(name + "_CushionBack" + FString::FromInt(ii), scaleCushionBack,
 			roundedTopHeight, modelParamsCushion);
 		modelParamsCushion.location = locationBottom;
-		PMCube::RoundedTop(name + "_CushionBottom" + FString::FromInt(ii), scaleCushionBottom, {},
+		PMCube::RoundedTop(name + "_CushionBottom" + FString::FromInt(ii), scaleCushionBottom,
 			roundedTopHeight, modelParamsCushion);
 
 		// Move Y over to next cushion.

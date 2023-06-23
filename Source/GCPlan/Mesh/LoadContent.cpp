@@ -4,6 +4,7 @@
 
 #include "../DataStructsActor.h"
 #include "../Common/DataConvert.h"
+#include "../Common/Lodash.h"
 #include "../Common/UnrealGlobal.h"
 #include "../Mesh/InstancedMesh.h"
 
@@ -52,12 +53,13 @@ void LoadContent::LoadMeshes(FString defaultMeshPath) {
 		UStaticMesh* mesh;
 		FString meshPath, name, materialPath;
 		_meshModels = data.models;
-		for (auto& Elem : data.models) {
+		for (auto& Elem : _meshModels) {
 			name = Elem.Key;
 			meshPath = Elem.Value.path;
 			materialPath = Elem.Value.materialPath;
 			mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL, *meshPath));
-			// UE_LOG(LogTemp, Display, TEXT("meshPath %s name %s"), *meshPath, *name);
+			_meshModels[Elem.Key].tags = Lodash::CheckAddSuffix(_meshModels[Elem.Key].tags, ",");
+			// UE_LOG(LogTemp, Display, TEXT("meshPath %s name %s tags %s"), *meshPath, *name, *_meshModels[Elem.Key].tags);
 			if (!mesh) {
 				UE_LOG(LogTemp, Display, TEXT("LoadContent.LoadMeshes not found, using defaultMeshPath %s"), *name);
 				meshPath = defaultMeshPath;
@@ -75,6 +77,41 @@ TArray<FString> LoadContent::GetMeshNamesByTypes(TArray<FString> types) {
 		}
 	}
 	return names;
+}
+
+TArray<FString> LoadContent::GetMeshNamesByTags(TArray<FString> tags) {
+	TArray<FString> names = {};
+	for (auto& Elem : _meshModels) {
+		if (Elem.Value.tags.Len() > 0) {
+			for (int ii = 0; ii < tags.Num(); ii++) {
+				if (Elem.Value.tags.Contains(tags[ii] + ",")) {
+					names.Add(Elem.Key);
+					break;
+				}
+			}
+		}
+	}
+	return names;
+}
+
+std::tuple<bool, TMap<FString, TArray<FString>>> LoadContent::FillMeshesByTags(TMap<FString, TArray<FString>> meshesByTags,
+	TArray<FString> required) {
+	bool valid = true;
+	TArray<FString> tags;
+	FString tag;
+	for (auto& Elem : meshesByTags) {
+		if (Elem.Value.Num() < 1) {
+			tag = Elem.Key;
+			tags = { tag };
+			meshesByTags[Elem.Key] = GetMeshNamesByTags(tags);
+			if ((required.Contains(tag) || required.Contains("[all]")) && meshesByTags[Elem.Key].Num() < 1) {
+				UE_LOG(LogTemp, Display, TEXT("LoadContent.FillMeshesByTags missing meshes for tag %s"), *tag);
+				valid = false;
+				break;
+			}
+		}
+	}
+	return { valid, meshesByTags };
 }
 
 FString LoadContent::Material(FString key) {

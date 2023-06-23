@@ -8,7 +8,7 @@ public:
 	~ModelComputer();
 
 	static AActor* Keyboard(FVector size, FModelParams modelParams = FModelParams(),
-		FModelCreateParams createParams = FModelCreateParams(), TArray<FString> tags = {});
+		FModelCreateParams createParams = FModelCreateParams());
 	static AActor* Mouse(FVector size, FModelParams modelParams = FModelParams(),
-		FModelCreateParams createParams = FModelCreateParams(), TArray<FString> tags = {});
+		FModelCreateParams createParams = FModelCreateParams());
 };

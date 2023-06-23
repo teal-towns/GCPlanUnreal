@@ -13,7 +13,7 @@ public:
 	// static UStaticMesh* CreateFromInputs();
 	static AActor* Create(FString name, FVector size, TArray<FPlaneOffsets> xOffsets,
 		TArray<FPlaneOffsets> yOffsets, FString plane = "xy",
-		TArray<FString> tags = {}, FModelCreateParams createParams = FModelCreateParams(),
+		FModelCreateParams createParams = FModelCreateParams(),
 		FModelParams modelParams = FModelParams());
 	// static std::tuple<TMap<FString, FString>, TArray<FPlaneOffsets>, TArray<FPlaneOffsets>> GetInputs(
 	// 	TArray<FPlaneOffsets> xOffsets = {}, TArray<FPlaneOffsets> yOffsets = {},

@@ -143,17 +143,24 @@ struct FContentMeshModel {
 	FString materialPath = "";
 	UPROPERTY()
 	FString rotation = "0,0,0";
+	UPROPERTY()
+	FString tags = "";
 	// UPROPERTY()
 	// FString offset = "";
 
 	FContentMeshModel() {};
 	FContentMeshModel(FString size_, FString type_, FString path_,
-		FString materialPath_ = "", FString rotation_ = "0,0,0") {
+		FString materialPath_ = "", FString rotation_ = "0,0,0", FString tags_ = "") {
 		size = size_;
 		type = type_;
 		path = path_;
 		materialPath = materialPath_;
 		rotation = rotation_;
+		tags = tags_;
+		// Ensure delimiter at end for searching.
+		if (tags.Len() > 1 && !(tags.RightChop((tags.Len() - 1)) == ",")) {
+			tags += ",";
+		}
 	};
 };
 

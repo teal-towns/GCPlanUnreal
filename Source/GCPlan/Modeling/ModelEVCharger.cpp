@@ -22,7 +22,6 @@ void ModelEVCharger::Create()
     auto [modelingBase, modelParams] = modelBase->GetInputs("EVCharger", FVector(1, 1, 2));
     FString name = modelingBase.name;
     FVector size = modelingBase.size;
-    TArray<FString> tags = modelingBase.tags;
 
     FVector rotation = FVector(0,0,0);
     FActorSpawnParameters spawnParams;
@@ -140,7 +139,7 @@ void ModelEVCharger::Create()
     float connectorBodyS1Width = connectorBottomDiameter * FMath::Cos(FMath::DegreesToRadians(60));
     cableCurrentX = cableCurrentX - connectorBottomDiameter * FMath::Sin(FMath::DegreesToRadians(connectorBottomAngleDegree));
     cableCurrentZ += connectorBottomLength / FMath::Cos(FMath::DegreesToRadians(connectorBottomAngleDegree));
-    UStaticMesh *mesh = PMPrism::Create(name + "_ConnectorBodyPrism", {}, 3, 1, 1, 0, true, true, true);
+    UStaticMesh *mesh = PMPrism::Create(name + "_ConnectorBodyPrism", 3, 1, 1, 0, true, true, true);
     location = FVector(cableCurrentX, -connectorBottomDiameter * 0.5, cableCurrentZ);
     scale = FVector(connectorBodyS1Width, connectorBodyS1Width, connectorBottomDiameter);
     modelParams.mesh = mesh;

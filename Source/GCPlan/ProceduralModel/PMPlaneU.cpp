@@ -28,7 +28,7 @@ AActor* PMPlaneU::Create(FString name, FVector size, FModelCreateParams createPa
 		yOffsets = GetOffsetsStart(direction);
 		yOffsets += GetOffsetsEnd(direction);
 	}
-	AActor* actor = PMPlane::Create(name + "_U", size, xOffsets, yOffsets, "xy", {}, createParams, modelParams);
+	AActor* actor = PMPlane::Create(name + "_U", size, xOffsets, yOffsets, "xy", createParams, modelParams);
 	return actor;
 }
 
@@ -106,7 +106,7 @@ AActor* PMPlaneU::Shape(FString name, FVector size, FModelCreateParams createPar
 		yOffsets.Add(FPlaneOffsets(ii / count, 0, 0, 0));
 	}
 	actorTemp = PMPlane::Create("Plane", FVector(thickness * 3, thickness, 0.01), xOffsets, yOffsets,
-		"xy", {}, groupCreateParams, groupModelParams);
+		"xy", groupCreateParams, groupModelParams);
 	UStaticMeshComponent* meshComponent = actorTemp->FindComponentByClass<UStaticMeshComponent>();
 	modelParams.mesh = meshComponent->GetStaticMesh();
 	// Create in YZ plane to match orientation of rest of shape.

@@ -177,3 +177,11 @@ TMap<FString, FString> Lodash::PairsStringToObject(FString pairsString) {
 	}
 	return keyVals;
 }
+
+FString Lodash::CheckAddSuffix(FString text, FString suffix) {
+	int len = suffix.Len();
+	if (text.Len() > 1 && !(text.RightChop((text.Len() - len)) == suffix)) {
+		text += suffix;
+	}
+	return text;
+}

@@ -16,7 +16,7 @@ PMPlane::~PMPlane() {
 
 AActor* PMPlane::Create(FString name, FVector size, TArray<FPlaneOffsets> xOffsets,
 	TArray<FPlaneOffsets> yOffsets, FString plane,
-	TArray<FString> tags, FModelCreateParams createParams, FModelParams modelParams) {
+	FModelCreateParams createParams, FModelParams modelParams) {
 	TMap<FString, FString> offsetsCombine = createParams.offsetsCombine;
 	// auto [xOffsets1, yOffsets1, offsetsCombine1] = GetInputs(xOffsets, yOffsets, offsetsCombine);
 	// xOffsets = xOffsets1;

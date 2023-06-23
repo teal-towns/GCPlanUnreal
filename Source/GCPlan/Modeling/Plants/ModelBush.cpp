@@ -15,12 +15,11 @@ AActor* ModelBush::CreateFromInputs() {
 	auto [modelingBase, modelParams] = modelBase->GetInputs("Bush", FVector(1.5, 1.5, 2));
 	FString name = modelingBase.name;
 	FVector size = modelingBase.size;
-	TArray<FString> tags = modelingBase.tags;
-	return Create(size, modelParams, FModelCreateParams(), tags);
+	return Create(size, modelParams, FModelCreateParams());
 }
 
 AActor* ModelBush::Create(FVector size, FModelParams modelParams,
-	FModelCreateParams createParamsIn, TArray<FString> tags) {
+	FModelCreateParams createParamsIn) {
 	ModelBase* modelBase = ModelBase::GetInstance();
 	FString name = Lodash::GetInstanceId("Bush_");
 	FVector rotation = FVector(0,0,0), location = FVector(0,0,0), scale = FVector(1,1,1);

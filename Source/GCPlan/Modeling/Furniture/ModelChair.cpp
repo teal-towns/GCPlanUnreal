@@ -22,15 +22,15 @@ AActor* ModelChair::CreateFromInputs() {
 	auto [modelingBase, modelParams] = modelBase->GetInputs("Chair1", FVector(0.5,0.5,1));
 	FString name = modelingBase.name;
 	FVector size = modelingBase.size;
-	TArray<FString> tags = modelingBase.tags;
-	if (tags.Contains("uChair")) {
-		return UChair(size, modelParams, FModelCreateParams(), tags);
+	TMap<FString, FString> pairs = modelingBase.pairs;
+	if (pairs.Contains("uChair")) {
+		return UChair(size, modelParams, FModelCreateParams());
 	}
-	return Create(size, modelParams, FModelCreateParams(), tags);
+	return Create(size, modelParams, FModelCreateParams(), pairs);
 }
 
 AActor* ModelChair::Create(FVector size, FModelParams modelParams,
-	FModelCreateParams createParamsIn, TArray<FString> tags) {
+	FModelCreateParams createParamsIn, TMap<FString, FString> pairs) {
 	ModelBase* modelBase = ModelBase::GetInstance();
 	FString name = Lodash::GetInstanceId("Chair_");
 	FVector rotation = FVector(0,0,0), location = FVector(0,0,0), scale = FVector(1,1,1);
@@ -44,13 +44,13 @@ AActor* ModelChair::Create(FVector size, FModelParams modelParams,
 	float seatHeight = 0.5;
 	float seatThickness = 0.05;
 	float legsOffset = 0.05;
-	if (tags.Contains("metal")) {
+	if (pairs.Contains("metal")) {
 		modelParams.materialKey = "metalChrome";
 	}
 
 	modelParams.meshKey = "cube";
 	modelParams.materialKey = "wood";
-	if (tags.Contains("stool")) {
+	if (pairs.Contains("stool")) {
 		seatHeight = seatThickness;
 		legsOffset = 0.1;
 		modelParams.meshKey = "cylinder";
@@ -62,9 +62,9 @@ AActor* ModelChair::Create(FVector size, FModelParams modelParams,
 	ModelLeg::BackLeft(name, size, scaleLeg, legsOffset, modelParams);
 	ModelLeg::FrontLeft(name, size, scaleLeg, legsOffset, modelParams);
 
-	if (tags.Contains("stool")) {
+	if (pairs.Contains("stool")) {
 		location = FVector(0, 0, size.Z - seatHeight);
-		if (tags.Contains("squareSeat")) {
+		if (pairs.Contains("squareSeat")) {
 			scale = FVector(size.X, size.Y, seatThickness);
 			modelParams.meshKey = "cube";
 			modelBase->CreateActor(name + "_Seat", location, rotation, scale, spawnParams, modelParams);
@@ -112,8 +112,7 @@ AActor* ModelChair::Create(FVector size, FModelParams modelParams,
 	return actor;
 }
 
-AActor* ModelChair::UChair(FVector size, FModelParams modelParams, FModelCreateParams createParamsIn,
-	TArray<FString> tags) {
+AActor* ModelChair::UChair(FVector size, FModelParams modelParams, FModelCreateParams createParamsIn) {
 	float seatHeight = 0.5;
 	float seatThickness = 0.05;
 
