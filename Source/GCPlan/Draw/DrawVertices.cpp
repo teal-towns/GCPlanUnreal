@@ -14,6 +14,7 @@
 #include "../Mesh/InstancedMesh.h"
 #include "../Mesh/LoadContent.h"
 #include "../Modeling/ModelBase.h"
+#include "../Modeling/Furniture/ModelDesk.h"
 #include "../Modeling/Furniture/ModelPlanterBox.h"
 #include "../Modeling/Furniture/ModelTable.h"
 #include "../Plot/PlotBuild.h"
@@ -67,8 +68,9 @@ void DrawVertices::LoadVertices() {
 	FString type, meshKey;
 	FVector location;
 	// Buildings - assume all are points.
-	types = { "couch", "chair", "planterBox", "room", "table" };
-	polygons = verticesEdit->FilterByTypes(types);
+	// types = { "couch", "chair", "desk", "planterBox", "room", "table" };
+	// polygons = verticesEdit->FilterByTypes(types);
+	polygons = verticesEdit->FilterByShapes({ "point" });
 	for (auto& Elem : polygons) {
 		pairs = Lodash::PairsStringToObject(Elem.Value.pairsString);
 		location = Elem.Value.vertices[0];
@@ -82,7 +84,9 @@ void DrawVertices::LoadVertices() {
 			}
 		} else {
 			type = Elem.Value.type;
-			if (type == "planterBox") {
+			if (type == "desk") {
+				ModelDesk::Build(pairs);
+			} else if (type == "planterBox") {
 				ModelPlanterBox::Build(pairs);
 			} else if (type == "room") {
 				BuildingRoom::Build(pairs);

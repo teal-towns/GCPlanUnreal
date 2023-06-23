@@ -21,18 +21,18 @@ void PMCube::CreateFromInputs() {
 	PMBase* pmBase = PMBase::GetInstance();
 	auto [inputs, modelParams] = pmBase->GetInputs("Cube", FVector(4,5,3));
 	// FString name = Lodash::GetInstanceId(inputs.name);
-	// if (inputs.tags.Contains("roundedCorners")) {
-	// 	RoundedCorner(inputs.name + "RoundedCorner", inputs.size, inputs.tags, modelParams);
-	if (inputs.tags.Contains("roundedTop")) {
-		RoundedTop(inputs.name + "_RoundedTop", inputs.size, inputs.tags, 1, modelParams);
-	} else if (inputs.tags.Contains("plane")) {
-		Plane(inputs.name + "_Plane", inputs.size, inputs.tags, modelParams);
+	// if (inputs.pairs.Contains("roundedCorners")) {
+	// 	RoundedCorner(inputs.name + "RoundedCorner", inputs.size, inputs.pairs, modelParams);
+	if (inputs.pairs.Contains("roundedTop")) {
+		RoundedTop(inputs.name + "_RoundedTop", inputs.size, 1, modelParams);
+	} else if (inputs.pairs.Contains("plane")) {
+		Plane(inputs.name + "_Plane", inputs.size, modelParams);
 	} else {
-		Create(inputs.name, inputs.size, inputs.tags, modelParams);
+		Create(inputs.name, inputs.size, modelParams);
 	}
 }
 
-void PMCube::Create(FString name, FVector size, TArray<FString> tags, FModelParams modelParams) {
+void PMCube::Create(FString name, FVector size, FModelParams modelParams) {
 	// UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 
 	ModelBase* modelBase = ModelBase::GetInstance();
@@ -90,7 +90,6 @@ void PMCube::Create(FString name, FVector size, TArray<FString> tags, FModelPara
 		{ FPlaneOffsets(0, 0, 0, 0) },
 		{ FPlaneOffsets(1, 0, 0, 0) }
 	};
-	TArray<FString> tagsPlane = {};
 
 	FModelCreateParams createParams;
 	createParams.parentActor = actor;
@@ -99,42 +98,41 @@ void PMCube::Create(FString name, FVector size, TArray<FString> tags, FModelPara
 	// FVector sizePlane = FVector(size.X, size.Y, 0.01);
 	// createParams.offset = FVector(0,0,0);
 	// createParams.triangleSide = -1;
-	// PMPlane::Create(name + "_Bottom", sizePlane, xOffsets, yOffsets, "xy", tagsPlane, createParams);
+	// PMPlane::Create(name + "_Bottom", sizePlane, xOffsets, yOffsets, "xy", createParams);
 	// createParams.offset = FVector(0, -1 * size.Y / 2, 0);
 	// createParams.triangleSide = 1;
-	// PMPlane::Create(name + "_Left", sizePlane, xOffsets, yOffsets, "xz", tagsPlane, createParams);
+	// PMPlane::Create(name + "_Left", sizePlane, xOffsets, yOffsets, "xz", createParams);
 	// createParams.offset = FVector(-1 * size.X / 2, 0, 0);
-	// PMPlane::Create(name + "_Back", sizePlane, xOffsets, yOffsets, "yz", tagsPlane, createParams);
+	// PMPlane::Create(name + "_Back", sizePlane, xOffsets, yOffsets, "yz", createParams);
 	// createParams.offset = FVector(0,0,size.Z);
-	// PMPlane::Create(name + "_Top", sizePlane, xOffsets, yOffsets, "xy", tagsPlane, createParams);
+	// PMPlane::Create(name + "_Top", sizePlane, xOffsets, yOffsets, "xy", createParams);
 	// createParams.offset = FVector(0, size.Y / 2, 0);
 	// createParams.triangleSide = -1;
-	// PMPlane::Create(name + "_Right", sizePlane, xOffsets, yOffsets, "xz", tagsPlane, createParams);
+	// PMPlane::Create(name + "_Right", sizePlane, xOffsets, yOffsets, "xz", createParams);
 	// createParams.offset = FVector(size.X / 2, 0, 0);
-	// PMPlane::Create(name + "_Front", sizePlane, xOffsets, yOffsets, "yz", tagsPlane, createParams);
+	// PMPlane::Create(name + "_Front", sizePlane, xOffsets, yOffsets, "yz", createParams);
 
 	FVector sizeXZ = PMPlane::MapXYZ(size, "xz");
 	FVector sizeYZ = PMPlane::MapXYZ(size, "yz");
 	createParams.offset = FVector(0,0,0);
 	// This works too (use full size, which makes offsets simpler).
 	createParams.triangleSide = -1;
-	PMPlane::Create(name + "_Bottom", size, xOffsets, yOffsets, "xy", tagsPlane, createParams);
+	PMPlane::Create(name + "_Bottom", size, xOffsets, yOffsets, "xy", createParams);
 	createParams.triangleSide = 1;
-	PMPlane::Create(name + "_Left", sizeXZ, xOffsets, yOffsets, "xz", tagsPlane, createParams);
-	PMPlane::Create(name + "_Back", sizeYZ, xOffsets, yOffsets, "yz", tagsPlane, createParams);
+	PMPlane::Create(name + "_Left", sizeXZ, xOffsets, yOffsets, "xz", createParams);
+	PMPlane::Create(name + "_Back", sizeYZ, xOffsets, yOffsets, "yz", createParams);
 	createParams.offset = FVector(0,0,size.Z);
-	PMPlane::Create(name + "_Top", size, xOffsets, yOffsets, "xy", tagsPlane, createParams);
+	PMPlane::Create(name + "_Top", size, xOffsets, yOffsets, "xy", createParams);
 	createParams.offset = FVector(0,size.Y,0);
 	createParams.triangleSide = -1;
-	PMPlane::Create(name + "_Right", sizeXZ, xOffsets, yOffsets, "xz", tagsPlane, createParams);
+	PMPlane::Create(name + "_Right", sizeXZ, xOffsets, yOffsets, "xz", createParams);
 	createParams.offset = FVector(size.X,0,0);
-	PMPlane::Create(name + "_Front", sizeYZ, xOffsets, yOffsets, "yz", tagsPlane, createParams);
+	PMPlane::Create(name + "_Front", sizeYZ, xOffsets, yOffsets, "yz", createParams);
 }
 
 // This creates a 5 sided (no bottom) cube by making a pyramid that is nearly vertically straight up.
 // It works, but the UVs will likely be messed up, so do not use?
-AActor* PMCube::Plane(FString name, FVector size, TArray<FString> tags,
-	FModelParams modelParams) {
+AActor* PMCube::Plane(FString name, FVector size, FModelParams modelParams) {
 	ModelBase* modelBase = ModelBase::GetInstance();
 	AActor* actor = modelBase->CreateActor(name);
 	USceneComponent* parent = actor->FindComponentByClass<USceneComponent>();
@@ -156,12 +154,11 @@ AActor* PMCube::Plane(FString name, FVector size, TArray<FString> tags,
 		{ FPlaneOffsets(1, 0, 0, 0) }
 	};
 	createParams.offsetsCombine = { { "z", "min" } };
-	PMPlane::Create(name + "_Cube", size, offsets, offsets, "xy", tags, createParams, modelParams);
+	PMPlane::Create(name + "_Cube", size, offsets, offsets, "xy", createParams, modelParams);
 	return actor;
 }
 
-AStaticMeshActor* PMCube::RoundedTop(FString name, FVector size, TArray<FString> tags,
-	float topHeight, FModelParams modelParams) {
+AStaticMeshActor* PMCube::RoundedTop(FString name, FVector size, float topHeight, FModelParams modelParams) {
 	FVector parentLocation = modelParams.location;
 	modelParams.location = FVector(0,0,0);
 	ModelBase* modelBase = ModelBase::GetInstance();
@@ -181,30 +178,30 @@ AStaticMeshActor* PMCube::RoundedTop(FString name, FVector size, TArray<FString>
 	createParams.parent = parent;
 
 	createParams.triangleSide = -1;
-	PMPlane::Create(name + "_Bottom", size, offsetsFlat, offsetsFlat, "xy", tags, createParams, modelParams);
+	PMPlane::Create(name + "_Bottom", size, offsetsFlat, offsetsFlat, "xy", createParams, modelParams);
 	createParams.triangleSide = 1;
-	PMPlane::Create(name + "_Left", sizeSidesXZ, offsetsFlat, offsetsFlat, "xz", tags, createParams, modelParams);
-	PMPlane::Create(name + "_Back", sizeSidesYZ, offsetsFlat, offsetsFlat, "yz", tags, createParams, modelParams);
+	PMPlane::Create(name + "_Left", sizeSidesXZ, offsetsFlat, offsetsFlat, "xz", createParams, modelParams);
+	PMPlane::Create(name + "_Back", sizeSidesYZ, offsetsFlat, offsetsFlat, "yz", createParams, modelParams);
 	createParams.offset = FVector(0,size.Y,0);
 	createParams.triangleSide = -1;
-	PMPlane::Create(name + "_Right", sizeSidesXZ, offsetsFlat, offsetsFlat, "xz", tags, createParams, modelParams);
+	PMPlane::Create(name + "_Right", sizeSidesXZ, offsetsFlat, offsetsFlat, "xz", createParams, modelParams);
 	createParams.offset = FVector(size.X,0,0);
-	PMPlane::Create(name + "_Front", sizeSidesYZ, offsetsFlat, offsetsFlat, "yz", tags, createParams, modelParams);
+	PMPlane::Create(name + "_Front", sizeSidesYZ, offsetsFlat, offsetsFlat, "yz", createParams, modelParams);
 
 	// TArray<FPlaneOffsets> offsetsTop = PMPlane::BorderRadiusTop(0.5, 0.25);
 	// offsetsTop += PMPlane::BorderRadiusTop(0.5, 0.25, "end");
 	// createParams.triangleSide = 1;
-	// PMPlane::Create(name + "_Top", sizeTop, offsetsTop, offsetsTop, "xy", tags, createParams, {{ "z", "min" }});
+	// PMPlane::Create(name + "_Top", sizeTop, offsetsTop, offsetsTop, "xy", createParams, {{ "z", "min" }});
 	// createParams.offset = FVector(0,size.Y,0);
 
 	createParams.offset = FVector(0,0,size.Z - topHeight);
-	RoundedTopSide(sizeTop, {}, createParams, modelParams);
+	RoundedTopSide(sizeTop, createParams, modelParams);
 
 	ModelBase::SetTransform(actor, parentLocation);
 	return actor;
 }
 
-void PMCube::RoundedTopSide(FVector size, TArray<FString> tags, FModelCreateParams createParams,
+void PMCube::RoundedTopSide(FVector size, FModelCreateParams createParams,
 	FModelParams modelParams) {
 	FVector offsetParent = createParams.offset;
 	ModelBase* modelBase = ModelBase::GetInstance();
@@ -227,6 +224,7 @@ void PMCube::RoundedTopSide(FVector size, TArray<FString> tags, FModelCreatePara
 	clonerCreateParams.parent = clonerParent;
 	createParams.offset = FVector(0,0,0);
 
+	TArray<FString> tags = {};
 	// 4 corners
 	FVector sizeCorner = FVector(size.Z, size.Z, size.Z);
 	// Create instance with ZERO rotation or offset, since will be cloning it.
@@ -297,5 +295,5 @@ void PMCube::RoundedTopSide(FVector size, TArray<FString> tags, FModelCreatePara
 	createParams.offset = offsetParent + FVector(0,0,size.Z);
 	FVector sizeTop = FVector(size.X - sizeCorner.X * 2, size.Y - sizeCorner.Y * 2, 0.01);
 	createParams.triangleSide = 1;
-	PMPlane::Create(name + "_Top", sizeTop, {}, {}, "xy", {}, createParams, modelParams);
+	PMPlane::Create(name + "_Top", sizeTop, {}, {}, "xy", createParams, modelParams);
 }

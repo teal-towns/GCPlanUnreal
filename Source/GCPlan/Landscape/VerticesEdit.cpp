@@ -61,6 +61,16 @@ TMap<FString, FPolygon> VerticesEdit::FilterByTypes(TArray<FString> types) {
 	return items;
 }
 
+TMap<FString, FPolygon> VerticesEdit::FilterByShapes(TArray<FString> shapes) {
+	TMap<FString, FPolygon> items = {};
+	for (auto& Elem : _items) {
+		if (shapes.Contains(Elem.Value.shape)) {
+			items.Add(Elem.Key, Elem.Value);
+		}
+	}
+	return items;
+}
+
 void VerticesEdit::DestroyItems() {
 	VerticesEdit::Hide();
 	_items.Empty();

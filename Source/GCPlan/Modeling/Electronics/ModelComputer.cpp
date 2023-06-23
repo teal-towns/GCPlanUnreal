@@ -10,12 +10,7 @@ ModelComputer::~ModelComputer() {
 }
 
 AActor* ModelComputer::Keyboard(FVector size, FModelParams modelParams,
-	FModelCreateParams createParamsIn, TArray<FString> tags) {
-	// ModelBase* modelBase = ModelBase::GetInstance();
-	// auto [modelingBase, modelParams] = modelBase->GetInputs("Keyboard", FVector(0.5, 0.25, 0.05));
-	// FString name = modelingBase.name;
-	// FVector size = modelingBase.size;
-	// TArray<FString> tags = modelingBase.tags;
+	FModelCreateParams createParamsIn) {
 
 	ModelBase* modelBase = ModelBase::GetInstance();
 	FString name = Lodash::GetInstanceId("Keyboard_");
@@ -36,12 +31,7 @@ AActor* ModelComputer::Keyboard(FVector size, FModelParams modelParams,
 }
 
 AActor* ModelComputer::Mouse(FVector size, FModelParams modelParams,
-	FModelCreateParams createParamsIn, TArray<FString> tags) {
-	// ModelBase* modelBase = ModelBase::GetInstance();
-	// auto [modelingBase, modelParams] = modelBase->GetInputs("Mouse", FVector(0.06, 0.12, 0.05));
-	// FString name = modelingBase.name;
-	// FVector size = modelingBase.size;
-	// TArray<FString> tags = modelingBase.tags;
+	FModelCreateParams createParamsIn) {
 
 	ModelBase* modelBase = ModelBase::GetInstance();
 	FString name = Lodash::GetInstanceId("Mouse_");

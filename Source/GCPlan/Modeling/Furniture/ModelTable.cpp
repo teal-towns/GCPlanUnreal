@@ -29,15 +29,15 @@ AActor* ModelTable::CreateFromInputs() {
 	auto [modelingBase, modelParams] = modelBase->GetInputs("Table", FVector(1.5,2.5,1));
 	FString name = modelingBase.name;
 	FVector size = modelingBase.size;
-	TArray<FString> tags = modelingBase.tags;
-	if (tags.Contains("roundShort")) {
+	TMap<FString, FString> pairs = modelingBase.pairs;
+	if (pairs.Contains("roundShort")) {
 		return RoundShort(size, modelParams, FModelCreateParams());
 	}
-	return Create(size, modelParams, FModelCreateParams(), tags);
+	return Create(size, modelParams, FModelCreateParams(), pairs);
 }
 
 AActor* ModelTable::Create(FVector size, FModelParams modelParams,
-	FModelCreateParams createParamsIn, TArray<FString> tags) {
+	FModelCreateParams createParamsIn, TMap<FString, FString> pairs) {
 	ModelBase* modelBase = ModelBase::GetInstance();
 	FString name = Lodash::GetInstanceId("Table_");
 	FVector rotation = FVector(0,0,0), location = FVector(0,0,0), scale = FVector(1,1,1);
@@ -53,7 +53,7 @@ AActor* ModelTable::Create(FVector size, FModelParams modelParams,
 	float legZ = size.Z - thick;
 	float legsOffset = 0.2;
 
-	if (tags.Contains("metal")) {
+	if (pairs.Contains("metal")) {
 		modelParams.materialKey = "metalChrome";
 		modelParams.meshKey = "cylinder";
 		legsOffset = 0.4;

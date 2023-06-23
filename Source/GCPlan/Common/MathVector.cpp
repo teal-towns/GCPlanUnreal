@@ -66,3 +66,13 @@ TArray<FVector> MathVector::RotateVertices(TArray<FVector> vertices, FVector rot
 	}
 	return vertices;
 }
+
+TArray<FVector> MathVector::RotateAround(TArray<FVector> vertices, FVector rotation, FVector center) {
+	FVector diff;
+	FRotator rotator = FRotator(rotation.Y, rotation.Z, rotation.X);
+	for (int ii = 0; ii < vertices.Num(); ii++) {
+		diff = vertices[ii] - center;
+		vertices[ii] = center + rotator.RotateVector(diff);
+	}
+	return vertices;
+}

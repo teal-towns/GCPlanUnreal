@@ -14,9 +14,11 @@
 #include "Mesh/InstancedMesh.h"
 #include "Plot/PlotBuild.h"
 
-#include "LayoutModel/LMConferenceRoom.h"
-#include "LayoutModel/LMLobby.h"
+#include "LayoutModel/OfficeRoom/LMConferenceRoom.h"
+#include "LayoutModel/OfficeRoom/LMLobby.h"
+#include "LayoutModel/OfficeRoom/LMOfficeDesks.h"
 
+#include "Common/MathVector.h"
 #include "Layout/LayoutPolygon.h"
 
 ALandProjectActor::ALandProjectActor()
@@ -122,24 +124,34 @@ void ALandProjectActor::Test() {
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	unrealGlobal->InitAll(GetWorld());
 
-	UE_LOG(LogTemp, Display, TEXT("yes"));
-	LayoutPolygon* layoutPolygon = LayoutPolygon::GetInstance();
-	TArray<FVector> vertices = {
-		// FVector(0,0,0), FVector(0,0,4), FVector(0,3,4), FVector(0,3,0)
-		// FVector(-1,1.5,0), FVector(-1,1.5,4), FVector(1.5,-2,4), FVector(1.5,-2,0)
-		FVector(-1,-2,0), FVector(-1,-2,4), FVector(1.5,1.5,4), FVector(1.5,1.5,0)
-	};
-	TArray<FString> meshNames = { "fern", "solidFern", "cinnamonFern" };
-	FPlaceParams placeParams;
-	placeParams.plane = "yz";
-	placeParams.offsetAverage = 0.3;
-	placeParams.rotMinX = 90;
-	placeParams.rotMaxX = 90;
-	placeParams.rotMinZ = 270;
-	placeParams.rotMaxZ = 270;
-	placeParams.rotMinY = 0;
-	placeParams.rotMaxY = 360;
-	layoutPolygon->PlaceInPolygon(vertices, meshNames, placeParams);
+	// LayoutPolygon* layoutPolygon = LayoutPolygon::GetInstance();
+	// TArray<FVector> vertices = {
+	// 	// FVector(0,0,0), FVector(0,0,4), FVector(0,3,4), FVector(0,3,0)
+	// 	// FVector(-1,1.5,0), FVector(-1,1.5,4), FVector(1.5,-2,4), FVector(1.5,-2,0)
+	// 	FVector(-1,-2,0), FVector(-1,-2,4), FVector(1.5,1.5,4), FVector(1.5,1.5,0)
+	// };
+	// TArray<FString> meshNames = { "brackenFern", "solidFern", "cinnamonFern" };
+	// FPlaceParams placeParams;
+	// placeParams.plane = "yz";
+	// placeParams.offsetAverage = 0.3;
+	// placeParams.rotMinX = 90;
+	// placeParams.rotMaxX = 90;
+	// placeParams.rotMinZ = 270;
+	// placeParams.rotMaxZ = 270;
+	// placeParams.rotMinY = 0;
+	// placeParams.rotMaxY = 360;
+	// layoutPolygon->PlaceInPolygon(vertices, meshNames, placeParams);
+
+
+	// FModelParams modelParams;
+	// FModelCreateParams createParams;
+	// LMOfficeDesks::Desks(FVector(10,12,4), modelParams, createParams);
+
+	TArray<FVector> vertices = { FVector(1, -1, 0) };
+	FVector rotation = FVector(0,0,180);
+	// rotation = FVector(0,0,30);
+	vertices = MathVector::RotateAround(vertices, rotation, FVector(0,0,0));
+	UE_LOG(LogTemp, Display, TEXT("rotate around %s"), *vertices[0].ToString());
 }
 
 void ALandProjectActor::Clear() {
@@ -176,9 +188,13 @@ void ALandProjectActor::SetVertices() {
 	// Hardcoded - varies by project (usually these are manually drawn / set via UI).
 	FModelParams modelParams;
 	FModelCreateParams createParams;
-	createParams.offset = FVector(-285,20,3);
 	createParams.rotation = FVector(0,0,30);
+	createParams.offset = FVector(-285,20,3);
 	LMLobby::Create(FVector(10,12,4), modelParams, createParams);
-	createParams.offset = FVector(-272,20,3);
+	createParams.offset = FVector(-279,9,3);
+	LMOfficeDesks::Desks(FVector(11,12,4), modelParams, createParams);
+	createParams.offset = FVector(-275,25,3);
 	LMConferenceRoom::Create(FVector(10,12,4), modelParams, createParams);
+	createParams.offset = FVector(-269,15,3);
+	LMLobby::TwoTables(FVector(10,12,4), modelParams, createParams);
 }

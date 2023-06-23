@@ -16,10 +16,10 @@ PMCylinder::~PMCylinder() {
 UStaticMesh* PMCylinder::CreateFromInputs() {
 	PMBase* pmBase = PMBase::GetInstance();
 	auto [inputs, modelParams] = pmBase->GetInputs("Cylinder1", FVector(1,1,1));
-	return Create(inputs.name, inputs.size, inputs.tags);
+	return Create(inputs.name, inputs.size);
 }
 
-UStaticMesh* PMCylinder::Create(FString name, FVector size, TArray<FString> tags, bool destroyActor) {
+UStaticMesh* PMCylinder::Create(FString name, FVector size, bool destroyActor) {
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	float UVScale = 1;
 	FVector vertices = FVector(10,10,10);

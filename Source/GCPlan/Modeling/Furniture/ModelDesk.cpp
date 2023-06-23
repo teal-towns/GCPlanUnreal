@@ -13,18 +13,32 @@ ModelDesk::ModelDesk() {
 ModelDesk::~ModelDesk() {
 }
 
+void ModelDesk::Build(TMap<FString, FString> pairs) {
+	auto [key, modelParams] = ModelBase::ModelParamsFromPairs(pairs);
+	auto [location, rotation, scale] = ModelBase::PairsToTransform(pairs, FVector(0,0,0));
+	FModelCreateParams createParams;
+	createParams.offset = location;
+	createParams.rotation = rotation;
+	if (!pairs.Contains("meshRule")) {
+		pairs.Add("meshRule", "");
+	}
+	if (pairs["meshRule"] == "desk") {
+		Create(scale, modelParams, createParams, pairs);
+	}
+}
+
 AActor* ModelDesk::CreateFromInputs() {
 	ModelBase* modelBase = ModelBase::GetInstance();
 	UWorld* World = modelBase->GetWorld();
 	auto [modelingBase, modelParams] = modelBase->GetInputs("Desk", FVector(0.7,1.3,1));
 	FString name = modelingBase.name;
 	FVector size = modelingBase.size;
-	TArray<FString> tags = modelingBase.tags;
-	return Create(size, modelParams, FModelCreateParams(), tags);
+	TMap<FString, FString> pairs = modelingBase.pairs;
+	return Create(size, modelParams, FModelCreateParams(), pairs);
 }
 
 AActor* ModelDesk::Create(FVector size, FModelParams modelParams,
-	FModelCreateParams createParamsIn, TArray<FString> tags, TMap<FString, float> sizes) {
+	FModelCreateParams createParamsIn, TMap<FString, FString> pairs, FModelDesk params) {
 	ModelBase* modelBase = ModelBase::GetInstance();
 	FString name = Lodash::GetInstanceId("Desk_");
 	FVector rotation = FVector(0,0,0), location = FVector(0,0,0), scale = FVector(1,1,1);
@@ -34,25 +48,32 @@ AActor* ModelDesk::Create(FVector size, FModelParams modelParams,
 	modelParams.meshKey = "cube";
 	modelParams.materialKey = "wood";
 	FActorSpawnParameters spawnParams;
-	if (!sizes.Contains("woodThickness")) {
-		sizes.Add("woodThickness", 0.05);
-	}
-	float thick = sizes["woodThickness"];
+	float thick = params.woodThickness;
 
-	location = FVector(0, 0, size.Z);
+	location = FVector(0, 0, size.Z - thick);
 	scale = FVector(size.X, size.Y, thick);
 	modelBase->CreateActor(name + "_Top", location, rotation, scale, spawnParams, modelParams);
 
-	if (tags.Contains("legs")) {
+	if (pairs.Contains("legs")) {
 		modelParams.materialKey = "black";
 		float legThick = thick;
 		float offset = thick / 2.0;
 		float legOff = 0.0;
-		FVector legSize = FVector(offset, offset, (size.Z / 2.0));
+		float legsHeight = size.Z - thick;
+		float legZ = 0;
+		// Make each leg half of legs height.
+		FVector legSize = FVector(offset, offset, (legsHeight / 2.0));
+		// Except if not tall enough, in which case bottom leg is fixed height.
+		if (legsHeight < params.bottomLegMinHeight * 2) {
+			legSize.Z = params.bottomLegMinHeight;
+			if (legSize.Z > legsHeight) {
+				legSize.Z = legsHeight;
+			}
+		}
 
+		// Telescoping legs - bottom first, then if have extra height, the top.
 		for (int ii = 0; ii < 2; ii++) {
 			float offXY = (offset + (0.5 * legThick) + (0.5 * legOff));
-			float legZ = legSize.Z * (float)ii;
 
 			// Left Front Leg
 			location = FVector(size.X / 2 - offXY, size.Y / -2 + offXY, legZ);
@@ -92,6 +113,8 @@ AActor* ModelDesk::Create(FVector size, FModelParams modelParams,
 
 			legThick /= 2.0;
 			legOff += legThick;
+			legZ += legSize.Z;
+			legSize.Z = legsHeight - legSize.Z;
 		}
 
 	} else {
@@ -114,7 +137,7 @@ AActor* ModelDesk::Create(FVector size, FModelParams modelParams,
 	}
 
 	FModelCreateParams createParams;
-	if (tags.Contains("keyboardMonitorMouse")) {
+	if (pairs.Contains("keyboardMonitorMouse")) {
 		AActor* actorTemp = modelBase->CreateActorEmpty(name + "Accessories", modelParams);
 		createParams.parent = actorTemp->FindComponentByClass<USceneComponent>();
 		createParams.parentActor = actorTemp;

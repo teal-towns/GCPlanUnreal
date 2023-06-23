@@ -38,12 +38,12 @@ TMap<FString, FMeshTransform> LayoutPolyLine::PlaceOnLine(TArray<FVector> vertic
 
 	FVector pathLine, vertex, vertexNext, currentPoint, crossAxisLine, crossPoint, crossPointEnd, vertexEnd;
 	int indexNext;
-	float stepDistance, currentAngle, currentAngleCross;
+	float stepDistance, currentAngle, currentAngleCross, lineDistance, spacingActual;
 	int verticesCount = vertices.Num();
 	float crossDegrees = 90;
 	float widthRadius = params.width / 2;
 	int iterations, iterationsCross;
-	int maxIterations, maxIterationsCross;
+	int maxIterations, maxIterationsCross, itemCount;
 	int buffer = 5;
 	for (int vv = 0; vv < verticesCount; vv++) {
 		if (vv == verticesCount - 1 && params.closedLoop < 1) {
@@ -55,10 +55,13 @@ TMap<FString, FMeshTransform> LayoutPolyLine::PlaceOnLine(TArray<FVector> vertic
 		pathLine = vertexNext - vertex;
 		currentPoint = vertices[vv] + pathLine.GetClampedToMaxSize(params.spacingStart);
 		vertexEnd = vertexNext - pathLine.GetClampedToMaxSize(params.spacingEnd);
-		if (params.spacingCenter > 0) {
-			float lineDistance = (vertexEnd - currentPoint).Size();
-			int itemsCount = floor(lineDistance / (params.spacing - params.spacingFactor));
-			float spacingActual = (float)(lineDistance / (itemsCount + 1));
+		lineDistance = (vertexEnd - currentPoint).Size();
+		itemCount = floor(lineDistance / (params.spacing - params.spacingFactor));
+		if (itemCount < params.minPerEdge) {
+			itemCount = params.minPerEdge;
+		}
+		if (params.alignCenter > 0) {
+			spacingActual = (float)(lineDistance / (itemCount + 1));
 			currentPoint += pathLine.GetClampedToMaxSize(spacingActual);
 		}
 

@@ -1,4 +1,4 @@
-#include "LMConferenceRoom.h"
+#include "LMTableChairs.h"
 
 #include "LayoutModelBase.h"
 #include "LMRoomPlants.h"
@@ -17,51 +17,26 @@
 #include "../ModelingStructsActor.h"
 #include "../BuildingStructsActor.h"
 
-LMConferenceRoom::LMConferenceRoom() {
+LMTableChairs::LMTableChairs() {
 }
 
-LMConferenceRoom::~LMConferenceRoom() {
+LMTableChairs::~LMTableChairs() {
 }
 
-TMap<FString, FPolygon> LMConferenceRoom::Create(FVector size, FModelParams modelParams,
-	FModelCreateParams createParamsIn) {
+TMap<FString, FPolygon> LMTableChairs::TableWithChairs(FVector size, FModelParams modelParams,
+	FModelCreateParams createParamsIn, FTableChairs params) {
 	FVector rotation = FVector(0,0,0), location = FVector(0,0,0), scale = FVector(1,1,1);
-	FString uName, type, pairsString, scaleString;
-	TArray<FVector> vertices;
-	TMap<FString, FPolygon> polygons = {};
-	uName = Lodash::GetInstanceId("Room");
-	pairsString = "meshRule=roomCube&mat=wood&bottomMat=marbleTile&scale=" + DataConvert::VectorToString(size) +
-		ModelBase::AddRotationString(createParamsIn.rotation);
-	vertices = { createParamsIn.offset };
-	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
-
-	FWallPlants plantParams;
-	plantParams.pairsStringPlants = "meshes=fern,solidFern,cinnamonFern&placeOffsetAverage=0.3";
-	LMRoomPlants::WallPlants(size, modelParams, createParamsIn, plantParams);
-
-	// scale = FVector(size.X / 2, size.Y / 2, -1);
-	scale = FVector(2.5 + 1 * 2, 5.5 + 1 * 2, -1);
-	LMConferenceRoom::TableWithChairs(scale, modelParams, createParamsIn);
-
-	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
-	verticesEdit->AddAndSave(polygons);
-	return polygons;
-}
-
-TMap<FString, FPolygon> LMConferenceRoom::TableWithChairs(FVector size, FModelParams modelParams,
-	FModelCreateParams createParamsIn) {
-	FVector rotation = FVector(0,0,0), location = FVector(0,0,0), scale = FVector(1,1,1);
-	FString uName, type, pairsString, scaleString;
+	FString uName, type, pairsString, scaleString, meshKey;
 	TArray<FVector> vertices;
 	TMap<FString, FPolygon> polygons = {};
 	LoadContent* loadContent = LoadContent::GetInstance();
 
-	float chairWidth = 1;
-	FVector tableLocation = FVector(0,0,0);
+	FVector tableLocation = FVector(0,0,0) + params.offset;
 	uName = Lodash::GetInstanceId("Table");
-	scale = FVector(size.X - chairWidth * 2, size.Y - chairWidth * 2, 1);
+	scale = FVector(size.X - params.chairWidth * 2, size.Y - params.chairWidth * 2, 1);
 	FVector tableScale = scale;
-	pairsString = "mesh=conferenceTable&scale=" + loadContent->MeshScale(scale, "conferenceTable") +
+	meshKey = params.tableMeshes[Lodash::RandomRangeInt(0, params.tableMeshes.Num() - 1)];
+	pairsString = "mesh=" + meshKey + "&scale=" + loadContent->MeshScale(scale, meshKey) +
 		ModelBase::AddRotationString(createParamsIn.rotation);
 	vertices = { MathVector::RotateVector(tableLocation, createParamsIn.rotation) + createParamsIn.offset };
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "table", "point", pairsString));
@@ -75,19 +50,20 @@ TMap<FString, FPolygon> LMConferenceRoom::TableWithChairs(FVector size, FModelPa
 	FPlaceParams placeParams;
 	placeParams.skipMesh = true;
 	placeParams.rotateTowardCenter = true;
-	placeParams.spacing = chairWidth;
+	placeParams.spacing = params.chairWidth;
 	placeParams.spacingCrossAxis = 999;
 	placeParams.spacingFactor = 0;
 	placeParams.closedLoop = 1;
-	placeParams.spacingStart = 1;
-	placeParams.spacingEnd = 1;
-	placeParams.spacingCenter = 1;
+	placeParams.spacingStart = params.edgeSpacing;
+	placeParams.spacingEnd = params.edgeSpacing;
+	placeParams.alignCenter = 1;
 	TMap<FString, FMeshTransform> transforms = LayoutPolyLine::PlaceOnLine(tableVertices, {}, placeParams);
 	for (auto& Elem : transforms) {
-		uName = Lodash::GetInstanceId("OfficeChair");
+		uName = Lodash::GetInstanceId("Chair");
 		// Use as is (already rotated and offset from table vertices placing).
-		pairsString = "mesh=officeChair&rot=" + DataConvert::VectorToString(Elem.Value.rotation +
-			loadContent->MeshRotation("officeChair"));
+		meshKey = params.chairMeshes[Lodash::RandomRangeInt(0, params.chairMeshes.Num() - 1)];
+		pairsString = "mesh=" + meshKey + "&rot=" + DataConvert::VectorToString(Elem.Value.rotation +
+			loadContent->MeshRotation(meshKey));
 		vertices = { Elem.Value.location };
 		polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "chair", "point", pairsString));
 	}

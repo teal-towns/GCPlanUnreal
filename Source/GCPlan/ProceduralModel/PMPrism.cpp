@@ -19,7 +19,7 @@ UStaticMesh *PMPrism::CreateFromInputs()
 {
 	PMBase *pmBase = PMBase::GetInstance();
 	auto [inputs, modelParams] = pmBase->GetInputs("Prism1", FVector(1, 1, 1), 4, 0.0);
-	return Create(inputs.name, inputs.tags, inputs.sidesSegmentCount, inputs.size.Z, inputs.size.X, inputs.topOffsetWidth, inputs.closeTop, inputs.closeBottom);
+	return Create(inputs.name, inputs.sidesSegmentCount, inputs.size.Z, inputs.size.X, inputs.topOffsetWidth, inputs.closeTop, inputs.closeBottom);
 }
 
 std::tuple<TArray<FVector>, TArray<int32>, TArray<FVector>, TArray<FProcMeshTangent>, TArray<FVector2D>> PMPrism::InitializeMesh(int32 sidesSegmentCount, bool closeTop, bool closeBottom, bool doubleSided)
@@ -53,7 +53,7 @@ std::tuple<TArray<FVector>, TArray<int32>, TArray<FVector>, TArray<FProcMeshTang
 	return {Vertices, Triangles, Normals, Tangents, UV0s};
 }
 
-UStaticMesh *PMPrism::Create(FString name, TArray<FString> tags, int32 sidesSegmentCount, float height,
+UStaticMesh *PMPrism::Create(FString name, int32 sidesSegmentCount, float height,
 							 float width, float topOffsetWidth, bool closeTop, bool closeBottom, bool destroyActor)
 {
 

@@ -93,9 +93,10 @@ std::tuple<FProceduralModelBase, FModelParams> PMBase::GetInputs(FString default
 }
 
 void PMBase::Create() {
-	if (_proceduralModelBase.tagsString.Len() > 0) {
-		_proceduralModelBase.tagsString.ParseIntoArray(_proceduralModelBase.tags, TEXT(","), true);
+	if (_proceduralModelBase.pairsString.Len() > 0) {
+		_proceduralModelBase.pairs = Lodash::PairsStringToObject(_proceduralModelBase.pairsString);
 	}
+
 	if (_proceduralModelBase.category == ProceduralModelCategory::CYLINDER) {
 		PMCylinder::CreateFromInputs();
 	} else if (_proceduralModelBase.category == ProceduralModelCategory::CUBE) {
