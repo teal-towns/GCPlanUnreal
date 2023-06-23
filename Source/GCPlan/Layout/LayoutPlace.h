@@ -37,7 +37,8 @@ struct FPlaceParams {
 	float spacingFactorCrossAxis = 0.25;
 	float spacingStart = 0;
 	float spacingEnd = 0;
-	int spacingCenter = 0;
+	int alignCenter = 0;
+	float minPerEdge = 1;
 
 	bool skipMesh = false;
 	bool rotateTowardCenter = false;

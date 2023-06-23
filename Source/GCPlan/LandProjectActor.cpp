@@ -181,4 +181,6 @@ void ALandProjectActor::SetVertices() {
 	LMLobby::Create(FVector(10,12,4), modelParams, createParams);
 	createParams.offset = FVector(-272,20,3);
 	LMConferenceRoom::Create(FVector(10,12,4), modelParams, createParams);
+	createParams.offset = FVector(-272,5,3);
+	LMLobby::TwoTables(FVector(10,12,4), modelParams, createParams);
 }
