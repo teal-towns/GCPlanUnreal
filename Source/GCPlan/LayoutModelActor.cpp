@@ -34,8 +34,8 @@ void ALayoutModelActor::GenerateModel() {
 void ALayoutModelActor::DestroyActors() {
 	Init();
 	ModelBase* modelBase = ModelBase::GetInstance();
-	modelBase->DestroyActors();
+	if (modelBase) modelBase->DestroyActors();//smm230623//
 	LayoutModelBase* layoutModelBase = LayoutModelBase::GetInstance();
-	layoutModelBase->DestroyActors();
+	if (layoutModelBase) layoutModelBase->DestroyActors();//smm230623//
 }
 

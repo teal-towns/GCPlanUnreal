@@ -277,13 +277,13 @@ UStaticMesh *PMPrism::Create(FString name, TArray<FString> tags, int32 sidesSegm
 
 	PMBase::AddMeshSection(ProceduralMesh, Vertices, UV0s, Triangles, Normals, Tangents);
 	UStaticMesh *mesh = PMBase::ToStaticMesh(ProceduralMesh);
-	if (!destroyActor)
-	{
-		PMBase::AddMesh(actor, mesh);
-	}
-	else {
-		if (IsValid(actor)) {
-			actor->Destroy();
+	if (mesh) {
+		if (!destroyActor) {
+			PMBase::AddMesh(actor, mesh);
+		} else {
+			if (IsValid(actor)) {
+				actor->Destroy();
+			}
 		}
 	}
 	return mesh;

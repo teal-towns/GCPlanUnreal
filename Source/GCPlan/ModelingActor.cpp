@@ -45,5 +45,5 @@ void AModelingActor::CreateFloor() {
 void AModelingActor::DestroyActors() {
 	Init();
 	ModelBase* modelBase = ModelBase::GetInstance();
-	modelBase->DestroyActors();
+	if (modelBase) modelBase->DestroyActors();//smm230623//
 }

@@ -71,7 +71,7 @@ AActor* PMPlane::Create(FString name, FVector size, TArray<FPlaneOffsets> xOffse
 	}
 	FVector vertexMapped, vertexTopLeft, diff;
 	FString steeperDiagonal;
-	float xDistance, yDistance;
+//smm230623//	float xDistance, yDistance;
 	for (int xx = 0; xx < verticesCount.X; xx++) {
 		xxVal = size.X * xOffsets[xx].ratioFromStart;
 		xyVal = size.Y * xOffsets[xx].offsetYRatio + xOffsets[xx].offsetY;

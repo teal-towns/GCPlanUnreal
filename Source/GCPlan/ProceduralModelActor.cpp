@@ -39,5 +39,5 @@ void AProceduralModelActor::GenerateModel() {
 void AProceduralModelActor::DestroyActors() {
 	Init();
 	ModelBase* modelBase = ModelBase::GetInstance();
-	modelBase->DestroyActors();
+	if (modelBase) modelBase->DestroyActors();//smm230623//
 }

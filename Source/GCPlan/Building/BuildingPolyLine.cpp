@@ -61,8 +61,8 @@ std::tuple<FBuildingBlueprint, FBuildData> BuildingPolyLine::BuildAlongPolyLine(
 	float globalAngle, stepAngle, mainAxisOneUnitLength;
 	int heightFloorsIndex = 0;
 
-	float verticesAngle, degreesPerPoint, curDegrees, nextHeightDegrees, curHeightDegrees;
-	int signDirectionHeightDegrees, nextHeightDegreesIndex, curHeightDegreesIndex;
+	float verticesAngle, degreesPerPoint, curDegrees, nextHeightDegrees, curHeightDegrees=0;//smm230623
+	int signDirectionHeightDegrees=1, nextHeightDegreesIndex=0, curHeightDegreesIndex=0;//smm230623
 	TArray<float> heightFloorsDegrees = {};
 	FVector heightStartLine;
 	TArray<int> floorHeightPattern;

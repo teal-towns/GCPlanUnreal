@@ -34,7 +34,7 @@ UWorld* LayoutModelBase::GetWorld() {
 
 void LayoutModelBase::DestroyActors() {
 	ModelBase* modelBase = ModelBase::GetInstance();
-	modelBase->DestroyActors();
+	if (modelBase) modelBase->DestroyActors();//smm230623//
 }
 
 void LayoutModelBase::CleanUp() {

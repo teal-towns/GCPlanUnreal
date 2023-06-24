@@ -321,11 +321,16 @@ std::tuple<FString, FModelParams> ModelBase::ModelParamsFromPairs(TMap<FString, 
 
 FString ModelBase::InstancedMeshFromPairs(TMap<FString, FString> pairs) {
 	InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
-	auto [key, modelParams] = ModelParamsFromPairs(pairs);
-	if (key.Len() > 0) {
-		instancedMesh->AddMesh(key, "", "", modelParams);
-	}
-	return key;
+	if (instancedMesh) {//smm230624
+		auto [key, modelParams] = ModelParamsFromPairs(pairs);
+		if (key.Len() > 0) {
+			instancedMesh->AddMesh(key, "", "", modelParams);
+		}
+		return key;
+	} else {//smm230624
+		FString ret = "";//smm230624
+		return ret;//smm230624
+	}//smm230624
 }
 
 FString ModelBase::AddRotationString(FVector rotationParent, FVector rotation, FString meshKey) {

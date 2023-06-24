@@ -108,11 +108,13 @@ UStaticMesh* PMCylinder::Create(FString name, FVector size, TArray<FString> tags
 	PMBase::AddMeshSection(ProceduralMesh, Vertices, UV0, Triangles);
 
 	UStaticMesh* mesh = PMBase::ToStaticMesh(ProceduralMesh);
-	if (!destroyActor) {
-		PMBase::AddMesh(actor, mesh);
-	} else {
-		if (IsValid(actor)) {
-			actor->Destroy();
+	if (mesh) {
+		if (!destroyActor) {
+			PMBase::AddMesh(actor, mesh);
+		} else {
+			if (IsValid(actor)) {
+				actor->Destroy();
+			}
 		}
 	}
 	return mesh;

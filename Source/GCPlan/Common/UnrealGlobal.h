@@ -22,8 +22,8 @@ public:
 	UnrealGlobal(UnrealGlobal &other) = delete;
 	void operator=(const UnrealGlobal &) = delete;
 
-	FDataSettings* _settings;
-	ASocketActor* SocketActor;
+	FDataSettings* _settings = nullptr;//smm230623
+	ASocketActor* SocketActor = nullptr;//smm230623
 	TMap<FString, AActor*> _actors;
 
 	static UnrealGlobal *GetInstance();

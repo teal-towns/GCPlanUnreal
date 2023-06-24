@@ -127,7 +127,7 @@ bool LayoutPolygon::PlaceInPolygon(TArray<FVector> vertices, TArray<FString> mes
 		float curY = min.Y;
 		float offsetMaxX = offsetAverage * offsetMaxFactorX;
 		float offsetMaxY = offsetAverage * offsetMaxFactorY;
-		float offsetX, offsetY, offsetZ;
+		float offsetX, offsetY;//smm230623// , offsetZ;
 		bool done = false;
 		// Use x & y, but map as needed.
 		float minX = min.X;

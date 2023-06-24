@@ -21,8 +21,8 @@ std::tuple<TMap<FString, FPolygon>, int> PlotDivide::SubdividePlots(TMap<FString
 
 	int countNew = 0;
 	if (addRoads) {
-		// meshTerrain->DestroyRoads();
-		splineRoad->DestroyRoads();
+		// if (meshTerrain) meshTerrain->DestroyRoads();//smm230623
+		if (splineRoad) splineRoad->DestroyRoads();//smm230623
 	}
 
 	TMap<FString, FPolygon> newPolygons = {};
@@ -86,7 +86,7 @@ std::tuple<TMap<FString, FPolygon>, int> PlotDivide::SubdividePlots(TMap<FString
 
 bool PlotDivide::AddRoads(TMap<FString, FPolygon> polygons) {
 	SplineRoad* splineRoad = SplineRoad::GetInstance();
-	splineRoad->DestroyRoads();
+	if (splineRoad) splineRoad->DestroyRoads();//smm230623
 	TArray<TArray<FVector>> spacesVertices = {};
 	float verticesBuffer = -999;
 	for (auto& Elem : polygons) {

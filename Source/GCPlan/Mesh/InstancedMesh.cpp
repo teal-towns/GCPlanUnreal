@@ -39,8 +39,8 @@ void InstancedMesh::CleanUp() {
 	}
 	_instancedMeshActors = {};
 	if (_instancedMeshesActor && IsValid(_instancedMeshesActor)) {
-		_instancedMeshesActor->Destroy();
-		// _instancedMeshesActor = nullptr;
+//smm230624		_instancedMeshesActor->Destroy();
+		_instancedMeshesActor = nullptr;
 	}
 	pinstance_ = nullptr;
 }
@@ -49,10 +49,12 @@ void InstancedMesh::InitMeshes() {
 	if (!IsValid(_instancedMeshesActor)) {
 		FString name = "InstancedMeshes";
 		ModelBase* modelBase = ModelBase::GetInstance();
-		PMBase* pmBase = PMBase::GetInstance();
-		FActorSpawnParameters spawnParams;
-		_instancedMeshesActor = modelBase->CreateActor(name, FVector(0,0,0), FVector(0,0,0),
-			FVector(1,1,1), spawnParams);
+		if (modelBase) {//smm230624
+//smm230624		PMBase* pmBase = PMBase::GetInstance();
+			FActorSpawnParameters spawnParams;
+			_instancedMeshesActor = modelBase->CreateActor(name, FVector(0, 0, 0), FVector(0, 0, 0),
+				FVector(1, 1, 1), spawnParams);
+		}//smm230624
 	} else {
 		UE_LOG(LogTemp, Display, TEXT("InitMeshes actor still valid"));
 		// if (_instancedMeshesActor) {
@@ -90,70 +92,90 @@ void InstancedMesh::AddMesh(FString name, FString meshPath, FString materialPath
 		AActor* actor;
 		// If recompile in editor, will not exist in memory, so need to check scene too.
 		UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
-		actor = unrealGlobal->GetActorByName(name, AActor::StaticClass());
-		if (actor) {
-			_instancedMeshActors.Add(name, actor);
-		} else {
-			// PMBase* pmBase = PMBase::GetInstance();
-			// ModelBase* modelBase = ModelBase::GetInstance();
-			USceneComponent* meshesParent = _instancedMeshesActor->FindComponentByClass<USceneComponent>();
-			FActorSpawnParameters spawnParams;
-			spawnParams.Name = FName(name);
-			actor = (AActor*)World->SpawnActor<AActor>(
-				AActor::StaticClass(), FVector(0,0,0) * unrealGlobal->GetScale(), FRotator(0,0,0), spawnParams);
-			actor->SetActorLabel(name);
-			_instancedMeshActors.Add(name, actor);
-
-			USceneComponent* parent = actor->FindComponentByClass<USceneComponent>();
-			UObject* parentObject = (UObject*)actor;
-			FString nameTemp = name + "_ISM";
-			UInstancedStaticMeshComponent* instancedStaticMesh = NewObject<UInstancedStaticMeshComponent>(parentObject,
-				UInstancedStaticMeshComponent::StaticClass(), *nameTemp);
-			instancedStaticMesh->CreationMethod = EComponentCreationMethod::Instance;
-			instancedStaticMesh->RegisterComponent();
-			// instancedStaticMesh->AttachToComponent(parent, FAttachmentTransformRules::KeepRelativeTransform);
-			actor->SetRootComponent(instancedStaticMesh);
-			// Must be after has root component.
-			actor->AttachToComponent(meshesParent, FAttachmentTransformRules::KeepRelativeTransform);
-			instancedStaticMesh->SetMobility(EComponentMobility::Static);
-
-			LoadContent* loadContent = LoadContent::GetInstance();
-			if (modelParams.mesh) {
-				instancedStaticMesh->SetStaticMesh(modelParams.mesh);
-			} else {
-				if (meshPath.Len() < 1) {
-					if (modelParams.meshPath.Len() < 1 && modelParams.meshKey.Len() > 0) {
-						modelParams.meshPath = loadContent->Mesh(modelParams.meshKey);
-					}
-					meshPath = modelParams.meshPath;
-				}
-				UStaticMesh* mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL,
-					*meshPath));
-				// UStaticMeshComponent* meshComponent = actor->FindComponentByClass<UStaticMeshComponent>();
-				// meshComponent->SetStaticMesh(mesh);
-				instancedStaticMesh->SetStaticMesh(mesh);
+		if (unrealGlobal && _instancedMeshesActor && IsValid(_instancedMeshesActor)) {//smm230624
+			actor = unrealGlobal->GetActorByName(name, AActor::StaticClass());
+			if (actor) {
+				_instancedMeshActors.Add(name, actor);
 			}
+			else {
+				// PMBase* pmBase = PMBase::GetInstance();
+				// ModelBase* modelBase = ModelBase::GetInstance();
+				USceneComponent* meshesParent = _instancedMeshesActor->FindComponentByClass<USceneComponent>();
+				if (meshesParent) {//smm230624
+					FActorSpawnParameters spawnParams;
+					spawnParams.Name = FName(name);
+					actor = (AActor*)World->SpawnActor<AActor>(
+						AActor::StaticClass(), FVector(0, 0, 0) * unrealGlobal->GetScale(), FRotator(0, 0, 0), spawnParams);
+					if (actor) {//smm230624
+						actor->SetActorLabel(name);
+						_instancedMeshActors.Add(name, actor);
 
-			if (modelParams.dynamicMaterial) {
-				instancedStaticMesh->SetMaterial(0, modelParams.dynamicMaterial);
-			} else {
-				if (materialPath.Len() < 1) {
-					if (modelParams.materialPath.Len() < 1 && modelParams.materialKey.Len() > 0) {
-						modelParams.materialPath = loadContent->Material(modelParams.materialKey);
-					}
-					materialPath = modelParams.materialPath;
-				}
-				if (materialPath.Contains(".MaterialInstance")) {
-					UMaterialInstance* material = Cast<UMaterialInstance>(StaticLoadObject(UMaterialInstance::StaticClass(), NULL,
-						*materialPath));
-					instancedStaticMesh->SetMaterial(0, material);
-				} else {
-					UMaterial* material = Cast<UMaterial>(StaticLoadObject(UMaterial::StaticClass(), NULL,
-						*materialPath));
-					instancedStaticMesh->SetMaterial(0, material);
-				}
+//smm230624				USceneComponent* parent = actor->FindComponentByClass<USceneComponent>();
+						UObject* parentObject = (UObject*)actor;
+						FString nameTemp = name + "_ISM";
+						UInstancedStaticMeshComponent* instancedStaticMesh = NewObject<UInstancedStaticMeshComponent>(parentObject,
+							UInstancedStaticMeshComponent::StaticClass(), *nameTemp);
+						if (instancedStaticMesh) {//smm230624
+							instancedStaticMesh->CreationMethod = EComponentCreationMethod::Instance;
+							instancedStaticMesh->RegisterComponent();
+							// instancedStaticMesh->AttachToComponent(parent, FAttachmentTransformRules::KeepRelativeTransform);
+							actor->SetRootComponent(instancedStaticMesh);
+							// Must be after has root component.
+							actor->AttachToComponent(meshesParent, FAttachmentTransformRules::KeepRelativeTransform);
+							instancedStaticMesh->SetMobility(EComponentMobility::Static);
+
+							LoadContent* loadContent = LoadContent::GetInstance();
+							if (loadContent) {//smm230624
+								if (modelParams.mesh) {
+									instancedStaticMesh->SetStaticMesh(modelParams.mesh);
+								}
+								else {
+									if (meshPath.Len() < 1) {
+										if (modelParams.meshPath.Len() < 1 && modelParams.meshKey.Len() > 0) {
+											modelParams.meshPath = loadContent->Mesh(modelParams.meshKey);
+										}
+										meshPath = modelParams.meshPath;
+									}
+									UStaticMesh* mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL,
+										*meshPath));
+									if (mesh) {//smm230624
+										// UStaticMeshComponent* meshComponent = actor->FindComponentByClass<UStaticMeshComponent>();
+										// meshComponent->SetStaticMesh(mesh);
+										instancedStaticMesh->SetStaticMesh(mesh);
+									}//smm230624//mesh
+								}
+
+								if (modelParams.dynamicMaterial) {
+									instancedStaticMesh->SetMaterial(0, modelParams.dynamicMaterial);
+								}
+								else {
+									if (materialPath.Len() < 1) {
+										if (modelParams.materialPath.Len() < 1 && modelParams.materialKey.Len() > 0) {
+											modelParams.materialPath = loadContent->Material(modelParams.materialKey);
+										}
+										materialPath = modelParams.materialPath;
+									}
+									if (materialPath.Contains(".MaterialInstance")) {
+										UMaterialInstance* material = Cast<UMaterialInstance>(StaticLoadObject(UMaterialInstance::StaticClass(), NULL,
+											*materialPath));
+										if (material) {//smm230624
+											instancedStaticMesh->SetMaterial(0, material);
+										}//smm230624//material
+									}
+									else {
+										UMaterial* material = Cast<UMaterial>(StaticLoadObject(UMaterial::StaticClass(), NULL,
+											*materialPath));
+										if (material) {//smm230624
+											instancedStaticMesh->SetMaterial(0, material);
+										}//smm230624//material
+									}
+								}
+							}//smm230624//loadContent
+						}//smm230624//instancedStaticMesh
+					}//smm230624//actor
+				}//smm230624//meshesParent
 			}
-		}
+		}//smm230624//unrealGlobal && _instancedMeshesActor
 	} else {
 		// return _instancedMeshActors[name];
 	}

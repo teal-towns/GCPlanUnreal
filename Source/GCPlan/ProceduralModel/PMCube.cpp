@@ -255,7 +255,7 @@ void PMCube::RoundedTopSide(FVector size, TArray<FString> tags, FModelCreatePara
 	modelParams.rotation = FVector(0,0,270);
 	modelBase->CreateActor(name + "_BackRight", location, rotation, scale, spawnParams, modelParams);
 
-	actorBase->Destroy();
+	if (IsValid(actorBase)) actorBase->Destroy();//smm230623
 
 	// Reset.
 	modelParams.rotation = FVector(0,0,0);
@@ -289,8 +289,8 @@ void PMCube::RoundedTopSide(FVector size, TArray<FString> tags, FModelCreatePara
 	modelBase->CreateActor(name + "_Right", location, rotation, scale, spawnParams, modelParams);
 
 	scale.Y = 1;
-	actorBase->Destroy();
-	clonerActor->Destroy();
+	if (IsValid(actorBase)) actorBase->Destroy();//smm230623
+	if (IsValid(clonerActor)) clonerActor->Destroy();//smm230623
 
 	// Middle
 	modelParams.rotation = FVector(0,0,0);

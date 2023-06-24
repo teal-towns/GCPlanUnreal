@@ -34,24 +34,26 @@ void UnrealGlobal::InitAll(UWorld* World1, TArray<FString> skipKeys) {
 	SetWorld(World1);
 	// CleanUp({ "socket"} );
 
-	// Init some first where order matters (latter ones depend on these).
-	auto [dataSettings, valid] = LoadSettings();
-	if (valid) {
-		_settings = dataSettings;
-	}
-	ModelBase* modelBase = ModelBase::GetInstance();
-    modelBase->SetWorld(World1);
-    PMBase* pmBase = PMBase::GetInstance();
-    pmBase->SetWorld(World1);
+	if (_settings == nullptr) {
+		// Init some first where order matters (latter ones depend on these).
+		auto [dataSettings, valid] = LoadSettings();
+		if (valid) {
+			_settings = dataSettings;
+			ModelBase* modelBase = ModelBase::GetInstance();
+			if (modelBase) modelBase->SetWorld(World1);
+			PMBase* pmBase = PMBase::GetInstance();
+			if (pmBase) pmBase->SetWorld(World1);
 
-    if (!skipKeys.Contains("meshes")) {
-		InitMeshes(World1);
-	}
+			if (!skipKeys.Contains("meshes")) {
+				InitMeshes(World1);
+			}
 
-	InitCommon(World1);
+			InitCommon(World1);
 
-	if (!skipKeys.Contains("web")) {
-		InitWeb(World1);
+			if (!skipKeys.Contains("web")) {
+				InitWeb(World1);
+			}
+		}
 	}
 }
 
@@ -59,16 +61,16 @@ void UnrealGlobal::InitCommon(UWorld* World1) {
 	SetWorld(World1);
 
     HeightMap* heightMap = HeightMap::GetInstance();
-    heightMap->SetWorld(World1);
+	if (heightMap) heightMap->SetWorld(World1);//smm230623
 
     SplineRoad* splineRoad = SplineRoad::GetInstance();
-    splineRoad->SetWorld(World1);
+	if (splineRoad) splineRoad->SetWorld(World1);//smm230623
 }
 
 void UnrealGlobal::InitWeb(UWorld* World1) {
 	SetWorld(World1);
 	GetSocket(World1);
-	SocketActor->InitSocket();
+	if (SocketActor) SocketActor->InitSocket();//smm230623
 }
 
 void UnrealGlobal::GetSocket(UWorld* World1) {
@@ -93,12 +95,14 @@ void UnrealGlobal::InitMeshes(UWorld* World1) {
 
 	// Must be after modelBase as uses that.
 	InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
-	instancedMesh->SetWorld(World);
-	instancedMesh->InitMeshes();
+	if (instancedMesh) {//smm230623
+		instancedMesh->SetWorld(World);
+		instancedMesh->InitMeshes();
+	}//smm230623
 
 	// Load from JSON too.
 	LoadContent* loadContent = LoadContent::GetInstance();
-	loadContent->LoadMeshes();
+	if (loadContent) loadContent->LoadMeshes();//smm230623
 }
 
 void UnrealGlobal::SetInited(FString key) {
@@ -116,13 +120,13 @@ bool UnrealGlobal::IsIniteds(TArray<FString> Keys) {
 
 void UnrealGlobal::CleanUp(TArray<FString> skipKeys) {
 	InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
-	instancedMesh->CleanUp();
+	if (instancedMesh) instancedMesh->CleanUp();//smm230623
 
 	SplineRoad* splineRoad = SplineRoad::GetInstance();
-	splineRoad->CleanUp();
+	if (splineRoad) splineRoad->CleanUp();//smm230623
 
 	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
-    verticesEdit->CleanUp();
+	if (verticesEdit) verticesEdit->CleanUp();//smm230623
 
     if (!skipKeys.Contains("socket") && IsValid(SocketActor)) {
 		SocketActor->Destroy();
@@ -150,18 +154,20 @@ FVector UnrealGlobal::Scale(FVector location) {
 
 void UnrealGlobal::SetActorFolder(AActor* actor, FString path) {
 #if WITH_EDITOR
-    actor->SetFolderPath(FName(*path));
+	if (actor) actor->SetFolderPath(FName(*path));//smm230623
 #endif
 }
 
 void UnrealGlobal::RemoveAttachedActors(AActor* actor) {
 	TArray<AActor*> OutActors;
-	actor->GetAttachedActors(OutActors);
-	for (AActor* a : OutActors) {
-		if (IsValid(a)) {
-			a->Destroy();
+	if (actor) {//smm230623
+		actor->GetAttachedActors(OutActors);
+		for (AActor* a : OutActors) {
+			if (IsValid(a)) {
+				a->Destroy();
+			}
 		}
-	}
+	}//smm230623
 }
 
 AActor* UnrealGlobal::GetActorByName(FString name, TSubclassOf<AActor> ActorClass, bool save, bool matchStartsWith) {

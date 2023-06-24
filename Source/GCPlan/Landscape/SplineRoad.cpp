@@ -62,13 +62,15 @@ void SplineRoad::DestroyRoads() {
 	FString name = "SplineRoads";
 	// Clear out any existing roads.
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
-	AActor* actor = unrealGlobal->GetActorByName(name, AStaticMeshActor::StaticClass());
-	if (actor) {
-		unrealGlobal->RemoveAttachedActors(actor);
-	}
+	if (unrealGlobal) {//smm230623
+		AActor* actor = unrealGlobal->GetActorByName(name, AStaticMeshActor::StaticClass());
+		if (actor) {
+			unrealGlobal->RemoveAttachedActors(actor);
+		}
+	}//smm230623
 
 	InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
-	instancedMesh->ClearInstances("RoadRoundabout");
+	if (instancedMesh) instancedMesh->ClearInstances("RoadRoundabout");//smm230623
 }
 
 void SplineRoad::CleanUp() {
@@ -108,156 +110,165 @@ void SplineRoad::DrawRoads(bool addPlants, bool carveLand) {
 	FRotator rotation = FRotator(0,0,0);
 	FActorSpawnParameters spawnParams;
 	FVector location = FVector(0,0,0);
-	USceneComponent* roadsParent = _roadsActor->FindComponentByClass<USceneComponent>();
-	// USplineMeshComponent* SplineMesh;
-	FSplinePoint point;
-	FVector direction, pointToUse;
+	if (unrealGlobal && loadContent && heightMap) {//smm230624
+		if (_roadsActor && IsValid(_roadsActor)) {//smm230624
+			USceneComponent* roadsParent = _roadsActor->FindComponentByClass<USceneComponent>();
+			// USplineMeshComponent* SplineMesh;
+			FSplinePoint point;
+			FVector direction, pointToUse;
 
-	InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
-	PMBase* pmBase = PMBase::GetInstance();
+			InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
+			PMBase* pmBase = PMBase::GetInstance();
+			if (instancedMesh && pmBase) {//smm230624
+				TArray<FString> roundaboutUNames = {};
 
-	TArray<FString> roundaboutUNames = {};
+				// TArray<FString> meshNamesBush = loadContent->GetMeshNamesByTypes({ "bush" });
+				TArray<FString> meshNamesBush = { "hazel", "rhododendron" };
+				TArray<FString> meshNamesTree = loadContent->GetMeshNamesByTypes({ "tree" });
+				bool saveHeightMap = false;
+				TMap<FString, FImagePixelValue> newHeightImageValues = {};
 
-	// TArray<FString> meshNamesBush = loadContent->GetMeshNamesByTypes({ "bush" });
-	TArray<FString> meshNamesBush = { "hazel", "rhododendron" };
-	TArray<FString> meshNamesTree = loadContent->GetMeshNamesByTypes({ "tree" });
-	bool saveHeightMap = false;
-	TMap<FString, FImagePixelValue> newHeightImageValues = {};
+				FModelParams modelParams;
+				modelParams.meshPath = loadContent->Mesh("roadSegment1");
+				modelParams.materialPath = "/Script/Engine.Material'/Game/Landscape/Asphalt_M.Asphalt_M'";
+				FModelCreateParams createParams;
 
-	FModelParams modelParams;
-	modelParams.meshPath = loadContent->Mesh("roadSegment1");
-	modelParams.materialPath = "/Script/Engine.Material'/Game/Landscape/Asphalt_M.Asphalt_M'";
-	FModelCreateParams createParams;
+				for (auto& Elem1 : _RoadsByType) {
+					FString type = Elem1.Key;
 
-	for (auto& Elem1 : _RoadsByType) {
-		FString type = Elem1.Key;
+					FPlaceParams placeParamsNature = FPlaceParams();
+					placeParamsNature.snapToGround = true;
+					placeParamsNature.width = 5;
+					float placingOffset = 5;
 
-		FPlaceParams placeParamsNature = FPlaceParams();
-		placeParamsNature.snapToGround = true;
-		placeParamsNature.width = 5;
-		float placingOffset = 5;
+					for (auto& Elem : _RoadsByType[type]) {
+						UName = Elem.Key;
+						widthMeters = Elem.Value.widthMeters;
+						vertices = Elem.Value.vertices;
 
-		for (auto& Elem : _RoadsByType[type]) {
-			UName = Elem.Key;
-			widthMeters = Elem.Value.widthMeters;
-			vertices = Elem.Value.vertices;
+						spawnParams.Name = FName(UName);
+						actor = (AActor*)World->SpawnActor<AActor>(
+							AActor::StaticClass(), FVector(0, 0, 0) * unrealGlobal->GetScale(), FRotator(0, 0, 0), spawnParams);
+						if (actor) {//smm230624
+							actor->SetActorLabel(UName);
+							_RoadsActors.Add(UName, actor);
+							parent = actor->FindComponentByClass<USceneComponent>();
+							parentObject = (UObject*)actor;
+							nameTemp = UName + "_Spline";
+							USplineComponent* spline = NewObject<USplineComponent>(parentObject,
+								USplineComponent::StaticClass(), *nameTemp);
+							if (spline) {//smm230624
+								spline->CreationMethod = EComponentCreationMethod::Instance;
+								spline->RegisterComponent();
+								actor->SetRootComponent(spline);
+								// Must be after has root component.
+								actor->AttachToComponent(roadsParent, FAttachmentTransformRules::KeepRelativeTransform);
 
-			spawnParams.Name = FName(UName);
-			actor = (AActor*)World->SpawnActor<AActor>(
-				AActor::StaticClass(), FVector(0,0,0) * unrealGlobal->GetScale(), FRotator(0,0,0), spawnParams);
-			actor->SetActorLabel(UName);
-			_RoadsActors.Add(UName, actor);
-			parent = actor->FindComponentByClass<USceneComponent>();
-			parentObject = (UObject*)actor;
-			nameTemp = UName + "_Spline";
-			USplineComponent* spline = NewObject<USplineComponent>(parentObject,
-				USplineComponent::StaticClass(), *nameTemp);
-			spline->CreationMethod = EComponentCreationMethod::Instance;
-			spline->RegisterComponent();
-			actor->SetRootComponent(spline);
-			// Must be after has root component.
-			actor->AttachToComponent(roadsParent, FAttachmentTransformRules::KeepRelativeTransform);
+								spline->AttachToComponent(parent, FAttachmentTransformRules::KeepRelativeTransform);
+								// Apparently defaults to 2 points, so remove them.
+								spline->ClearSplinePoints();
 
-			spline->AttachToComponent(parent, FAttachmentTransformRules::KeepRelativeTransform);
-			// Apparently defaults to 2 points, so remove them.
-			spline->ClearSplinePoints();
+								modelParams.parent = parent;
+								createParams.parentActor = actor;
+								createParams.parent = modelParams.parent;
 
-			modelParams.parent = parent;
-			createParams.parentActor = actor;
-			createParams.parent = modelParams.parent;
+								verticesCount = vertices.Num();
+								int pointCount = 0;
+								for (int vv = 0; vv < verticesCount; vv++) {
+									// Add point before the vertex for flattening out to align at intersection.
+									if (vv > 0) {
+										direction = (vertices[(vv - 1)] - vertices[vv]).GetClampedToMaxSize(flatteningMeters);
+										pointToUse = vertices[vv] + direction;
+										// Set Z to the same to ensure flat.
+										pointToUse.Z = vertices[vv].Z;
+										// UE_LOG(LogTemp, Display, TEXT("pre-point %s prev %s cur %s"), *pointToUse.ToString(), *vertices[(vv-1)].ToString(), *vertices[vv].ToString());
+										point = FSplinePoint((float)pointCount, pointToUse * unrealGlobal->GetScale());
+										spline->AddPoint(point, false);
+										pointCount += 1;
+									}
 
-			verticesCount = vertices.Num();
-			int pointCount = 0;
-			for (int vv = 0; vv < verticesCount; vv++) {
-				// Add point before the vertex for flattening out to align at intersection.
-				if (vv > 0) {
-					direction = (vertices[(vv - 1)] - vertices[vv]).GetClampedToMaxSize(flatteningMeters);
-					pointToUse = vertices[vv] + direction;
-					// Set Z to the same to ensure flat.
-					pointToUse.Z = vertices[vv].Z;
-					// UE_LOG(LogTemp, Display, TEXT("pre-point %s prev %s cur %s"), *pointToUse.ToString(), *vertices[(vv-1)].ToString(), *vertices[vv].ToString());
-					point = FSplinePoint((float)pointCount, pointToUse * unrealGlobal->GetScale());
-					spline->AddPoint(point, false);
-					pointCount += 1;
+									// UE_LOG(LogTemp, Display, TEXT("point %s"), *vertices[vv].ToString());
+									point = FSplinePoint((float)pointCount, vertices[vv] * unrealGlobal->GetScale());
+									// point = FSplinePoint((float)vv, vertices[vv] * unrealGlobal->GetScale());
+									spline->AddPoint(point, false);
+									pointCount += 1;
+
+									// Add point after the vertex for flattening out to align at intersection.
+									if (vv < verticesCount - 1) {
+										direction = (vertices[(vv + 1)] - vertices[vv]).GetClampedToMaxSize(flatteningMeters);
+										pointToUse = vertices[vv] + direction;
+										// Set Z to the same to ensure flat.
+										pointToUse.Z = vertices[vv].Z;
+										// UE_LOG(LogTemp, Display, TEXT("post-point %s cur %s next %s"), *pointToUse.ToString(), *vertices[vv].ToString(), *vertices[(vv+1)].ToString());
+										point = FSplinePoint((float)pointCount, pointToUse * unrealGlobal->GetScale());
+										spline->AddPoint(point, false);
+										pointCount += 1;
+									}
+
+									// Add roundabout.
+									// 0 digits to block overlap within 1 meter.
+									uNameRoundabout = "BuildingRoad_" + Lodash::ToFixed(vertices[vv].X, 0) + "_" + Lodash::ToFixed(vertices[vv].Y, 0);
+									if (!roundaboutUNames.Contains(uNameRoundabout)) {
+										// Move up a bit to cover roads.
+										FVector pos = vertices[vv];
+										pos.Z += 0.25;
+
+										instancedMesh->CreateInstance("RoadRoundabout", pos, FRotator(0, Lodash::RandomRangeFloat(0, 360), 0), FVector(2, 2, 1.5));
+										roundaboutUNames.Add(uNameRoundabout);
+									}
+
+									// Carve land (heightmap)
+									if (carveLand && type == "road" && vv > 0) {
+										newHeightImageValues = heightMap->CarveLine(vertices[(vv - 1)], vertices[vv], widthMeters,
+											newHeightImageValues);
+										saveHeightMap = true;
+									}
+								}
+
+								// Must update to get tangents calculated, so do mesh at end after have all points.
+								spline->UpdateSpline();
+								FVector tangentStart, tangentEnd, pathLine;
+								for (int ii = 1; ii < pointCount; ii++) {
+									tangentStart = FVector(0, 0, 0);
+									tangentEnd = FVector(0, 0, 0);
+									// TODO - this did not seem to do anything; need to understand tangents better?
+									// // Fix tangents at (next to) start and end by flattening them (z = 0)
+									// if (ii == 2) {
+									// 	pathLine = vertices[1] - vertices[0];
+									// 	tangentStart = FVector(pathLine.X, pathLine.Y, 0);
+									// } else if (ii == pointCount - 2) {
+									// 	pathLine = vertices[(verticesCount - 1)] - vertices[(verticesCount - 2)];
+									// 	tangentEnd = FVector(pathLine.X, pathLine.Y, 0);
+									// }
+									PMSpline::AddSplineMesh(UName, ii, modelParams, createParams, widthMeters, spline,
+										tangentStart, tangentEnd);
+								}
+
+								if (addPlants) {
+									// Place nature / trees on sides of roads.
+									placeParamsNature.spacing = 5;
+									placeParamsNature.spacingCrossAxis = 2;
+									placeParamsNature.scaleMin = 0.75;
+									placeParamsNature.scaleMax = 1.25;
+									LayoutPolyLine::PlaceOnLineSides(vertices, widthMeters + placingOffset * 2,
+										meshNamesBush, placeParamsNature);
+									placeParamsNature.spacing = 20;
+									placeParamsNature.spacingCrossAxis = 999;
+									placeParamsNature.scaleMin = 0.1;
+									placeParamsNature.scaleMax = 0.5;
+									LayoutPolyLine::PlaceOnLineSides(vertices, widthMeters + placingOffset * 2,
+										meshNamesTree, placeParamsNature);
+								}
+							}//smm230624//spline
+						}//smm230624//actor
+					}
 				}
 
-				// UE_LOG(LogTemp, Display, TEXT("point %s"), *vertices[vv].ToString());
-				point = FSplinePoint((float)pointCount, vertices[vv] * unrealGlobal->GetScale());
-				// point = FSplinePoint((float)vv, vertices[vv] * unrealGlobal->GetScale());
-				spline->AddPoint(point, false);
-				pointCount += 1;
-
-				// Add point after the vertex for flattening out to align at intersection.
-				if (vv < verticesCount - 1) {
-					direction = (vertices[(vv + 1)] - vertices[vv]).GetClampedToMaxSize(flatteningMeters);
-					pointToUse = vertices[vv] + direction;
-					// Set Z to the same to ensure flat.
-					pointToUse.Z = vertices[vv].Z;
-					// UE_LOG(LogTemp, Display, TEXT("post-point %s cur %s next %s"), *pointToUse.ToString(), *vertices[vv].ToString(), *vertices[(vv+1)].ToString());
-					point = FSplinePoint((float)pointCount, pointToUse * unrealGlobal->GetScale());
-					spline->AddPoint(point, false);
-					pointCount += 1;
+				if (saveHeightMap) {
+					// heightMap->SaveImage();
+					heightMap->SetImageValues(newHeightImageValues);
 				}
-
-				// Add roundabout.
-				// 0 digits to block overlap within 1 meter.
-				uNameRoundabout = "BuildingRoad_" + Lodash::ToFixed(vertices[vv].X, 0) + "_" + Lodash::ToFixed(vertices[vv].Y, 0);
-				if (!roundaboutUNames.Contains(uNameRoundabout)) {
-					// Move up a bit to cover roads.
-					FVector pos = vertices[vv];
-					pos.Z += 0.25;
-
-					instancedMesh->CreateInstance("RoadRoundabout", pos, FRotator(0,Lodash::RandomRangeFloat(0,360),0), FVector(2,2,1.5));
-					roundaboutUNames.Add(uNameRoundabout);
-				}
-
-				// Carve land (heightmap)
-				if (carveLand && type == "road" && vv > 0) {
-					newHeightImageValues = heightMap->CarveLine(vertices[(vv - 1)], vertices[vv], widthMeters,
-						newHeightImageValues);
-					saveHeightMap = true;
-				}
-			}
-
-			// Must update to get tangents calculated, so do mesh at end after have all points.
-			spline->UpdateSpline();
-			FVector tangentStart, tangentEnd, pathLine;
-			for (int ii = 1; ii < pointCount; ii++) {
-				tangentStart = FVector(0,0,0);
-				tangentEnd = FVector(0,0,0);
-				// TODO - this did not seem to do anything; need to understand tangents better?
-				// // Fix tangents at (next to) start and end by flattening them (z = 0)
-				// if (ii == 2) {
-				// 	pathLine = vertices[1] - vertices[0];
-				// 	tangentStart = FVector(pathLine.X, pathLine.Y, 0);
-				// } else if (ii == pointCount - 2) {
-				// 	pathLine = vertices[(verticesCount - 1)] - vertices[(verticesCount - 2)];
-				// 	tangentEnd = FVector(pathLine.X, pathLine.Y, 0);
-				// }
-				PMSpline::AddSplineMesh(UName, ii, modelParams, createParams, widthMeters, spline,
-					tangentStart, tangentEnd);
-			}
-
-			if (addPlants) {
-				// Place nature / trees on sides of roads.
-				placeParamsNature.spacing = 5;
-				placeParamsNature.spacingCrossAxis = 2;
-				placeParamsNature.scaleMin = 0.75;
-				placeParamsNature.scaleMax = 1.25;
-				LayoutPolyLine::PlaceOnLineSides(vertices, widthMeters + placingOffset * 2,
-					meshNamesBush, placeParamsNature);
-				placeParamsNature.spacing = 20;
-				placeParamsNature.spacingCrossAxis = 999;
-				placeParamsNature.scaleMin = 0.1;
-				placeParamsNature.scaleMax = 0.5;
-				LayoutPolyLine::PlaceOnLineSides(vertices, widthMeters + placingOffset * 2,
-					meshNamesTree, placeParamsNature);
-			}
-		}
-	}
-
-	if (saveHeightMap) {
-		// heightMap->SaveImage();
-		heightMap->SetImageValues(newHeightImageValues);
-	}
+			}//smm230624//instancedMesh && pmBase
+		}//smm230624//_roadsActor
+	}//smm230624//unrealGlobal && loadContent && heightMap
 }
