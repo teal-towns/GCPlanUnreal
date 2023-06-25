@@ -23,7 +23,6 @@ AActor *ModelSolarChargingStation::Create()
 	auto [modelingBase, modelParams] = modelBase->GetInputs("SolarChargingStation", FVector(20, 5, 3)); // common size for 8 car parking spaces
 	FString name = modelingBase.name;
 	FVector size = modelingBase.size;
-	TArray<FString> tags = modelingBase.tags;
 
 	FVector rotation = FVector(0, 0, 0);
 	FActorSpawnParameters spawnParams;
@@ -90,7 +89,7 @@ void ModelSolarChargingStation::CreateBaseSupport(FString name, FVector scale, F
 	FString meshPathCylinder = loadContent->Mesh("cylinder");
 	FString materialSmoothConcretePath = loadContent->Material("smoothConcrete");
 	FString materialMetalChromePath = loadContent->Material("metalChrome");
-	UStaticMesh *meshTrapezoidalPrism = PMPrism::Create(name + "_TrapezoidalPrism", {}, 4, 1, 1, -0.4, true, true, true);
+	UStaticMesh *meshTrapezoidalPrism = PMPrism::Create(name + "_TrapezoidalPrism", 4, 1, 1, -0.4, true, true, true);
 
 	/* Base support */
 	// Bottom
