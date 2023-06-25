@@ -17,6 +17,8 @@ struct FPlaceParams {
 	float radius = -1;
 	FString shape = "square";
 	float offsetAverage = 10;
+	float offsetX = -1;
+	float offsetY = -1;
 	float offsetMaxFactorX = 0.5;
 	float offsetMaxFactorY = 0.5;
 	float offsetMaxFactorZ = 0.5;

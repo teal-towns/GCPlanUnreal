@@ -322,6 +322,10 @@ std::tuple<FString, FModelParams> ModelBase::ModelParamsFromPairs(TMap<FString, 
 FString ModelBase::InstancedMeshFromPairs(TMap<FString, FString> pairs) {
 	InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
 	auto [key, modelParams] = ModelParamsFromPairs(pairs);
+	if (key.Len() > 1023) {
+		UE_LOG(LogTemp, Warning, TEXT("ModelBase.InstancedMeshFromPairs key too long, skipping %s"), *key);
+		key = "";
+	}
 	if (key.Len() > 0) {
 		instancedMesh->AddMesh(key, "", "", modelParams);
 	}

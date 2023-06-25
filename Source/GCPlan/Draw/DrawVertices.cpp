@@ -14,6 +14,7 @@
 #include "../Mesh/InstancedMesh.h"
 #include "../Mesh/LoadContent.h"
 #include "../Modeling/ModelBase.h"
+#include "../Modeling/Common/ModelCord.h"
 #include "../Modeling/Furniture/ModelDesk.h"
 #include "../Modeling/Furniture/ModelPlanterBox.h"
 #include "../Modeling/Furniture/ModelTable.h"
@@ -84,7 +85,9 @@ void DrawVertices::LoadVertices() {
 			}
 		} else {
 			type = Elem.Value.type;
-			if (type == "desk") {
+			if (type == "cord") {
+				ModelCord::Build(pairs);
+			} else if (type == "desk") {
 				ModelDesk::Build(pairs);
 			} else if (type == "planterBox") {
 				ModelPlanterBox::Build(pairs);
@@ -123,6 +126,14 @@ void DrawVertices::LoadVertices() {
 
 			placeParams.offsetAverage = pairs.Contains("placeOffsetAverage") ?
 				DataConvert::Float(pairs["placeOffsetAverage"]) : 10;
+			placeParams.offsetX = pairs.Contains("placeOffsetX") ?
+				DataConvert::Float(pairs["placeOffsetX"]) : -1;
+			placeParams.offsetY = pairs.Contains("placeOffsetY") ?
+				DataConvert::Float(pairs["placeOffsetY"]) : -1;
+			placeParams.offsetMaxFactorX = pairs.Contains("placeOffsetMaxFactorX") ?
+				DataConvert::Float(pairs["placeOffsetMaxFactorX"]) : 0.5;
+			placeParams.offsetMaxFactorY = pairs.Contains("placeOffsetMaxFactorY") ?
+				DataConvert::Float(pairs["placeOffsetMaxFactorY"]) : 0.5;
 			placeParams.rotMinX = pairs.Contains("placeRotMinX") ?
 				DataConvert::Float(pairs["placeRotMinX"]) : 0;
 			placeParams.rotMaxX = pairs.Contains("placeRotMaxX") ?
@@ -136,7 +147,7 @@ void DrawVertices::LoadVertices() {
 			placeParams.rotMaxZ = pairs.Contains("placeRotMaxZ") ?
 				DataConvert::Float(pairs["placeRotMaxZ"]) : 360;
 			placeParams.plane = pairs.Contains("placePlane") ? pairs["placePlane"] : "xy";
-			layoutPolygon->PlaceInPolygon(Elem.Value.vertices, meshNames, placeParams);
+			LayoutPolygon::PlaceInPolygon(Elem.Value.vertices, meshNames, placeParams);
 		}
 	}
 }

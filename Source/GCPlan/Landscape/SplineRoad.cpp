@@ -36,8 +36,11 @@ SplineRoad *SplineRoad::GetInstance() {
 
 void SplineRoad::SetWorld(UWorld* World1) {
 	World = World1;
+	Init();
+}
 
-	if (!_roadsActor) {
+void SplineRoad::Init() {
+	if (_roadsActor == nullptr || !IsValid(_roadsActor)) {
 		FString name = "SplineRoads";
 		ModelBase* modelBase = ModelBase::GetInstance();
 		FActorSpawnParameters spawnParams;
@@ -94,6 +97,7 @@ void SplineRoad::AddRoads(TMap<FString, FRoadPath> roadsPaths) {
 }
 
 void SplineRoad::DrawRoads(bool addPlants, bool carveLand) {
+	Init();
 	float flatteningMeters = 10;
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	LoadContent* loadContent = LoadContent::GetInstance();

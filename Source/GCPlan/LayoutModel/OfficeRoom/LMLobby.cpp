@@ -43,7 +43,7 @@ TMap<FString, FPolygon> LMLobby::Create(FVector size, FModelParams modelParams,
 	vertices = { createParamsIn.offset };
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
 
-	FPlanterBox plantParams;
+	FWallPlanterBox plantParams;
 	plantParams.pairsStringPlants = "meshes=brackenFern,solidFern,cinnamonFern&placeOffsetAverage=0.5";
 	LMRoomPlants::WallPlanterBox(size, modelParams, createParamsIn, plantParams);
 
@@ -78,8 +78,8 @@ TMap<FString, FPolygon> LMLobby::TwoTables(FVector size, FModelParams modelParam
 
 	scale = FVector(1.5 + 1 * 2, 1.5 + 1 * 2, 1);
 	FTableChairs tableParams;
-	tableParams.tableMeshes = { "shortRoundTableWood" };
-	tableParams.chairMeshes = { "chairTeal" };
+	tableParams.meshesByTags["table"] = { "shortRoundTableWood" };
+	tableParams.meshesByTags["chair"] = { "chairTeal" };
 	tableParams.offset = FVector(-2.5,-3,0);
 	// FModelCreateParams createParamsTemp;
 	// createParamsTemp.rotation = createParamsIn.rotation;
@@ -87,8 +87,8 @@ TMap<FString, FPolygon> LMLobby::TwoTables(FVector size, FModelParams modelParam
 	LMTableChairs::TableWithChairs(scale, modelParams, createParamsIn, tableParams);
 
 	scale = FVector(4.5 + 1 * 1.5, 3 + 1 * 2, 1);
-	tableParams.tableMeshes = { "tableGlassLine" };
-	tableParams.chairMeshes = { "chair" };
+	tableParams.meshesByTags["table"] = { "tableGlassLine" };
+	tableParams.meshesByTags["chair"] = { "chair" };
 	tableParams.offset = FVector(1,3,0);
 	// createParamsTemp.offset = createParamsIn.offset + FVector(1,4,0);
 	LMTableChairs::TableWithChairs(scale, modelParams, createParamsIn, tableParams);

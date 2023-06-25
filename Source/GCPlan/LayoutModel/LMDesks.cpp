@@ -53,6 +53,7 @@ TMap<FString, FPolygon> LMDesks::TwoDesksRow(FVector size, FModelParams modelPar
 	FVector rotateAroundBase = createParamsIn.rotateAround;
 	float rotationZ;
 	float xTemp;
+	FPlanterBox plantParams;
 	for (int xx = 0; xx < 2; xx++) {
 		// Desks face each other, so rotate second set.
 		rotationZ = xx == 0 ? 0 : 180;
@@ -61,25 +62,29 @@ TMap<FString, FPolygon> LMDesks::TwoDesksRow(FVector size, FModelParams modelPar
 				// Center at desks, so start more toward middle.
 				xTemp = currentX + (rotationZ == 0 ? rowXSize / 4 : rowXSize / -4);
 				for (int pp = 0; pp < params.plantsPerDeskRow; pp++) {
-					// plants
-					scale = FVector(params.plantWidth, params.plantWidth, params.planterHeight);
-					location = FVector(xTemp, currentYStart + scale.Y / 2, 0) + offsetBase;
-					uName = uNameBase + Lodash::GetInstanceId("_PlanterBox");
-					pairsString = "meshRule=planterBoxCylinderRaised&scale=" + DataConvert::VectorToString(scale) +
-						ModelBase::AddRotationString(createParamsIn.rotation);
-					vertices = { MathVector::RotateVector(location, createParamsIn.rotation) + createParamsIn.offset };
-					vertices = ModelBase::Vertices(vertices, createParamsIn, params.rotation);
-					polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "planterBox", "point", pairsString));
-					uName = uNameBase + Lodash::GetInstanceId("_Plant");
-					// scale = FVector(params.plantWidth, params.plantWidth, 1);
-					scale = FVector(1,1,1);
-					location.Z = params.planterHeight + offsetBase.Z;
-					meshKey = params.meshesByTags["indoorBush"][Lodash::RandomRangeInt(0, params.meshesByTags["indoorBush"].Num() - 1)];
-					pairsString = "mesh=" + meshKey + "&scale=" + DataConvert::VectorToString(scale) +
-						ModelBase::AddRotationString(createParamsIn.rotation);
-					vertices = { MathVector::RotateVector(location, createParamsIn.rotation) + createParamsIn.offset };
-					vertices = ModelBase::Vertices(vertices, createParamsIn, params.rotation);
-					polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "bush", "point", pairsString));
+					scale = FVector(params.plantWidth, params.plantWidth, size.Z);
+					plantParams.offset = FVector(xTemp, currentYStart + scale.Y / 2, 0) + offsetBase;
+					plantParams.meshRule = "planterBoxCylinderRaised";
+					LMRoomPlants::PlanterBox(scale, modelParams, createParamsIn, plantParams);
+					// // plants
+					// scale = FVector(params.plantWidth, params.plantWidth, params.planterHeight);
+					// location = FVector(xTemp, currentYStart + scale.Y / 2, 0) + offsetBase;
+					// uName = uNameBase + Lodash::GetInstanceId("_PlanterBox");
+					// pairsString = "meshRule=planterBoxCylinderRaised&scale=" + DataConvert::VectorToString(scale) +
+					// 	ModelBase::AddRotationString(createParamsIn.rotation);
+					// vertices = { MathVector::RotateVector(location, createParamsIn.rotation) + createParamsIn.offset };
+					// vertices = ModelBase::Vertices(vertices, createParamsIn, params.rotation);
+					// polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "planterBox", "point", pairsString));
+					// uName = uNameBase + Lodash::GetInstanceId("_Plant");
+					// // scale = FVector(params.plantWidth, params.plantWidth, 1);
+					// scale = FVector(1,1,1);
+					// location.Z = params.planterHeight + offsetBase.Z;
+					// meshKey = params.meshesByTags["indoorBush"][Lodash::RandomRangeInt(0, params.meshesByTags["indoorBush"].Num() - 1)];
+					// pairsString = "mesh=" + meshKey + "&scale=" + DataConvert::VectorToString(scale) +
+					// 	ModelBase::AddRotationString(createParamsIn.rotation);
+					// vertices = { MathVector::RotateVector(location, createParamsIn.rotation) + createParamsIn.offset };
+					// vertices = ModelBase::Vertices(vertices, createParamsIn, params.rotation);
+					// polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "bush", "point", pairsString));
 
 					xTemp += params.plantWidth * 1.5;
 				}

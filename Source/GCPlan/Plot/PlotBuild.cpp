@@ -105,9 +105,9 @@ void PlotBuild::RingPlantsCenter(TArray<FVector> vertices, float unitDiameter, i
 
 	meshNames = loadContent->GetMeshNamesByTypes({ "tree" });
 	placeParams.offsetAverage = 15;
-	layoutPolygon->PlaceInPolygon(verticesInner, meshNames, placeParams, center);
+	LayoutPolygon::PlaceInPolygon(verticesInner, meshNames, placeParams, center);
 
 	meshNames = loadContent->GetMeshNamesByTypes({ "bush" });
 	placeParams.offsetAverage = 5;
-	layoutPolygon->PlaceInPolygon(verticesInner, meshNames, placeParams, center);
+	LayoutPolygon::PlaceInPolygon(verticesInner, meshNames, placeParams, center);
 }

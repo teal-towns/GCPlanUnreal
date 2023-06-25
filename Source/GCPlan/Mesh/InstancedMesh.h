@@ -18,6 +18,7 @@ public:
 	void SetWorld(UWorld*);
 	// UWorld* GetWorld();
 	void CleanUp();
+	void Init();
 	void InitMeshes();
 	// bool MeshExists(FString name);
 	void AddMesh(FString name, FString meshPath = "", FString materialPath = "",

@@ -34,24 +34,27 @@ void UnrealGlobal::InitAll(UWorld* World1, TArray<FString> skipKeys) {
 	SetWorld(World1);
 	// CleanUp({ "socket"} );
 
-	// Init some first where order matters (latter ones depend on these).
-	auto [dataSettings, valid] = LoadSettings();
-	if (valid) {
-		_settings = dataSettings;
-	}
 	ModelBase* modelBase = ModelBase::GetInstance();
-    modelBase->SetWorld(World1);
-    PMBase* pmBase = PMBase::GetInstance();
-    pmBase->SetWorld(World1);
+	modelBase->SetWorld(World1);
+	PMBase* pmBase = PMBase::GetInstance();
+	pmBase->SetWorld(World1);
 
-    if (!skipKeys.Contains("meshes")) {
-		InitMeshes(World1);
-	}
+	if (_settings == nullptr) {
+		// Init some first where order matters (latter ones depend on these).
+		auto [dataSettings, valid] = LoadSettings();
+		if (valid) {
+			_settings = dataSettings;
 
-	InitCommon(World1);
+		    if (!skipKeys.Contains("meshes")) {
+				InitMeshes(World1);
+			}
 
-	if (!skipKeys.Contains("web")) {
-		InitWeb(World1);
+			InitCommon(World1);
+
+			if (!skipKeys.Contains("web")) {
+				InitWeb(World1);
+			}
+		}
 	}
 }
 
@@ -130,6 +133,8 @@ void UnrealGlobal::CleanUp(TArray<FString> skipKeys) {
 	_initeds.Empty();
 	_actors.Empty();
 	// World = nullptr;
+	_settings = nullptr;
+	SocketActor = nullptr;
 }
 
 void UnrealGlobal::SetWorld(UWorld* World1) {
@@ -150,16 +155,22 @@ FVector UnrealGlobal::Scale(FVector location) {
 
 void UnrealGlobal::SetActorFolder(AActor* actor, FString path) {
 #if WITH_EDITOR
-    actor->SetFolderPath(FName(*path));
+	if (actor) {
+    	actor->SetFolderPath(FName(*path));
+    } else {
+    	UE_LOG(LogTemp, Warning, TEXT("UnrealGlobal.SetActorFolder actor invalid, skipping %s"), *path);
+    }
 #endif
 }
 
 void UnrealGlobal::RemoveAttachedActors(AActor* actor) {
 	TArray<AActor*> OutActors;
-	actor->GetAttachedActors(OutActors);
-	for (AActor* a : OutActors) {
-		if (IsValid(a)) {
-			a->Destroy();
+	if (actor) {
+		actor->GetAttachedActors(OutActors);
+		for (AActor* a : OutActors) {
+			if (IsValid(a)) {
+				a->Destroy();
+			}
 		}
 	}
 }

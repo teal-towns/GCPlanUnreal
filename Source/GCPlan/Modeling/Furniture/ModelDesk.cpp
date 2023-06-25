@@ -74,6 +74,9 @@ AActor* ModelDesk::Create(FVector size, FModelParams modelParams,
 		// Telescoping legs - bottom first, then if have extra height, the top.
 		for (int ii = 0; ii < 2; ii++) {
 			float offXY = (offset + (0.5 * legThick) + (0.5 * legOff));
+			if (legSize.Z < 0.01) {
+				break;
+			}
 
 			// Left Front Leg
 			location = FVector(size.X / 2 - offXY, size.Y / -2 + offXY, legZ);

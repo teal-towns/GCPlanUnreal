@@ -17,4 +17,5 @@ public:
 	static TMap<FString, float> Object(TMap<FString, float> values, TMap<FString, float> defaults);
 	static TMap<FString, FString> PairsStringToObject(FString pairsString);
 	static FString CheckAddSuffix(FString text, FString suffix);
+	static FString Join(TArray<FString> list, FString delimiter);
 };

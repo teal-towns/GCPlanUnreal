@@ -59,7 +59,6 @@ void LoadContent::LoadMeshes(FString defaultMeshPath) {
 			materialPath = Elem.Value.materialPath;
 			mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL, *meshPath));
 			_meshModels[Elem.Key].tags = Lodash::CheckAddSuffix(_meshModels[Elem.Key].tags, ",");
-			// UE_LOG(LogTemp, Display, TEXT("meshPath %s name %s tags %s"), *meshPath, *name, *_meshModels[Elem.Key].tags);
 			if (!mesh) {
 				UE_LOG(LogTemp, Display, TEXT("LoadContent.LoadMeshes not found, using defaultMeshPath %s"), *name);
 				meshPath = defaultMeshPath;
@@ -149,6 +148,13 @@ FString LoadContent::MeshScale(FVector scale, FString meshKey, TArray<FString> a
 		}
 	}
 	return DataConvert::VectorToString(scale);
+}
+
+FVector LoadContent::GetMeshSize(FString meshKey) {
+	if (_meshModels.Contains(meshKey) && _meshModels[meshKey].size.Len() > 0) {
+		return DataConvert::StringToVector(_meshModels[meshKey].size);
+	}
+	return FVector(0,0,0);
 }
 
 FVector LoadContent::MeshRotation(FString meshKey) {
