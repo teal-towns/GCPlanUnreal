@@ -127,7 +127,7 @@ TMap<FString, FMeshTransform> LayoutPolygon::PlaceInPolygon(TArray<FVector> vert
 		float curY = min.Y;
 		float offsetMaxX = offsetAverage * offsetMaxFactorX;
 		float offsetMaxY = offsetAverage * offsetMaxFactorY;
-		float offsetX, offsetY, offsetZ;
+		float offsetX, offsetY;
 		bool done = false;
 		// Use x & y, but map as needed.
 		float minX = min.X;
