@@ -26,10 +26,11 @@ LayoutPolygon *LayoutPolygon::GetInstance() {
 	return pinstance_;
 }
 
-bool LayoutPolygon::PlaceInPolygon(TArray<FVector> vertices, TArray<FString> meshNames, 
+TMap<FString, FMeshTransform> LayoutPolygon::PlaceInPolygon(TArray<FVector> vertices, TArray<FString> meshNames, 
 	FPlaceParams inParams, FVector posCenter) {
-	if (meshNames.Num() < 1) {
-		return false;
+	TMap<FString, FMeshTransform> meshes = {};
+	if (!inParams.skipMesh && meshNames.Num() < 1) {
+		return meshes;
 	}
 	if (posCenter == FVector(0,0,0)) {
 		posCenter = MathPolygon::GetPolygonCenter(vertices);
@@ -94,7 +95,6 @@ bool LayoutPolygon::PlaceInPolygon(TArray<FVector> vertices, TArray<FString> mes
 		// }
 	}
 
-	TMap<FString, FMeshTransform> meshes = {};
 	int count = 0;
 	FVector pos;
 	int iterations = 0;
@@ -145,6 +145,8 @@ bool LayoutPolygon::PlaceInPolygon(TArray<FVector> vertices, TArray<FString> mes
 			maxX = max.Z;
 			offsetMaxX = offsetAverage * offsetMaxFactorX;
 		}
+		float offsetXBase = inParams.offsetX > 0 ? inParams.offsetX : offsetAverage;
+		float offsetYBase = inParams.offsetY > 0 ? inParams.offsetY : offsetAverage;
 		while (curY < maxY) {
 			curX = minX;
 			while (curX < maxX) {
@@ -169,9 +171,9 @@ bool LayoutPolygon::PlaceInPolygon(TArray<FVector> vertices, TArray<FString> mes
 				}
 				iterations += 1;
 
-				curX += offsetAverage;
+				curX += offsetXBase;
 			}
-			curY += offsetAverage;
+			curY += offsetYBase;
 			if (done) {
 				break;
 			}
@@ -179,13 +181,14 @@ bool LayoutPolygon::PlaceInPolygon(TArray<FVector> vertices, TArray<FString> mes
 	}
 
 	// Place them.
-	InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
-	for (auto& Elem : meshes) {
-		instancedMesh->CreateInstance(Elem.Value.meshName, Elem.Value.location,
-			DataConvert::VectorToRotator(Elem.Value.rotation), Elem.Value.scale);
+	if (!inParams.skipMesh) {
+		InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
+		for (auto& Elem : meshes) {
+			instancedMesh->CreateInstance(Elem.Value.meshName, Elem.Value.location,
+				DataConvert::VectorToRotator(Elem.Value.rotation), Elem.Value.scale);
+		}
 	}
-	// return meshes;
-	return true;
+	return meshes;
 }
 
 std::tuple<FString, FMeshTransform> LayoutPolygon::CheckAddObj(FVector pos,
@@ -194,7 +197,7 @@ std::tuple<FString, FMeshTransform> LayoutPolygon::CheckAddObj(FVector pos,
 	FString key = "";
 	FMeshTransform obj = FMeshTransform();
 
-	FString meshName;
+	FString meshName = "";
 	FString name, uniqueName;
 	FVector scale, rot;
 	// TArray<FString> emptyTArray = {};
@@ -243,12 +246,14 @@ std::tuple<FString, FMeshTransform> LayoutPolygon::CheckAddObj(FVector pos,
 			}
 		}
 		if (valid) {
-			index = Lodash::RandomRangeInt(0, meshesCount - 1);
-			meshName = meshNames[index];
 			rot = FVector(Lodash::RandomRangeFloat(inParams.rotMinX, inParams.rotMaxX),
 				Lodash::RandomRangeFloat(inParams.rotMinY, inParams.rotMaxY),
 				Lodash::RandomRangeFloat(inParams.rotMinZ, inParams.rotMaxZ));
 			scaleFactor = Lodash::RandomRangeFloat(inParams.scaleMin, inParams.scaleMax);
+			if (meshesCount > 0) {
+				index = Lodash::RandomRangeInt(0, meshesCount - 1);
+				meshName = meshNames[index];
+			}
 			uniqueName = Lodash::GetInstanceId(meshName);
 			key = uniqueName;
 			scale = FVector(scaleFactor, scaleFactor, scaleFactor);

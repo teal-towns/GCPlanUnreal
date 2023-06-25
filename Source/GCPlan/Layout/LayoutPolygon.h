@@ -19,11 +19,11 @@ public:
 	void operator=(const LayoutPolygon &) = delete;
 	static LayoutPolygon *GetInstance();
 
-	bool PlaceInPolygon(TArray<FVector> vertices, TArray<FString> meshNames,
+	static TMap<FString, FMeshTransform> PlaceInPolygon(TArray<FVector> vertices, TArray<FString> meshNames,
 		FPlaceParams params = FPlaceParams(), FVector posCenter = FVector(0,0,0));
-	std::tuple<FString, FMeshTransform> CheckAddObj(FVector pos,
+	static std::tuple<FString, FMeshTransform> CheckAddObj(FVector pos,
 		TArray<FString> meshNames, TArray<FVector2D> vertices2D, FVector posCenter,
 		TArray<FVector> minMaxPoints, FPlaceParams params = FPlaceParams());
-	bool InPolygon(FVector pos, FVector2D pos2D, TArray<FVector2D> vertices2D, FVector posCenter,
+	static bool InPolygon(FVector pos, FVector2D pos2D, TArray<FVector2D> vertices2D, FVector posCenter,
 		float radius, FString shape);
 };

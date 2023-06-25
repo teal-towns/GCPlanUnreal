@@ -30,6 +30,7 @@ public:
 
 	static SplineRoad *GetInstance();
 	void SetWorld(UWorld*);
+	void Init();
 	void DestroyRoads();
 	void CleanUp();
 

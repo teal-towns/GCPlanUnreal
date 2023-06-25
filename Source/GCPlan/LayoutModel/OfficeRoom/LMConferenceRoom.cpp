@@ -43,8 +43,8 @@ TMap<FString, FPolygon> LMConferenceRoom::Create(FVector size, FModelParams mode
 	// scale = FVector(size.X / 2, size.Y / 2, -1);
 	scale = FVector(2.5 + 1 * 2, 5.5 + 1 * 2, 1);
 	FTableChairs tableParams;
-	tableParams.tableMeshes = { "conferenceTable" };
-	tableParams.chairMeshes = { "officeChair" };
+	tableParams.meshesByTags["table"] = { "conferenceTable" };
+	tableParams.meshesByTags["chair"] = { "officeChair" };
 	LMTableChairs::TableWithChairs(scale, modelParams, createParamsIn, tableParams);
 
 	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();

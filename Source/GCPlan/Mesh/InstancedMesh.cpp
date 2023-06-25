@@ -40,13 +40,13 @@ void InstancedMesh::CleanUp() {
 	_instancedMeshActors = {};
 	if (_instancedMeshesActor && IsValid(_instancedMeshesActor)) {
 		_instancedMeshesActor->Destroy();
-		// _instancedMeshesActor = nullptr;
 	}
+	_instancedMeshesActor = nullptr;
 	pinstance_ = nullptr;
 }
 
-void InstancedMesh::InitMeshes() {
-	if (!IsValid(_instancedMeshesActor)) {
+void InstancedMesh::Init() {
+	if (!_instancedMeshesActor || !IsValid(_instancedMeshesActor)) {
 		FString name = "InstancedMeshes";
 		ModelBase* modelBase = ModelBase::GetInstance();
 		PMBase* pmBase = PMBase::GetInstance();
@@ -59,6 +59,10 @@ void InstancedMesh::InitMeshes() {
 		// 	UE_LOG(LogTemp, Display, TEXT("pending?"), _instancedMeshesActor->IsPendingKill(), _instancedMeshesActor->HasAnyFlags(RF_BeginDestroyed));
 		// }
 	}
+}
+
+void InstancedMesh::InitMeshes() {
+	Init();
 
 	// LoadContent* loadContent = LoadContent::GetInstance();
 	// TODO - replace and / or reference these all from load content
@@ -129,9 +133,11 @@ void InstancedMesh::AddMesh(FString name, FString meshPath, FString materialPath
 				}
 				UStaticMesh* mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL,
 					*meshPath));
-				// UStaticMeshComponent* meshComponent = actor->FindComponentByClass<UStaticMeshComponent>();
-				// meshComponent->SetStaticMesh(mesh);
-				instancedStaticMesh->SetStaticMesh(mesh);
+				if (!mesh) {
+					UE_LOG(LogTemp, Warning, TEXT("InstancedMesh.AddMesh mesh load error, skipping %s"), *meshPath);
+				} else {
+					instancedStaticMesh->SetStaticMesh(mesh);
+				}
 			}
 
 			if (modelParams.dynamicMaterial) {
@@ -146,11 +152,19 @@ void InstancedMesh::AddMesh(FString name, FString meshPath, FString materialPath
 				if (materialPath.Contains(".MaterialInstance")) {
 					UMaterialInstance* material = Cast<UMaterialInstance>(StaticLoadObject(UMaterialInstance::StaticClass(), NULL,
 						*materialPath));
-					instancedStaticMesh->SetMaterial(0, material);
+					if (!material) {
+						UE_LOG(LogTemp, Warning, TEXT("InstancedMesh.AddMesh material load error, skipping %s"), *materialPath);
+					} else {
+						instancedStaticMesh->SetMaterial(0, material);
+					}
 				} else {
 					UMaterial* material = Cast<UMaterial>(StaticLoadObject(UMaterial::StaticClass(), NULL,
 						*materialPath));
-					instancedStaticMesh->SetMaterial(0, material);
+					if (!material) {
+						UE_LOG(LogTemp, Warning, TEXT("InstancedMesh.AddMesh material load error, skipping %s"), *materialPath);
+					} else {
+						instancedStaticMesh->SetMaterial(0, material);
+					}
 				}
 			}
 		}

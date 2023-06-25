@@ -185,3 +185,14 @@ FString Lodash::CheckAddSuffix(FString text, FString suffix) {
 	}
 	return text;
 }
+
+FString Lodash::Join(TArray<FString> list, FString delimiter) {
+	FString text;
+	for (int ii = 0; ii < list.Num(); ii++) {
+		text += list[ii];
+		if (ii < list.Num() - 1) {
+		 	text += delimiter;
+		}
+	}
+	return text;
+}

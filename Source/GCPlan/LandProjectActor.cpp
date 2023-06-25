@@ -14,9 +14,11 @@
 #include "Mesh/InstancedMesh.h"
 #include "Plot/PlotBuild.h"
 
+#include "LayoutModel/OfficeRoom/LMCafeteria.h"
 #include "LayoutModel/OfficeRoom/LMConferenceRoom.h"
 #include "LayoutModel/OfficeRoom/LMLobby.h"
 #include "LayoutModel/OfficeRoom/LMOfficeDesks.h"
+#include "LayoutModel/OfficeRoom/LMServerRoom.h"
 
 #include "Common/MathVector.h"
 #include "Layout/LayoutPolygon.h"
@@ -140,7 +142,7 @@ void ALandProjectActor::Test() {
 	// placeParams.rotMaxZ = 270;
 	// placeParams.rotMinY = 0;
 	// placeParams.rotMaxY = 360;
-	// layoutPolygon->PlaceInPolygon(vertices, meshNames, placeParams);
+	// LayoutPolygon::PlaceInPolygon(vertices, meshNames, placeParams);
 
 
 	// FModelParams modelParams;
@@ -197,4 +199,8 @@ void ALandProjectActor::SetVertices() {
 	LMConferenceRoom::Create(FVector(10,12,4), modelParams, createParams);
 	createParams.offset = FVector(-269,15,3);
 	LMLobby::TwoTables(FVector(10,12,4), modelParams, createParams);
+	createParams.offset = FVector(-291,31,3);
+	LMCafeteria::Create(FVector(10,12,4), modelParams, createParams);
+	createParams.offset = FVector(0,0,4);
+	LMServerRoom::Create(FVector(10,12,4), modelParams, createParams);
 }
