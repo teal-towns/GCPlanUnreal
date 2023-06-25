@@ -14,6 +14,7 @@
 /Content/Conditional
 /Source/Conditional
 
+/Source/GCPlan/CCDefines.h
 /Source/ThirdParty/cppdelaunay/libcppdelaunay
 
 /Content/EuropeanBeech
