@@ -20,7 +20,7 @@ ModelSolarChargingStation::~ModelSolarChargingStation()
 AActor *ModelSolarChargingStation::Create()
 {
 	ModelBase *modelBase = ModelBase::GetInstance();
-	auto [modelingBase, modelParams] = modelBase->GetInputs("SolarChargingStation", FVector(7, 5, 3)); // common size for three car parking spaces
+	auto [modelingBase, modelParams] = modelBase->GetInputs("SolarChargingStation", FVector(20, 5, 3)); // common size for 8 car parking spaces
 	FString name = modelingBase.name;
 	FVector size = modelingBase.size;
 	TArray<FString> tags = modelingBase.tags;
@@ -50,12 +50,13 @@ AActor *ModelSolarChargingStation::Create()
 	int baseSupportCount = 2 + (size.X / 3 - 1); // Set bases stand 3 meters apart
 
 	CreateBaseSupport(name, scale, "right", size.X, size.Z, spawnParams, modelParams, modelBase);
+	CreateBaseSupport(name, scale, "middle", size.X, size.Z, spawnParams, modelParams, modelBase);
 	CreateBaseSupport(name, scale, "left", size.X, size.Z, spawnParams, modelParams, modelBase);
 
 	/* Solar Panel */
 	modelParams.meshPath = meshPath;
 	modelParams.materialPath = materialSolarPanelPath;
-	scale = FVector(solarPanelWidth, solarPanelWidth * 0.8, 0.01);
+	scale = FVector(solarPanelWidth, size.Y, 0.01);
 	location = FVector(0, 0, size.Z);
 	modelBase->CreateActor(name + "_solarPanel", location, FVector(10, 0, 0), scale, spawnParams, modelParams);
 
@@ -67,14 +68,22 @@ void ModelSolarChargingStation::CreateBaseSupport(FString name, FVector scale, F
 {
 	float sideFactor = side == "left" ? -1 : 1;
 	name = name + "_" + side;
-	float baseWidth = sizeX * 0.1;
+	float baseWidth = 0.8;
 	float baseHeight = sizeZ * 0.2;
 	float baseBottomHeight = baseHeight * 0.2;
 	float baseBottomOffset = 0.4;
 	float baseMiddleHeight = baseHeight * 0.8;
 	float baseMiddleWidth = baseWidth * (1 - baseBottomOffset / 2);
-	float currentX = (sizeX / 2 - baseWidth / 2) * sideFactor;
 	float currentZ = 0;
+	float currentX = 0;
+	if (side == "right")
+	{
+		currentX = (sizeX / 2 - baseWidth / 2);
+	}
+	else if (side == "left")
+	{
+		currentX = -(sizeX / 2 - baseWidth / 2);
+	}
 
 	LoadContent *loadContent = LoadContent::GetInstance();
 	FString meshPath = loadContent->Mesh("cube");
