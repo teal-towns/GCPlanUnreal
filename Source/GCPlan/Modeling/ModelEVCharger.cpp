@@ -34,8 +34,8 @@ void ModelEVCharger::Create()
     USceneComponent *parent = actor->FindComponentByClass<USceneComponent>();
 
 	LoadContent* loadContent = LoadContent::GetInstance();
-    FString bodyMaterialPath = loadContent->Material("white");
-    FString cableMaterialPath = loadContent->Material("black");
+    FString bodyMaterialPath = loadContent->Material("smoothWhiteMetal");
+    FString cableMaterialPath = loadContent->Material("grey");
     FString connectorPinMaterialPath = loadContent->Material("grey");
     FString meshPathCube = loadContent->Mesh("cube");
     FString meshPathCylinder = loadContent->Mesh("cylinder");
