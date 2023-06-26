@@ -33,7 +33,7 @@ std::tuple<TMap<FString, FPolygon>, int> PlotDivide::SubdividePlots(TMap<FString
 	FPolygon polygonTemp;
 	float averageChildDiameter, newAverageChildDiameter, squareMeters;
 	TArray<FVector> bounds;
-	TMap<FString, FRoadPath> roads;
+	TMap<FString, FPolygon> roads;
 	TArray<FVector2D> vertices2D;
 	for (auto& Elem : polygons) {
 		polygonTemp = Elem.Value;
@@ -98,7 +98,7 @@ bool PlotDivide::AddRoads(TMap<FString, FPolygon> polygons) {
 			}
 		}
 	}
-	TMap<FString, FRoadPath> roads = BuildingRoad::BetweenSpaces(spacesVertices, verticesBuffer);
+	TMap<FString, FPolygon> roads = BuildingRoad::BetweenSpaces(spacesVertices, verticesBuffer);
 	splineRoad->AddRoads(roads);
 	return true;
 }

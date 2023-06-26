@@ -6,6 +6,7 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "ProceduralMeshComponent.h"
 
+#include "../Common/DataConvert.h"
 #include "../Common/Lodash.h"
 #include "../Common/UnrealGlobal.h"
 #include "../Landscape/HeightMap.h"
@@ -83,7 +84,7 @@ void SplineRoad::CleanUp() {
 	pinstance_ = nullptr;
 }
 
-void SplineRoad::AddRoads(TMap<FString, FRoadPath> roadsPaths) {
+void SplineRoad::AddRoads(TMap<FString, FPolygon> roadsPaths) {
 	for (auto& Elem : roadsPaths) {
 		FString UName = Elem.Key;
 		FString type = Elem.Value.type;
@@ -96,7 +97,7 @@ void SplineRoad::AddRoads(TMap<FString, FRoadPath> roadsPaths) {
 	}
 }
 
-void SplineRoad::DrawRoads(FString materialPath, bool addPlants, bool carveLand) {
+void SplineRoad::DrawRoads() {
 	Init();
 	float flatteningMeters = 10;
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
@@ -130,8 +131,11 @@ void SplineRoad::DrawRoads(FString materialPath, bool addPlants, bool carveLand)
 
 	FModelParams modelParams;
 	modelParams.meshPath = loadContent->Mesh("roadSegment1");
-	modelParams.materialPath = loadContent->Material(materialPath);
 	FModelCreateParams createParams;
+	TMap<FString, FString> pairs;
+	FString materialKey;
+	int addPlants = 0;
+	int carveLand = 1;
 
 	for (auto& Elem1 : _RoadsByType) {
 		FString type = Elem1.Key;
@@ -143,8 +147,12 @@ void SplineRoad::DrawRoads(FString materialPath, bool addPlants, bool carveLand)
 
 		for (auto& Elem : _RoadsByType[type]) {
 			UName = Elem.Key;
-			widthMeters = Elem.Value.widthMeters;
+			pairs = Lodash::PairsStringToObject(Elem.Value.pairsString);
+			widthMeters = pairs.Contains("width") ? DataConvert::Float(pairs["width"]) : 3;
+			addPlants = pairs.Contains("addPlants") ? 1 : 0;
 			vertices = Elem.Value.vertices;
+			materialKey = pairs.Contains("mat") ? pairs["mat"] : "asphalt";
+			modelParams.materialPath = loadContent->Material(materialKey);
 
 			spawnParams.Name = FName(UName);
 			actor = (AActor*)World->SpawnActor<AActor>(
@@ -216,7 +224,7 @@ void SplineRoad::DrawRoads(FString materialPath, bool addPlants, bool carveLand)
 				}
 
 				// Carve land (heightmap)
-				if (carveLand && type == "road" && vv > 0) {
+				if (carveLand > 0 && type == "road" && vv > 0) {
 					newHeightImageValues = heightMap->CarveLine(vertices[(vv - 1)], vertices[vv], widthMeters,
 						newHeightImageValues);
 					saveHeightMap = true;
@@ -242,7 +250,7 @@ void SplineRoad::DrawRoads(FString materialPath, bool addPlants, bool carveLand)
 					tangentStart, tangentEnd);
 			}
 
-			if (addPlants) {
+			if (addPlants > 0) {
 				// Place nature / trees on sides of roads.
 				placeParamsNature.spacing = 5;
 				placeParamsNature.spacingCrossAxis = 2;

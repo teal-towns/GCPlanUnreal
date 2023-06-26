@@ -16,7 +16,7 @@ BuildingFlowerHomes::BuildingFlowerHomes() {
 BuildingFlowerHomes::~BuildingFlowerHomes() {
 }
 
-std::tuple<FBuildingBlueprint, TMap<FString, FRoadPath>> BuildingFlowerHomes::Create(
+std::tuple<FBuildingBlueprint, TMap<FString, FPolygon>> BuildingFlowerHomes::Create(
 	TArray<FVector> pathVertices, float verticesBuffer, float centerAreaRatio,
 	float homeLandSizeSqM, FString homeLocation,
 	int maxFloors, FString uName, float unitDiameter, float floorHeight,
@@ -33,7 +33,8 @@ std::tuple<FBuildingBlueprint, TMap<FString, FRoadPath>> BuildingFlowerHomes::Cr
 	// FVector posOppositeCenter = pathVertices[0] + (posVertices[0] - posCenterGround);
 	FVector buildTowardPoint;
 
-	TMap<FString, FRoadPath> homePlotPaths = {};
+	TMap<FString, FPolygon> homePlotPaths = {};
+	FString pairsString;
 	// Un buffer vertices for paths to extend all the way to roads.
 	TArray<FVector> spacesVertices = MathPolygon::BufferVertices(pathVertices, posCenterGround, -1 * verticesBuffer);
 
@@ -70,7 +71,8 @@ std::tuple<FBuildingBlueprint, TMap<FString, FRoadPath>> BuildingFlowerHomes::Cr
 			nextTemp = verticesInnerCircle[ii];
 			edgeCenter = currentTemp + (nextTemp - currentTemp) * 0.5;
 			uNameTemp = "BuildingPath_" + Lodash::ToFixed(edgeCenter.X, 1) + "_" + Lodash::ToFixed(edgeCenter.Y, 1);
-			homePlotPaths.Add(uNameTemp, FRoadPath(uNameTemp, uNameTemp, { currentTemp, nextTemp }, 3, "walkPath"));
+			pairsString = "width=3";
+			homePlotPaths.Add(uNameTemp, FPolygon(uNameTemp, uNameTemp, { currentTemp, nextTemp }, edgeCenter, "walkPath", "path", pairsString));
 		}
 		// Since we start at 2nd one, on that last one, write the last one too.
 		if (ii == (verticesCount - 1)) {
@@ -78,7 +80,8 @@ std::tuple<FBuildingBlueprint, TMap<FString, FRoadPath>> BuildingFlowerHomes::Cr
 			nextTemp = verticesInnerCircle[0];
 			edgeCenter = currentTemp + (nextTemp - currentTemp) * 0.5;
 			uNameTemp = "BuildingPath_" + Lodash::ToFixed(edgeCenter.X, 1) + "_" + Lodash::ToFixed(edgeCenter.Y, 1);
-			homePlotPaths.Add(uNameTemp, FRoadPath(uNameTemp, uNameTemp, { currentTemp, nextTemp }, 3, "walkPath"));
+			pairsString = "width=3";
+			homePlotPaths.Add(uNameTemp, FPolygon(uNameTemp, uNameTemp, { currentTemp, nextTemp }, edgeCenter, "walkPath", "path", pairsString));
 		}
 
 		// Check that plot is big enough (on plot edges will be squished / small).
@@ -96,7 +99,8 @@ std::tuple<FBuildingBlueprint, TMap<FString, FRoadPath>> BuildingFlowerHomes::Cr
 			nextTemp = vertexInner;
 			edgeCenter = currentTemp + (nextTemp - currentTemp) * 0.5;
 			uNameTemp = "BuildingPath_" + Lodash::ToFixed(edgeCenter.X, 1) + "_" + Lodash::ToFixed(edgeCenter.Y, 1);
-			homePlotPaths.Add(uNameTemp, FRoadPath(uNameTemp, uNameTemp, { currentTemp, nextTemp }, 3, "walkPath"));
+			pairsString = "width=3";
+			homePlotPaths.Add(uNameTemp, FPolygon(uNameTemp, uNameTemp, { currentTemp, nextTemp }, edgeCenter, "walkPath", "path", pairsString));
 
 			TArray<int> heightFloorsOrder = {};
 			int minCrossCountUnits = -1;

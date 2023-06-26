@@ -9,6 +9,6 @@ public:
 
 	static TArray<FLand> CreateLands(TMap<FString, FPolygon> polygons, float unitDiameter = 9);
 	static void DrawLands(TArray<FLand> lands);
-	static void FlowerHomePlants(TMap<FString, FRoadPath> homePlotPaths);
+	static void FlowerHomePlants(TMap<FString, FPolygon> homePlotPaths);
 	static void RingPlantsCenter(TArray<FVector> vertices, float unitDiameter, int crossUnitsCount);
 };

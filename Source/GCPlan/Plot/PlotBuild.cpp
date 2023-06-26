@@ -67,8 +67,7 @@ void PlotBuild::DrawLands(TArray<FLand> lands) {
 	}
 }
 
-void PlotBuild::FlowerHomePlants(TMap<FString, FRoadPath> homePlotPaths) {
-	float widthMeters;
+void PlotBuild::FlowerHomePlants(TMap<FString, FPolygon> homePlotPaths) {
 	TArray<FVector> vertices;
 	LoadContent* loadContent = LoadContent::GetInstance();
 	TArray<FString> meshNamesBush = loadContent->GetMeshNamesByTypes({ "bush" });
@@ -77,7 +76,6 @@ void PlotBuild::FlowerHomePlants(TMap<FString, FRoadPath> homePlotPaths) {
 	placeParams.snapToGround = true;
 	placeParams.width = 5;
 	for (auto& Elem : homePlotPaths) {
-		widthMeters = Elem.Value.widthMeters;
 		vertices = Elem.Value.vertices;
 
 		placeParams.spacing = 2;
