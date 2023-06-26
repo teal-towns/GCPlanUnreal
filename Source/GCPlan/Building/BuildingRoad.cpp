@@ -11,10 +11,11 @@ BuildingRoad::BuildingRoad() {
 BuildingRoad::~BuildingRoad() {
 }
 
-TMap<FString, FRoadPath> BuildingRoad::BetweenSpaces(TArray<TArray<FVector>> spacesVertices,
+TMap<FString, FPolygon> BuildingRoad::BetweenSpaces(TArray<TArray<FVector>> spacesVertices,
 	float verticesBuffer) {
-	TMap<FString, FRoadPath> roads = {};
+	TMap<FString, FPolygon> roads = {};
 	TArray<FString> usedKeys = {};
+	FString pairsString = "";
 	HeightMap* heightMap = HeightMap::GetInstance();
 	for (int ii = 0; ii < spacesVertices.Num(); ii++) {
 		// Unbuffer vertices.
@@ -34,7 +35,8 @@ TMap<FString, FRoadPath> BuildingRoad::BetweenSpaces(TArray<TArray<FVector>> spa
 			// 0 digits to block overlap within 1 meter.
 			FString uName = "BuildingRoad_" + Lodash::ToFixed(edgeCenter.X, 0) + "_" + Lodash::ToFixed(edgeCenter.Y, 0);
 			if (!usedKeys.Contains(uName)) {
-				roads.Add(uName, FRoadPath(uName, uName, { vertex, vertexNext }, 10, "road"));
+				pairsString = "width=10";
+				roads.Add(uName, FPolygon(uName, uName, { vertex, vertexNext }, edgeCenter, "road", "path", pairsString));
 				usedKeys.Add(uName);
 			}
 		}

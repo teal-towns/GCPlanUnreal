@@ -16,7 +16,7 @@ private:
 
 	UWorld* World;
 
-	TMap<FString, TMap<FString, FRoadPath>> _RoadsByType = {};
+	TMap<FString, TMap<FString, FPolygon>> _RoadsByType = {};
 	AStaticMeshActor* _roadsActor = nullptr;
 	TMap<FString, AActor*> _RoadsActors = {};
 
@@ -34,6 +34,6 @@ public:
 	void DestroyRoads();
 	void CleanUp();
 
-	void AddRoads(TMap<FString, FRoadPath> roads);
-	void DrawRoads(FString materialPath = "asphalt", bool addPlants = true, bool carveLand = true);
+	void AddRoads(TMap<FString, FPolygon> roads);
+	void DrawRoads();
 };

@@ -6,6 +6,8 @@
 
 #include "HeightMap.h"
 #include "ImageUtils.h"
+#include "../Common/DataConvert.h"
+#include "../Common/Lodash.h"
 
 MeshTerrain* MeshTerrain::pinstance_{nullptr};
 std::mutex MeshTerrain::mutex_;
@@ -92,7 +94,7 @@ void MeshTerrain::DestroyRoads() {
 	_RoadsByType.Empty();
 }
 
-void MeshTerrain::AddRoads(TMap<FString, FRoadPath> roadsPaths) {
+void MeshTerrain::AddRoads(TMap<FString, FPolygon> roadsPaths) {
 	for (auto& Elem : roadsPaths) {
 		FString UName = Elem.Key;
 		FString type = Elem.Value.type;
@@ -112,8 +114,7 @@ void MeshTerrain::DrawRoads(float stepFactor) {
 
 	float stepDistance, widthMeters;
 	int pixelRange, pixelRangeHalf;
-
-
+	TMap<FString, FString> pairs;
 
 	for (auto& Elem1 : _RoadsByType) {
 		FString type = Elem1.Key;
@@ -130,7 +131,8 @@ void MeshTerrain::DrawRoads(float stepFactor) {
 		int splatsCount = 0;
 		for (auto& Elem : _RoadsByType[type]) {
 			FString UName = Elem.Key;
-			widthMeters = Elem.Value.widthMeters;
+			pairs = Lodash::PairsStringToObject(Elem.Value.pairsString);
+			widthMeters = pairs.Contains("width") ? DataConvert::Float(pairs["width"]) : 3;
 			TArray<FVector> vertices = Elem.Value.vertices;
 			stepDistance = widthMeters * stepFactor;
 			pixelRange = round(widthMeters / MetersPerPixel);

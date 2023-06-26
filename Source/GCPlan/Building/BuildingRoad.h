@@ -7,6 +7,6 @@ public:
 	BuildingRoad();
 	~BuildingRoad();
 
-	static TMap<FString, FRoadPath> BetweenSpaces(TArray<TArray<FVector>> spacesVertices,
+	static TMap<FString, FPolygon> BetweenSpaces(TArray<TArray<FVector>> spacesVertices,
 		float verticesBuffer);
 };

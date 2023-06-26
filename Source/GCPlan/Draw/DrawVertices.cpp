@@ -43,25 +43,21 @@ void DrawVertices::LoadVertices() {
 	TArray<FLand> lands = PlotBuild::CreateLands(polygons);
 	PlotBuild::DrawLands(lands);
 
-	// Roads.
-	FString uName;
-	TMap<FString, FPolygon> polygonsRoad = verticesEdit->FilterByTypes({ "road" });
-	if (polygonsRoad.Num() > 0) {
-		TMap<FString, FRoadPath> roads = {};
-		for (auto& Elem : polygonsRoad) {
-			uName = Elem.Key;
-			roads.Add(uName, FRoadPath(uName, uName, Elem.Value.vertices, 10, "road"));
-		}
-		splineRoad->AddRoads(roads);
-	}
-	// MeshTerrain* meshTerrain = MeshTerrain::GetInstance();
-	// meshTerrain->DrawRoads();
-	splineRoad->DrawRoads("trainTracks");
-
 	// Place nature on land.
 	if (unrealGlobal->_settings->performanceQualityLevel >= 8) {
 		LandNature::PlaceNature();
 	}
+
+	// Paths
+	// Roads.
+	FString uName;
+	polygons = verticesEdit->FilterByShapes({ "path" });
+	if (polygons.Num() > 0) {
+		splineRoad->AddRoads(polygons);
+	}
+	// MeshTerrain* meshTerrain = MeshTerrain::GetInstance();
+	// meshTerrain->DrawRoads();
+	splineRoad->DrawRoads();
 
 	InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
 	TArray<FString> types;

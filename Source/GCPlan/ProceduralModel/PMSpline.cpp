@@ -88,7 +88,7 @@ void PMSpline::AddSplineMesh(FString UName, int pointCount, FModelParams modelPa
 }
 
 USplineMeshComponent* PMSpline::InitMesh(FString nameTemp, FModelParams modelParams,
-	FModelCreateParams createParams, float widthMeters) {
+	FModelCreateParams createParams, float widthMeters, float widthMetersMesh) {
 	UObject* parentObject = (UObject*)createParams.parentActor;
 	USplineMeshComponent* SplineMesh = NewObject<USplineMeshComponent>(parentObject,
 		USplineMeshComponent::StaticClass(), *nameTemp);
@@ -103,9 +103,7 @@ USplineMeshComponent* PMSpline::InitMesh(FString nameTemp, FModelParams modelPar
 	ModelBase::SetMeshMaterialFromParams(SplineMesh, modelParams);
 
 	// Width of the mesh
-	// float scale = widthMeters;
-	float scale = 1;
-	// TODO - need to compute relative to mesh size?
+	float scale = widthMeters / widthMetersMesh;
 	SplineMesh->SetStartScale(FVector2D(scale, scale));
 	SplineMesh->SetEndScale(FVector2D(scale, scale));
 

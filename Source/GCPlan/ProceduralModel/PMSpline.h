@@ -17,5 +17,5 @@ public:
 		FModelCreateParams createParams, float widthMeters, USplineComponent* spline,
 		FVector tangentStart = FVector(0,0,0), FVector tangentEnd = FVector(0,0,0));
 	static USplineMeshComponent* InitMesh(FString nameTemp, FModelParams modelParams,
-		FModelCreateParams createParams, float widthMeters);
+		FModelCreateParams createParams, float widthMeters, float widthMetersMesh = 10);
 };

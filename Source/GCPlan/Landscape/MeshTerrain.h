@@ -20,9 +20,7 @@ private:
 	UMaterialInterface* Material;
 	UMaterialInstanceDynamic* MaterialInstanceDynamic;
 	// UMaterialInstance* MaterialInstance;
-	TMap<FString, TMap<FString, FRoadPath>> _RoadsByType = {};
-	// TMap<FString, FRoadPath> _Roads = {};
-	// TMap<FString, FRoadPath> _WalkPaths = {};
+	TMap<FString, TMap<FString, FPolygon>> _RoadsByType = {};
 
 public:
 	MeshTerrain();
@@ -41,7 +39,7 @@ public:
 	void CreateTerrainFromHeightMap(float Scale = 247.71, int UVScale = 1);
 	std::tuple<int, int> CreateVerticesFromHeightMap(float Scale, int UVScale, float ZScale = 100);
 	void CreateTriangles(int XSize, int YSize);
-	void AddRoads(TMap<FString, FRoadPath> roads);
+	void AddRoads(TMap<FString, FPolygon> roads);
 	void DrawRoads(float stepFactor = 0.5);
 	void DestroyRoads();
 };
