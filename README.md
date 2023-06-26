@@ -3,6 +3,7 @@
 - Copy the `Source/ConditionalExample` folder and adjust for your content.
 	- Create a new folder for your project / assets and add this path to `settings.json`
 	- Add content (meshes and materials) to `Content/Conditional` and update `contentMeshes.json` to reference them.
+	- Copy `CCDefines.h` to `Source/GCPlan/CCDefines.h` and modify accordingly.
 	- Landscape (this currently has to be manually set in the project editor - TODO: fix this so it is auto-updated via code and can live in the conditional project folder so changing `settings.json` will be all that is necessary.)
 		- add `image-terrain.jpg` and a 16-bit grayscale `image-heightmap.png` to the root of the `Source/Conditional` folder
 		- add `image-terrain-[size].jpg` to the `Content/Conditional/Landscape` (sub)folder

@@ -35,5 +35,5 @@ public:
 	void CleanUp();
 
 	void AddRoads(TMap<FString, FRoadPath> roads);
-	void DrawRoads(bool addPlants = true, bool carveLand = true);
+	void DrawRoads(FString materialPath = "asphalt", bool addPlants = true, bool carveLand = true);
 };

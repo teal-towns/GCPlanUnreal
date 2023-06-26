@@ -96,7 +96,7 @@ void SplineRoad::AddRoads(TMap<FString, FRoadPath> roadsPaths) {
 	}
 }
 
-void SplineRoad::DrawRoads(bool addPlants, bool carveLand) {
+void SplineRoad::DrawRoads(FString materialPath, bool addPlants, bool carveLand) {
 	Init();
 	float flatteningMeters = 10;
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
@@ -130,7 +130,7 @@ void SplineRoad::DrawRoads(bool addPlants, bool carveLand) {
 
 	FModelParams modelParams;
 	modelParams.meshPath = loadContent->Mesh("roadSegment1");
-	modelParams.materialPath = "/Script/Engine.Material'/Game/Landscape/Asphalt_M.Asphalt_M'";
+	modelParams.materialPath = loadContent->Material(materialPath);
 	FModelCreateParams createParams;
 
 	for (auto& Elem1 : _RoadsByType) {

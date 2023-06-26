@@ -56,7 +56,7 @@ void DrawVertices::LoadVertices() {
 	}
 	// MeshTerrain* meshTerrain = MeshTerrain::GetInstance();
 	// meshTerrain->DrawRoads();
-	splineRoad->DrawRoads();
+	splineRoad->DrawRoads("trainTracks");
 
 	// Place nature on land.
 	if (unrealGlobal->_settings->performanceQualityLevel >= 8) {
