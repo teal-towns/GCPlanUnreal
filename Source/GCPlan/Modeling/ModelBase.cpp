@@ -27,6 +27,7 @@
 #include "Plants/ModelTree.h"
 #include "ModelStreetLight.h"
 #include "ModelEVCharger.h"
+#include "ModelSolarChargingStation.h"
 
 ModelBase* ModelBase::pinstance_{nullptr};
 std::mutex ModelBase::mutex_;
@@ -137,7 +138,7 @@ void ModelBase::Create() {
 		ModelCouch::CreateFromInputs();
 	} else if (_modelingBase.subCategory == "DESK") {
 		ModelDesk::CreateFromInputs();
-	} else if (_modelingBase.subCategory == "EVCHARGER") {
+	} else if (_modelingBase.subCategory == "EV_CHARGER") {
 		ModelEVCharger::Create();
 	// } else if (_modelingBase.subCategory == "KEYBOARD") {
 	// 	ModelComputer::Keyboard();
@@ -159,6 +160,8 @@ void ModelBase::Create() {
 		ModelTable::CreateFromInputs();
 	} else if (_modelingBase.subCategory == "TREE") {
 		ModelTree::CreateFromInputs();
+	} else if (_modelingBase.subCategory == "SOLAR_CHARGING_STATION"){
+		ModelSolarChargingStation::Create();
 	}
 }
 

@@ -34,6 +34,9 @@ void ModelEVCharger::Create()
     USceneComponent *parent = actor->FindComponentByClass<USceneComponent>();
 
 	LoadContent* loadContent = LoadContent::GetInstance();
+    FString bodyMaterialPath = loadContent->Material("smoothWhiteMetal");
+    FString cableMaterialPath = loadContent->Material("grey");
+    FString connectorPinMaterialPath = loadContent->Material("grey");
     FString meshPathCube = loadContent->Mesh("cube");
     FString meshPathCylinder = loadContent->Mesh("cylinder");
     FString meshPathSphere = loadContent->Mesh("sphere");
@@ -49,6 +52,8 @@ void ModelEVCharger::Create()
     float cableDiameter = 0.04;
 
     modelParams.meshPath = meshPathCube;
+    modelParams.materialPath = bodyMaterialPath;
+
     // Charger Bottom
     location = FVector(0, 0, 0);
     scale = FVector(chargerWidth, chargerDepth, chargerBottomHeight);
@@ -70,6 +75,7 @@ void ModelEVCharger::Create()
     modelBase->CreateActor(name + "_ChargerTopRectTop", location, rotation, scale, spawnParams, modelParams);
 
     // Screen
+    modelParams.materialPath = cableMaterialPath;
     location = FVector(0, chargerDepth / 2, chargerBottomHeight * 2 / 3);
     scale = FVector(chargerWidth * 0.8, 0.02, chargerBottomHeight * 0.3);
     modelBase->CreateActor(name + "_Screen", location, rotation, scale, spawnParams, modelParams);
@@ -77,6 +83,8 @@ void ModelEVCharger::Create()
     /******************** Charging Cable ********************/
 
     modelParams.meshPath = meshPathCylinder;
+    modelParams.materialPath = cableMaterialPath;
+
     // Charging Cable Section 1
     float section1Length = cableLength * 0.05;
     float cableCurrentX = (chargerWidth + section1Length) / 2;
@@ -157,6 +165,8 @@ void ModelEVCharger::Create()
     modelBase->CreateActor(name + "_ConnectorBody_Section2", location, FVector(0, 0, 0), scale, spawnParams, modelParams);
 
     modelParams.meshPath = meshPathCylinder;
+    modelParams.materialPath = connectorPinMaterialPath;
+
     // Connector Head Pin 1
     float connectorHeadDiameter = connectorBottomDiameter / 3;
     float connectorHeadPin1Length = ((cableCurrentX - chargerWidth / 2) - connectorBodyS2Length / 2) * 0.9;

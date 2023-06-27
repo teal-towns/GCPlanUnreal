@@ -101,10 +101,12 @@ enum ModelingSubCategoryTools {
 };
 
 UENUM()
-enum ModelingSubCategoryVehicle {
+enum ModelingSubCategoryVehicle
+{
 	CAR,
-	EVCHARGER,
-	TRAIN
+	EV_CHARGER,
+	TRAIN,
+	SOLAR_CHARGING_STATION
 };
 
 USTRUCT()
