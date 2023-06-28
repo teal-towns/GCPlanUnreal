@@ -12,5 +12,5 @@ public:
 	static AActor* Create(FVector size, FModelParams modelParams = FModelParams(),
 		FModelCreateParams createParams = FModelCreateParams(), TMap<FString, FString> pairs = {});
 	static AActor* RoundShort(FVector size, FModelParams modelParams = FModelParams(),
-		FModelCreateParams createParams = FModelCreateParams());
+		FModelCreateParams createParams = FModelCreateParams(), TMap<FString, FString> pairs = {});
 };

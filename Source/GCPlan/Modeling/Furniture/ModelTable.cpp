@@ -3,6 +3,7 @@
 #include "../ModelBase.h"
 #include "../Common/ModelLeg.h"
 #include "../../Common/Lodash.h"
+#include "../Common/ModelTile.h"
 
 ModelTable::ModelTable() {
 }
@@ -20,7 +21,7 @@ void ModelTable::Build(TMap<FString, FString> pairs) {
 		pairs.Add("meshRule", "");
 	}
 	if (pairs["meshRule"] == "tableRoundShort") {
-		RoundShort(scale, modelParams, createParams);
+		RoundShort(scale, modelParams, createParams, pairs);//smm230726
 	}
 }
 
@@ -31,7 +32,7 @@ AActor* ModelTable::CreateFromInputs() {
 	FVector size = modelingBase.size;
 	TMap<FString, FString> pairs = modelingBase.pairs;
 	if (pairs.Contains("roundShort")) {
-		return RoundShort(size, modelParams, FModelCreateParams());
+		return RoundShort(size, modelParams, FModelCreateParams(), pairs);//smm230726
 	}
 	return Create(size, modelParams, FModelCreateParams(), pairs);
 }
@@ -67,14 +68,21 @@ AActor* ModelTable::Create(FVector size, FModelParams modelParams,
 
 	location = FVector(0, 0, legZ);
 	scale = FVector(size.X, size.Y, thick);
-	modelBase->CreateActor(name + "_Top", location, rotation, scale, spawnParams, modelParams);
+	AStaticMeshActor* tileActor = modelBase->CreateActor(name + "_Top", location, rotation, scale, spawnParams, modelParams);
+
+	if (pairs.Contains("tile")) {
+		location.X += (size.X / -2.0);
+		location.Y += (size.Y / -2.0);
+		location.Z += (thick / -2.0);
+		ModelTile::Top(tileActor, name + "_Top", location, rotation, scale, spawnParams, modelParams);
+	}
 
 	ModelBase::SetTransformFromParams(actor, createParamsIn);
 	return actor;
 }
 
 AActor* ModelTable::RoundShort(FVector size, FModelParams modelParams,
-	FModelCreateParams createParamsIn) {
+	FModelCreateParams createParamsIn, TMap<FString, FString> pairs) {
 	if (size == FVector(0,0,0)) {
 		size = FVector(1.3,1.3,0.7);
 	}
@@ -97,7 +105,18 @@ AActor* ModelTable::RoundShort(FVector size, FModelParams modelParams,
 	modelParams.meshKey = "cylinder";
 	modelParams.materialKey = "white";
 	scale = FVector(size.X, size.Y, topHeight);
-	modelBase->CreateActor(name + "_Top", FVector(0,0,size.Z - topHeight), rotation, scale, spawnParams, modelParams);
+	location = FVector(0, 0, size.Z - topHeight);
+	AStaticMeshActor* tileActor = modelBase->CreateActor(name + "_Top", location, rotation, scale, spawnParams, modelParams);
+
+#if 0 // ModelTile only handles rectangles//smm230627
+	if (pairs.Contains("tile")) {
+		location.X += (size.X / -2.0);
+		location.Y += (size.Y / -2.0);
+		location.Z += (topHeight / -2.0);
+		ModelTile::Top(tileActor, name + "_Top", location, rotation, scale, spawnParams, modelParams);
+	}
+#endif 0 // ModelTile only handles rectangles//smm230627
+
 	ModelBase::SetTransformFromParams(actor, createParamsIn);
 	return actor;
 }
