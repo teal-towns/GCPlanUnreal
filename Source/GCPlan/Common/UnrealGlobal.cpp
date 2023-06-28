@@ -11,6 +11,7 @@
 #include "../Mesh/InstancedMesh.h"
 #include "../Mesh/LoadContent.h"
 #include "../Modeling/ModelBase.h"
+#include "../Move/MoveObject.h"
 #include "../ProceduralModel/PMBase.h"
 
 UnrealGlobal* UnrealGlobal::pinstance_{nullptr};
@@ -137,6 +138,9 @@ void UnrealGlobal::CleanUp(TArray<FString> skipKeys) {
 
 	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
     verticesEdit->CleanUp();
+
+    MoveObject* moveObject = MoveObject::GetInstance();
+    moveObject->CleanUp();
 
     if (!skipKeys.Contains("socket") && IsValid(SocketActor)) {
 		SocketActor->Destroy();

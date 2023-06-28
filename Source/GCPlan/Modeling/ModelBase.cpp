@@ -265,6 +265,7 @@ AStaticMeshActor* ModelBase::CreateActor(FString name, FVector location, FVector
 
 	LoadContent* loadContent = LoadContent::GetInstance();
 	UStaticMeshComponent* meshComponent = actor->FindComponentByClass<UStaticMeshComponent>();
+	actor->SetRootComponent(meshComponent);
 	SetMeshMaterialFromParams(meshComponent, modelParams);
 
 	if (modelParams.parent) {

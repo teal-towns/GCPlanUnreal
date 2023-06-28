@@ -111,8 +111,10 @@ void ALandProjectActor::Init() {
 
 		// CreateUI();
 
-		LisbonSequence* lisbonSequence = LisbonSequence::GetInstance();
-		lisbonSequence->Start();
+		// MoveObject* moveObject = MoveObject::GetInstance();
+		// moveObject->CleanUp();
+		// LisbonSequence* lisbonSequence = LisbonSequence::GetInstance();
+		// lisbonSequence->Start();
 	}
 }
 
@@ -170,12 +172,13 @@ void ALandProjectActor::Test() {
 	// vertices = MathVector::RotateAround(vertices, rotation, FVector(0,0,0));
 	// UE_LOG(LogTemp, Display, TEXT("rotate around %s"), *vertices[0].ToString());
 
-	// FModelCreateParams createParams;
-	// createParams.offset = FVector(0,0,5);
-	// createParams.rotation = FVector(0,0,-45);
-	// // ModelHighlight::Create(FVector(5,5,5), FModelParams(), createParams, {}, "testing1");
-	// DrawHighlight* drawHighlight = DrawHighlight::GetInstance();
+	FModelCreateParams createParams;
+	createParams.offset = FVector(-400,-121,26);
+	createParams.rotation = FVector(0,0,-45);
+	// ModelHighlight::Create(FVector(5,5,5), FModelParams(), createParams, {}, "testing1");
+	DrawHighlight* drawHighlight = DrawHighlight::GetInstance();
 	// drawHighlight->CreateOne("key1", FVector(5,5,5), FModelParams(), createParams, {}, Lodash::GetInstanceId("testing1"));
+	drawHighlight->CreateOne("trainStation", FVector(5,5,5), FModelParams(), createParams, {}, "Train Station");
 }
 
 void ALandProjectActor::Clear() {
@@ -228,7 +231,8 @@ void ALandProjectActor::SetVertices() {
 
 	createParams.rotation = FVector(0,0,-60);
 	// createParams.offset = FVector(-401,-149,3);
-	createParams.offset = FVector(135,-1124,3);
+	// createParams.offset = FVector(135,-1124,3);
+	createParams.offset = FVector(-65.5,-777,5);
 	LMTrain::Create(FVector(0,0,0), modelParams, createParams);
 }
 

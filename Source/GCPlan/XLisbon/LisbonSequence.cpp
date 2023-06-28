@@ -36,21 +36,32 @@ void LisbonSequence::Start() {
 	// TMap<FString, FPolygon> polygons = verticesEdit->FilterByTypes({ "train" });
 	// UE_LOG(LogTemp, Display, TEXT("LisbonSequence Start polygons %d"), polygons.Num());
 	// AActor* actor;
-	// float speed = 0.5;
+	// float speed = 0.25;
+	// FVector endBase = FVector(-401,-149,3);
+	// bool startSet = false;
+	// FVector startBase = FVector(0,0,0);
+	// // FVector end;
 	// FVector end = FVector(-401,-149,3);
 	// for (auto& Elem : polygons) {
 	// 	actor = modelBase->GetActorByName(Elem.Key, true);
-	// 	UE_LOG(LogTemp, Display, TEXT("polygon name %s"), *Elem.Key);
 	// 	if (actor) {
-	// 		UE_LOG(LogTemp, Display, TEXT("yes actor"));
+	// 		if (startSet) {
+	// 			startBase = actor->GetActorLocation() / unrealGlobal->GetScale();
+	// 			end = endBase;
+	// 			startSet = true;
+	// 		} else {
+	// 			end = endBase + (actor->GetActorLocation() / unrealGlobal->GetScale() - startBase);
+	// 		}
+	// 		UE_LOG(LogTemp, Display, TEXT("polygon name %s end %s"), *Elem.Key, *end.ToString());
 	// 		moveObject->Move(actor, end, speed);
 	// 	}
 	// }
 
-	// // UI text
-	// // if (unrealGlobal->_canvasTextWidget) {
-	// // 	unrealGlobal->_canvasTextWidget->SetText(Lodash::GetInstanceId("TextHere_"));
-	// // }
+	// TODO - causing memory leak / crash?
+	// UI text
+	if (unrealGlobal->_canvasTextWidget) {
+		unrealGlobal->_canvasTextWidget->SetText(Lodash::GetInstanceId("TextHere_"));
+	}
 
 	// // 3D text
 	// FModelCreateParams createParams;

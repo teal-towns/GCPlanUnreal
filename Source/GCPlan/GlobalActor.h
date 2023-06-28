@@ -2,6 +2,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+
+// #include "CanvasTextWidget.h"
+
 #include "GlobalActor.generated.h"
 
 UCLASS()
@@ -20,6 +23,11 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	static void LisbonExteriors();
+
+	// UPROPERTY(EditAnywhere)
+	// UCanvasTextWidget* CanvasTextWidget;
+
+	// void CreateUI();
 
 private:
 	// void Init();

@@ -31,6 +31,7 @@ public:
 	static MoveObject *GetInstance();
 
 	void Tick(float DeltaTime);
+	void CleanUp();
 	void Remove(FString name);
 	void Move(AActor* actor, FVector end, float speed);
 

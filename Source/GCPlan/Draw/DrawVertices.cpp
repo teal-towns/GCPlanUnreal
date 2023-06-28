@@ -68,39 +68,42 @@ void DrawVertices::LoadVertices() {
 	// Buildings - assume all are points.
 	// types = { "couch", "chair", "desk", "planterBox", "room", "table" };
 	// polygons = verticesEdit->FilterByTypes(types);
+	TArray<FString> skipTypes = { "train" };
 	polygons = verticesEdit->FilterByShapes({ "point" });
 	for (auto& Elem : polygons) {
-		pairs = Lodash::PairsStringToObject(Elem.Value.pairsString);
-		location = Elem.Value.vertices[0];
-		pairs.Add("loc", DataConvert::VectorToString(location));
-		if (pairs.Contains("mesh")) {
-			if (pairs.Contains("movable")) {
-				auto [key, modelParams] = ModelBase::ModelParamsFromPairs(pairs);
-				if (key.Len() > 0) {
-					auto [location1, rotation, scale] = ModelBase::PairsToTransform(pairs);
-					modelBase->CreateActor(Elem.Key, location, rotation, scale,
-						FActorSpawnParameters(), modelParams);
+		if (!skipTypes.Contains(Elem.Value.type)) {
+			pairs = Lodash::PairsStringToObject(Elem.Value.pairsString);
+			location = Elem.Value.vertices[0];
+			pairs.Add("loc", DataConvert::VectorToString(location));
+			if (pairs.Contains("mesh")) {
+				if (pairs.Contains("movable")) {
+					auto [key, modelParams] = ModelBase::ModelParamsFromPairs(pairs);
+					if (key.Len() > 0) {
+						auto [location1, rotation, scale] = ModelBase::PairsToTransform(pairs);
+						modelBase->CreateActor(Elem.Key, location, rotation, scale,
+							FActorSpawnParameters(), modelParams);
+					}
+				} else {
+					meshKey = ModelBase::InstancedMeshFromPairs(pairs);
+					if (meshKey.Len() > 0) {
+						auto [location1, rotation, scale] = ModelBase::PairsToTransform(pairs);
+						instancedMesh->CreateInstance(meshKey, location,
+							DataConvert::VectorToRotator(rotation), scale);
+					}
 				}
 			} else {
-				meshKey = ModelBase::InstancedMeshFromPairs(pairs);
-				if (meshKey.Len() > 0) {
-					auto [location1, rotation, scale] = ModelBase::PairsToTransform(pairs);
-					instancedMesh->CreateInstance(meshKey, location,
-						DataConvert::VectorToRotator(rotation), scale);
+				type = Elem.Value.type;
+				if (type == "cord") {
+					ModelCord::Build(pairs);
+				} else if (type == "desk") {
+					ModelDesk::Build(pairs);
+				} else if (type == "planterBox") {
+					ModelPlanterBox::Build(pairs);
+				} else if (type == "room") {
+					BuildingRoom::Build(pairs);
+				} else if (type == "table") {
+					ModelTable::Build(pairs);
 				}
-			}
-		} else {
-			type = Elem.Value.type;
-			if (type == "cord") {
-				ModelCord::Build(pairs);
-			} else if (type == "desk") {
-				ModelDesk::Build(pairs);
-			} else if (type == "planterBox") {
-				ModelPlanterBox::Build(pairs);
-			} else if (type == "room") {
-				BuildingRoom::Build(pairs);
-			} else if (type == "table") {
-				ModelTable::Build(pairs);
 			}
 		}
 	}
