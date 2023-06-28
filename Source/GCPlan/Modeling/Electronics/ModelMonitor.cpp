@@ -2,6 +2,7 @@
 
 #include "../ModelBase.h"
 #include "../../Common/Lodash.h"
+#include "../Common/ModelTile.h"
 
 ModelMonitor::ModelMonitor() {
 }
@@ -39,13 +40,13 @@ AActor* ModelMonitor::Create(FVector size, FModelParams modelParams,
 	if (stand > 0) {
 		// Back
 		float thick = 0.05;
-		location = FVector((-0.5 * stand), (-size.Y), thick);
-		scale = FVector(stand, thick, (stand * 2));
+		location = FVector((size.X / -2.0), 0, thick);
+		scale = FVector(stand, thick, (2.0 * stand));
 		modelBase->CreateActor(name + "_Back", location, rotation, scale, spawnParams, modelParams);
 
 		// Base
-		location = FVector((-0.5 * stand), (-size.Y), 0);
-		scale = FVector((stand * 3), stand, thick);
+		location = FVector((-0.5 * size.X), 0, thick);
+		scale = FVector((3.0 * size.X), (3.0 * stand), thick);
 		modelBase->CreateActor(name + "_Base", location, rotation, scale, spawnParams, modelParams);
 	}
 

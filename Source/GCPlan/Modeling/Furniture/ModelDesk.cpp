@@ -6,6 +6,10 @@
 #include "../Electronics/ModelComputer.h"
 #include "../Electronics/ModelMonitor.h"
 #include "../../Common/Lodash.h"
+#include "../Common/ModelTile.h"
+
+//#define DEBUGTILEFRONT//smmdebug230627 // Used to debug Front Tile logic
+//#define DEBUGTILEBOTTOM//smmdebug230627 // Used to debug Bottom Tile logic
 
 ModelDesk::ModelDesk() {
 }
@@ -52,7 +56,14 @@ AActor* ModelDesk::Create(FVector size, FModelParams modelParams,
 
 	location = FVector(0, 0, size.Z - thick);
 	scale = FVector(size.X, size.Y, thick);
-	modelBase->CreateActor(name + "_Top", location, rotation, scale, spawnParams, modelParams);
+	AStaticMeshActor* tileActor = modelBase->CreateActor(name + "_Top", location, rotation, scale, spawnParams, modelParams);
+
+	if (pairs.Contains("tile")) {
+		location.X += (size.X / -2.0);
+		location.Y += (size.Y / -2.0);
+		location.Z += (thick / -2.0);
+		ModelTile::Top(tileActor, name + "_Top", location, rotation, scale, spawnParams, modelParams);
+	}
 
 	if (pairs.Contains("legs")) {
 		modelParams.materialKey = "black";
@@ -79,7 +90,7 @@ AActor* ModelDesk::Create(FVector size, FModelParams modelParams,
 			}
 
 			// Left Front Leg
-			location = FVector(size.X / 2 - offXY, size.Y / -2 + offXY, legZ);
+			location = FVector(((size.X / 2.0) - offXY), ((size.Y / -2.0) + offXY), legZ);
 			scale = FVector(legThick, legThick, legSize.Z);
 			if (ii == 1) {
 				modelBase->CreateActor(name + "_LegsLF1", location, rotation, scale, spawnParams, modelParams);
@@ -88,7 +99,7 @@ AActor* ModelDesk::Create(FVector size, FModelParams modelParams,
 			}
 
 			// Left Back Leg
-			location = FVector(size.X / -2 + offXY, size.Y / -2 + offXY, legZ);
+			location = FVector(((size.X / -2.0) + offXY), ((size.Y / -2.0) + offXY), legZ);
 			scale = FVector(legThick, legThick, legSize.Z);
 			if (ii == 1) {
 				modelBase->CreateActor(name + "_LegsLB1", location, rotation, scale, spawnParams, modelParams);
@@ -97,7 +108,7 @@ AActor* ModelDesk::Create(FVector size, FModelParams modelParams,
 			}
 
 			// Right Front Leg
-			location = FVector(size.X / 2 - offXY, size.Y / 2 - offXY, legZ);
+			location = FVector(((size.X / 2.0) - offXY), ((size.Y / 2.0) - offXY), legZ);
 			scale = FVector(legThick, legThick, legSize.Z);
 			if (ii == 1) {
 				modelBase->CreateActor(name + "_LegsRF1", location, rotation, scale, spawnParams, modelParams);
@@ -106,7 +117,7 @@ AActor* ModelDesk::Create(FVector size, FModelParams modelParams,
 			}
 
 			// Right Back Leg
-			location = FVector(size.X / -2 + offXY, size.Y / 2 - offXY, legZ);
+			location = FVector(((size.X / -2.0) + offXY), ((size.Y / 2.0) - offXY), legZ);
 			scale = FVector(legThick, legThick, legSize.Z);
 			if (ii == 1) {
 				modelBase->CreateActor(name + "_LegsRB1", location, rotation, scale, spawnParams, modelParams);
@@ -122,21 +133,70 @@ AActor* ModelDesk::Create(FVector size, FModelParams modelParams,
 
 	} else {
 		modelParams.materialKey = "wood";
-		// Left
-		location = FVector(0, size.Y / -2 + thick / 2, 0);
-		scale = FVector(size.X, thick, size.Z);
-		modelBase->CreateActor(name + "_Left", location, rotation, scale, spawnParams, modelParams);
-
 		// Right
-		location = FVector(0, size.Y / 2 - thick / 2, 0);
+		location = FVector(0, ((size.Y / -2.0) + (thick / 2.0)), 0);
 		scale = FVector(size.X, thick, size.Z);
-		modelBase->CreateActor(name + "_Right", location, rotation, scale, spawnParams, modelParams);
+		AStaticMeshActor* tileActorR = modelBase->CreateActor(name + "_Right", location, rotation, scale, spawnParams, modelParams);
+
+		if (pairs.Contains("tile")) {
+			location.X += (size.X / -2.0);
+			location.Y += (thick / -2.0);
+			location.Z -= thick;
+			ModelTile::Right(tileActorR, name + "_Right", location, rotation, scale, spawnParams, modelParams);
+		}
+
+		// Left
+		location = FVector(0, ((size.Y / 2.0) - (thick / 2.0)), 0);
+		scale = FVector(size.X, thick, size.Z);
+		AStaticMeshActor* tileActorL = modelBase->CreateActor(name + "_Left", location, rotation, scale, spawnParams, modelParams);
+
+		if (pairs.Contains("tile")) {
+			location.X += (size.X / -2.0);
+			location.Y += (thick / -2.0);
+			location.Z -= thick;
+			ModelTile::Left(tileActorL, name + "_Left", location, rotation, scale, spawnParams, modelParams);
+		}
 
 		// Back
 		float gapBack = (0.4 * size.Z);
-		location = FVector(size.X / -2 + thick / 2, 0, gapBack);
-		scale = FVector(thick, (size.Y - (2.0 * thick)), (size.Z - gapBack));
-		modelBase->CreateActor(name + "_Back", location, rotation, scale, spawnParams, modelParams);
+		location = FVector((size.X / -2.0), 0, gapBack);
+		scale = FVector(thick, size.Y, (size.Z - gapBack));
+		AStaticMeshActor* tileActorB = modelBase->CreateActor(name + "_Back", location, rotation, scale, spawnParams, modelParams);
+
+		if (pairs.Contains("tile")) {
+			location.X -= (thick / 2.0);
+			location.Y += (size.Y / -2.0);
+			location.Z -= thick;
+			ModelTile::Back(tileActorB, name + "_Back", location, rotation, scale, spawnParams, modelParams);
+		}
+
+#ifdef DEBUGTILEFRONT//smmdebug230627
+		// Front
+		location = FVector((size.X / 2.0), 0, 0);
+		scale = FVector(thick, size.Y, size.Z);
+		AStaticMeshActor* tileActorF = modelBase->CreateActor(name + "_Front", location, rotation, scale, spawnParams, modelParams);
+
+//		if (pairs.Contains("tile")) {
+			location.X -= (thick / 2.0);
+			location.Y += (size.Y / -2.0);
+			location.Z -= thick;
+			ModelTile::Front(tileActorF, name + "_Front", location, rotation, scale, spawnParams, modelParams);
+//		}
+#endif DEBUGTILEFRONT//smmdebug230627
+
+#ifdef DEBUGTILEBOTTOM//smmdebug230627
+			// Bottom
+			location = FVector(0, 0, 0);
+			scale = FVector(size.X, size.Y, thick);
+			AStaticMeshActor* tileActorM = modelBase->CreateActor(name + "_Bottom", location, rotation, scale, spawnParams, modelParams);
+
+//		if (pairs.Contains("tile")) {
+			location.X += (size.X / -2.0);
+			location.Y += (size.Y / -2.0);
+			location.Z += (thick / -2.0);
+			ModelTile::Bottom(tileActorM, name + "_Bottom", location, rotation, scale, spawnParams, modelParams);
+//		}
+#endif DEBUGTILEBOTTOM//smmdebug230627
 	}
 
 	FModelCreateParams createParams;
@@ -145,12 +205,21 @@ AActor* ModelDesk::Create(FVector size, FModelParams modelParams,
 		createParams.parent = actorTemp->FindComponentByClass<USceneComponent>();
 		createParams.parentActor = actorTemp;
 		modelParams.parent = createParams.parent;
-		createParams.offset = FVector(0, (-0.25 * size.Y), (size.Z + thick));
-		ModelMonitor::Create(FVector(0.05, 0.4, 0.3), modelParams, createParams);
-		createParams.offset = FVector((-0.10 * size.X), 0, (size.Z + thick));
-		ModelComputer::Keyboard(FVector(0.2, 0.1, 0.02), modelParams, createParams);
-		createParams.offset = FVector((0.10 * size.X), 0, (size.Z + thick));
-		ModelComputer::Mouse(FVector(0.05, 0.02, 0.02), modelParams, createParams);
+		float MonitorXoff = 0.00;
+		float MonitorYoff = (-0.1 * size.Y);
+		createParams.offset = FVector(MonitorXoff, MonitorYoff, (size.Z + thick));
+		float MonitorXsiz = 0.05;
+		float MonitorYsiz = 0.40;
+		ModelMonitor::Create(FVector(MonitorXsiz, MonitorYsiz, 0.3), modelParams, createParams);
+		float KeyboardXoff = (2.0 * (MonitorXoff + MonitorXsiz));
+		float KeyboardYsiz = 0.2;
+		float KeyboardYoff = ((MonitorYoff + MonitorYsiz) - (1.8 * KeyboardYsiz));
+		createParams.offset = FVector(KeyboardXoff, KeyboardYoff, (size.Z + thick));
+		float KeyboardZsiz = 0.02;
+		ModelComputer::Keyboard(FVector(0.1, KeyboardYsiz, KeyboardZsiz), modelParams, createParams);
+		float MouseYoff = (KeyboardYoff - (1.0 * KeyboardYsiz));
+		createParams.offset = FVector(KeyboardXoff, MouseYoff, (size.Z + thick));
+		ModelComputer::Mouse(FVector(0.05, 0.03, KeyboardZsiz), modelParams, createParams);
 	}
 
 	ModelBase::SetTransformFromParams(actor, createParamsIn);
