@@ -8,9 +8,6 @@
 #include "../../Common/Lodash.h"
 #include "../Common/ModelTile.h"
 
-//#define DEBUGTILEFRONT//smmdebug230627 // Used to debug Front Tile logic
-//#define DEBUGTILEBOTTOM//smmdebug230627 // Used to debug Bottom Tile logic
-
 ModelDesk::ModelDesk() {
 }
 
@@ -170,7 +167,6 @@ AActor* ModelDesk::Create(FVector size, FModelParams modelParams,
 			ModelTile::Back(tileActorB, name + "_Back", location, rotation, scale, spawnParams, modelParams);
 		}
 
-#ifdef DEBUGTILEFRONT//smmdebug230627
 		// Front
 		location = FVector((size.X / 2.0), 0, 0);
 		scale = FVector(thick, size.Y, size.Z);
@@ -182,13 +178,11 @@ AActor* ModelDesk::Create(FVector size, FModelParams modelParams,
 			location.Z -= thick;
 			ModelTile::Front(tileActorF, name + "_Front", location, rotation, scale, spawnParams, modelParams);
 //		}
-#endif DEBUGTILEFRONT//smmdebug230627
 
-#ifdef DEBUGTILEBOTTOM//smmdebug230627
-			// Bottom
-			location = FVector(0, 0, 0);
-			scale = FVector(size.X, size.Y, thick);
-			AStaticMeshActor* tileActorM = modelBase->CreateActor(name + "_Bottom", location, rotation, scale, spawnParams, modelParams);
+		// Bottom
+		location = FVector(0, 0, 0);
+		scale = FVector(size.X, size.Y, thick);
+		AStaticMeshActor* tileActorM = modelBase->CreateActor(name + "_Bottom", location, rotation, scale, spawnParams, modelParams);
 
 //		if (pairs.Contains("tile")) {
 			location.X += (size.X / -2.0);
@@ -196,7 +190,6 @@ AActor* ModelDesk::Create(FVector size, FModelParams modelParams,
 			location.Z += (thick / -2.0);
 			ModelTile::Bottom(tileActorM, name + "_Bottom", location, rotation, scale, spawnParams, modelParams);
 //		}
-#endif DEBUGTILEBOTTOM//smmdebug230627
 	}
 
 	FModelCreateParams createParams;

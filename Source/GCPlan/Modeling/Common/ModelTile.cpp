@@ -19,6 +19,7 @@ TArray<FString> tileTypes = {
 #define DEFTILESIZE	0.1
 #define MINTILESNUM	4	// minimum Number of Tiles  4 x  4 = 16
 #define MAXTILESNUM	64	// maximum Number of Tiles 64 x 64 = 4096
+#define TILEBUFFER 0.04
 
 ModelTile::ModelTile() {
 }
@@ -30,42 +31,42 @@ void ModelTile::Left(AStaticMeshActor* actor, FString name, FVector location, FV
 					FVector scale, FActorSpawnParameters spawnParams, FModelParams modelParams)
 {
 	FVector tile = FVector(scale.X, 0, scale.Z);
-	doTile(actor, name, location, rotation, scale, spawnParams, modelParams, tile);
+	doTile(actor, name, location + FVector(0, -1 * TILEBUFFER, 0), rotation, scale, spawnParams, modelParams, tile);
 }
 
 void ModelTile::Right(AStaticMeshActor* actor, FString name, FVector location, FVector rotation,
 					FVector scale, FActorSpawnParameters spawnParams, FModelParams modelParams)
 {
 	FVector tile = FVector(scale.X, 0, scale.Z);
-	doTile(actor, name, location, rotation, scale, spawnParams, modelParams, tile);
+	doTile(actor, name, location + FVector(0, 1 * TILEBUFFER, 0), rotation, scale, spawnParams, modelParams, tile);
 }
 
 void ModelTile::Back(AStaticMeshActor* actor, FString name, FVector location, FVector rotation,
 					FVector scale, FActorSpawnParameters spawnParams, FModelParams modelParams)
 {
 	FVector tile = FVector(0, scale.Y, scale.Z);
-	doTile(actor, name, location, rotation, scale, spawnParams, modelParams, tile);
+	doTile(actor, name, location + FVector(-1 * TILEBUFFER, 0, 0), rotation, scale, spawnParams, modelParams, tile);
 }
 
 void ModelTile::Front(AStaticMeshActor* actor, FString name, FVector location, FVector rotation,
 					FVector scale, FActorSpawnParameters spawnParams, FModelParams modelParams)
 {
 	FVector tile = FVector(0, scale.Y, scale.Z);
-	doTile(actor, name, location, rotation, scale, spawnParams, modelParams, tile);
+	doTile(actor, name, location + FVector(1 * TILEBUFFER, 0, 0), rotation, scale, spawnParams, modelParams, tile);
 }
 
 void ModelTile::Bottom(AStaticMeshActor* actor, FString name, FVector location, FVector rotation,
 					FVector scale, FActorSpawnParameters spawnParams, FModelParams modelParams)
 {
 	FVector tile = FVector(scale.X, scale.Y, 0);
-	doTile(actor, name, location, rotation, scale, spawnParams, modelParams, tile);
+	doTile(actor, name, location + FVector(0, 0, -1 * TILEBUFFER), rotation, scale, spawnParams, modelParams, tile);
 }
 
 void ModelTile::Top(AStaticMeshActor* actor, FString name, FVector location, FVector rotation,
 					FVector scale, FActorSpawnParameters spawnParams, FModelParams modelParams)
 {
 	FVector tile = FVector(scale.X, scale.Y, 0);
-	doTile(actor, name, location, rotation, scale, spawnParams, modelParams, tile);
+	doTile(actor, name, location + FVector(0, 0, 1 * TILEBUFFER), rotation, scale, spawnParams, modelParams, tile);
 }
 
 void ModelTile::doTile(AStaticMeshActor* actor, FString name, FVector location, FVector rotation,
