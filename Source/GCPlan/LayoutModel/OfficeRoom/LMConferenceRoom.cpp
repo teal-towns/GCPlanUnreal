@@ -34,6 +34,7 @@ TMap<FString, FPolygon> LMConferenceRoom::Create(FVector size, FModelParams mode
 	pairsString = "meshRule=roomCube&mat=wood&bottomMat=marbleTile&scale=" + DataConvert::VectorToString(size) +
 		ModelBase::AddRotationString(createParamsIn.rotation);
 	vertices = { createParamsIn.offset };
+	vertices = ModelBase::Vertices(vertices, createParamsIn);
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
 
 	FWallPlants plantParams;

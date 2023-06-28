@@ -1,4 +1,6 @@
 #include "LandProjectActor.h"
+
+#include "Blueprint/UserWidget.h"
 #include "JsonObjectConverter.h"
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
@@ -7,6 +9,7 @@
 #include "DataStructsActor.h"
 #include "SocketActor.h"
 
+#include "Common/Lodash.h"
 #include "Common/UnrealGlobal.h"
 #include "Draw/DrawVertices.h"
 #include "Landscape/SplineRoad.h"
@@ -14,11 +17,17 @@
 #include "Mesh/InstancedMesh.h"
 #include "Plot/PlotBuild.h"
 
+#include "CanvasTextWidget.h"
+#include "Draw/DrawHighlight.h"
 #include "LayoutModel/OfficeRoom/LMCafeteria.h"
 #include "LayoutModel/OfficeRoom/LMConferenceRoom.h"
 #include "LayoutModel/OfficeRoom/LMLobby.h"
 #include "LayoutModel/OfficeRoom/LMOfficeDesks.h"
 #include "LayoutModel/OfficeRoom/LMServerRoom.h"
+#include "LayoutModel/TrainStation/LMTrain.h"
+#include "Modeling/Common/ModelHighlight.h"
+#include "Move/MoveObject.h"
+#include "XLisbon/LisbonSequence.h"
 
 #include "Common/MathVector.h"
 #include "Layout/LayoutPolygon.h"
@@ -98,6 +107,14 @@ void ALandProjectActor::Init() {
 		VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
 		verticesEdit->LoadFromFiles();
 		verticesEdit->CheckSubdividePolygons("plot");
+		verticesEdit->Hide();
+
+		// CreateUI();
+
+		// MoveObject* moveObject = MoveObject::GetInstance();
+		// moveObject->CleanUp();
+		// LisbonSequence* lisbonSequence = LisbonSequence::GetInstance();
+		// lisbonSequence->Start();
 	}
 }
 
@@ -149,11 +166,19 @@ void ALandProjectActor::Test() {
 	// FModelCreateParams createParams;
 	// LMOfficeDesks::Desks(FVector(10,12,4), modelParams, createParams);
 
-	TArray<FVector> vertices = { FVector(1, -1, 0) };
-	FVector rotation = FVector(0,0,180);
-	// rotation = FVector(0,0,30);
-	vertices = MathVector::RotateAround(vertices, rotation, FVector(0,0,0));
-	UE_LOG(LogTemp, Display, TEXT("rotate around %s"), *vertices[0].ToString());
+	// TArray<FVector> vertices = { FVector(1, -1, 0) };
+	// FVector rotation = FVector(0,0,180);
+	// // rotation = FVector(0,0,30);
+	// vertices = MathVector::RotateAround(vertices, rotation, FVector(0,0,0));
+	// UE_LOG(LogTemp, Display, TEXT("rotate around %s"), *vertices[0].ToString());
+
+	FModelCreateParams createParams;
+	createParams.offset = FVector(-400,-121,26);
+	createParams.rotation = FVector(0,0,-45);
+	// ModelHighlight::Create(FVector(5,5,5), FModelParams(), createParams, {}, "testing1");
+	DrawHighlight* drawHighlight = DrawHighlight::GetInstance();
+	// drawHighlight->CreateOne("key1", FVector(5,5,5), FModelParams(), createParams, {}, Lodash::GetInstanceId("testing1"));
+	drawHighlight->CreateOne("trainStation", FVector(5,5,5), FModelParams(), createParams, {}, "Train Station");
 }
 
 void ALandProjectActor::Clear() {
@@ -203,4 +228,22 @@ void ALandProjectActor::SetVertices() {
 	LMCafeteria::Create(FVector(10,12,4), modelParams, createParams);
 	createParams.offset = FVector(0,0,4);
 	LMServerRoom::Create(FVector(10,12,4), modelParams, createParams);
+
+	createParams.rotation = FVector(0,0,-60);
+	// createParams.offset = FVector(-401,-149,3);
+	// createParams.offset = FVector(135,-1124,3);
+	createParams.offset = FVector(-65.5,-777,5);
+	LMTrain::Create(FVector(0,0,0), modelParams, createParams);
+}
+
+void ALandProjectActor::CreateUI() {
+	if (!CanvasTextWidget) {
+		UE_LOG(LogTemp, Warning, TEXT("LandProjectActor.CreateUI missing CanvasTextWidget"));
+	} else {
+		CanvasTextWidget->AddToViewport(0);
+		// CanvasTextWidget->SetText(Lodash::GetInstanceId("TextHere_"));
+		CanvasTextWidget->SetText(Lodash::GetInstanceId(""));
+		UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+		unrealGlobal->SetWidgets(CanvasTextWidget);
+	}
 }

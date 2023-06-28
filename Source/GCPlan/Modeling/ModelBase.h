@@ -14,6 +14,7 @@ struct FModelParams {
 	UStaticMesh* mesh = nullptr;
 	UMaterialInstanceDynamic* dynamicMaterial = nullptr;
 	USceneComponent* parent = nullptr;
+	bool movable = false;
 	FString textureBase = "";
 	FString textureNormal = "";
 	FLinearColor textureColor = FLinearColor(1,1,1,1);
@@ -85,6 +86,7 @@ public:
 		FVector rotation = FVector(0,0,0), FVector scale = FVector(1,1,1),
 		FActorSpawnParameters spawnParams = FActorSpawnParameters(), FModelParams = FModelParams());
 	static void SetMeshMaterialFromParams(UStaticMeshComponent* meshComponent, FModelParams modelParams);
+	static UMaterialInterface* GetMaterial(FModelParams modelParams);
 	static std::tuple<FVector, FVector, FVector> PairsToTransform(TMap<FString, FString> pairs,
 		FVector scale = FVector(1,1,1));
 	static std::tuple<FString, FModelParams> ModelParamsFromPairs(TMap<FString, FString> pairs);
@@ -101,6 +103,8 @@ public:
 	std::tuple<FModelingBase, FModelParams> GetInputs(FString defaultName, FVector defaultSize);
 	void DestroyActors();
 	void CleanUp();
+	void DestroyActorByKey(FString key);
+	AActor* GetActorByName(FString name, bool checkScene = false);
 
 private:
 	static ModelBase *pinstance_;
@@ -108,5 +112,5 @@ private:
 
 	UWorld* World;
 	FModelingBase _modelingBase;
-	TMap<FString, AStaticMeshActor*> _spawnedActors = {};
+	TMap<FString, AActor*> _spawnedActors = {};
 };

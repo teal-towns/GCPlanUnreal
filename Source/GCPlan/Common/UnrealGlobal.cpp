@@ -11,6 +11,7 @@
 #include "../Mesh/InstancedMesh.h"
 #include "../Mesh/LoadContent.h"
 #include "../Modeling/ModelBase.h"
+#include "../Move/MoveObject.h"
 #include "../ProceduralModel/PMBase.h"
 
 UnrealGlobal* UnrealGlobal::pinstance_{nullptr};
@@ -28,6 +29,10 @@ UnrealGlobal *UnrealGlobal::GetInstance() {
 		pinstance_ = new UnrealGlobal();
 	}
 	return pinstance_;
+}
+
+void UnrealGlobal::SetWidgets(UCanvasTextWidget* canvasTextWidget) {
+	_canvasTextWidget = canvasTextWidget;
 }
 
 void UnrealGlobal::InitAll(UWorld* World1, TArray<FString> skipKeys) {
@@ -66,6 +71,13 @@ void UnrealGlobal::InitCommon(UWorld* World1) {
 
     SplineRoad* splineRoad = SplineRoad::GetInstance();
     splineRoad->SetWorld(World1);
+
+    TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(World1, AGlobalActor::StaticClass(), OutActors);
+	for (AActor* a : OutActors) {
+		_globalActor = Cast<AGlobalActor>(a);
+		break;
+	}
 }
 
 void UnrealGlobal::InitWeb(UWorld* World1) {
@@ -127,6 +139,9 @@ void UnrealGlobal::CleanUp(TArray<FString> skipKeys) {
 	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
     verticesEdit->CleanUp();
 
+    MoveObject* moveObject = MoveObject::GetInstance();
+    moveObject->CleanUp();
+
     if (!skipKeys.Contains("socket") && IsValid(SocketActor)) {
 		SocketActor->Destroy();
 	}
@@ -135,6 +150,8 @@ void UnrealGlobal::CleanUp(TArray<FString> skipKeys) {
 	// World = nullptr;
 	_settings = nullptr;
 	SocketActor = nullptr;
+	_globalActor = nullptr;
+	_canvasTextWidget = nullptr;
 }
 
 void UnrealGlobal::SetWorld(UWorld* World1) {

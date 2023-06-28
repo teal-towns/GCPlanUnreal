@@ -13,8 +13,8 @@ void UGCPlanGameInstance::Init() {
 }
 
 void UGCPlanGameInstance::Shutdown() {
-	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
-	unrealGlobal->CleanUp();
+	// UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+	// unrealGlobal->CleanUp();
 	Super::Shutdown();
 }
 

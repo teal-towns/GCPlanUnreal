@@ -34,6 +34,7 @@ TMap<FString, FPolygon> LMOfficeDesks::Desks(FVector size, FModelParams modelPar
 	pairsString = "meshRule=roomCube&mat=wood&bottomMat=carpetBlue&scale=" + DataConvert::VectorToString(size) +
 		ModelBase::AddRotationString(createParamsIn.rotation);
 	vertices = { createParamsIn.offset };
+	vertices = ModelBase::Vertices(vertices, createParamsIn);
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
 
 	FDesks deskParams;
