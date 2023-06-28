@@ -30,6 +30,10 @@ UnrealGlobal *UnrealGlobal::GetInstance() {
 	return pinstance_;
 }
 
+void UnrealGlobal::SetWidgets(UCanvasTextWidget* canvasTextWidget) {
+	_canvasTextWidget = canvasTextWidget;
+}
+
 void UnrealGlobal::InitAll(UWorld* World1, TArray<FString> skipKeys) {
 	SetWorld(World1);
 	// CleanUp({ "socket"} );
@@ -66,6 +70,13 @@ void UnrealGlobal::InitCommon(UWorld* World1) {
 
     SplineRoad* splineRoad = SplineRoad::GetInstance();
     splineRoad->SetWorld(World1);
+
+    TArray<AActor*> OutActors;
+	UGameplayStatics::GetAllActorsOfClass(World1, AGlobalActor::StaticClass(), OutActors);
+	for (AActor* a : OutActors) {
+		_globalActor = Cast<AGlobalActor>(a);
+		break;
+	}
 }
 
 void UnrealGlobal::InitWeb(UWorld* World1) {
@@ -135,6 +146,8 @@ void UnrealGlobal::CleanUp(TArray<FString> skipKeys) {
 	// World = nullptr;
 	_settings = nullptr;
 	SocketActor = nullptr;
+	_globalActor = nullptr;
+	_canvasTextWidget = nullptr;
 }
 
 void UnrealGlobal::SetWorld(UWorld* World1) {

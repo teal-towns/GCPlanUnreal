@@ -47,6 +47,7 @@ TMap<FString, FPolygon> LMTableChairs::TableWithChairs(FVector size, FModelParam
 	pairsString = "mesh=" + meshKey + "&scale=" + loadContent->MeshScale(scale, meshKey, {"x","y"}) +
 		ModelBase::AddRotationString(createParamsIn.rotation);
 	vertices = { MathVector::RotateVector(tableLocation, createParamsIn.rotation) + createParamsIn.offset };
+	vertices = ModelBase::Vertices(vertices, createParamsIn);
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "table", "point", pairsString));
 
 	// Go around table and place chairs.
@@ -73,6 +74,7 @@ TMap<FString, FPolygon> LMTableChairs::TableWithChairs(FVector size, FModelParam
 		pairsString = "mesh=" + meshKey + "&rot=" + DataConvert::VectorToString(Elem.Value.rotation +
 			loadContent->MeshRotation(meshKey));
 		vertices = { Elem.Value.location };
+		vertices = ModelBase::Vertices(vertices, createParamsIn);
 		polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "chair", "point", pairsString));
 	}
 
@@ -177,6 +179,7 @@ TMap<FString, FPolygon> LMTableChairs::SmallTableChairs(FVector size, FModelPara
 		pairsString = "meshRule=planterBox&scale=" + DataConvert::VectorToString(scale) +
 			ModelBase::AddRotationString(createParamsIn.rotation);
 		vertices = { MathVector::RotateVector(location + params.offset, createParamsIn.rotation) + createParamsIn.offset };
+		vertices = ModelBase::Vertices(vertices, createParamsIn);
 		polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "planterBox", "point", pairsString));
 		// flower
 		uName = uNameBase + "_flower";

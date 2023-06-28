@@ -46,18 +46,6 @@ TMap<FString, FPolygon> LMRoomPlants::WallPlanterBox(FVector size, FModelParams 
 		}
 		params.offset = location;
 		MultiPlantsBox(scale, modelParams, createParamsIn, params);
-		// uName = Lodash::GetInstanceId("PlanterBox");
-		// pairsString = "meshRule=planterBox&scale=" + DataConvert::VectorToString(scale) +
-		// 	ModelBase::AddRotationString(createParamsIn.rotation);
-		// vertices = { MathVector::RotateVector(location, createParamsIn.rotation) + createParamsIn.offset };
-		// polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "planterBox", "point", pairsString));
-		// // plants
-		// location += FVector(0,0,params.height);
-		// vertices = MathVector::RotateVertices(MathPolygon::PointToBox(location, scale), createParamsIn.rotation,
-		// 	createParamsIn.offset);
-		// uName = Lodash::GetInstanceId("Plants");
-		// pairsString = params.pairsStringPlants;
-		// polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "bush", "polygon", pairsString));
 	}
 
 	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
@@ -79,11 +67,13 @@ TMap<FString, FPolygon> LMRoomPlants::MultiPlantsBox(FVector size, FModelParams 
 	pairsString = "meshRule=planterBox&scale=" + DataConvert::VectorToString(scale) +
 		ModelBase::AddRotationString(createParamsIn.rotation);
 	vertices = { MathVector::RotateVector(location + params.offset, createParamsIn.rotation) + createParamsIn.offset };
+	vertices = ModelBase::Vertices(vertices, createParamsIn, params.rotation);
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "planterBox", "point", pairsString));
 	// plants
 	location += FVector(0,0,params.height);
 	vertices = MathVector::RotateVertices(MathPolygon::PointToBox(location + params.offset, scale), createParamsIn.rotation,
 		createParamsIn.offset);
+	vertices = ModelBase::Vertices(vertices, createParamsIn, params.rotation);
 	uName = uNameBase + "_plants";
 	pairsString = params.pairsStringPlants;
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "bush", "polygon", pairsString));
@@ -151,6 +141,7 @@ TMap<FString, FPolygon> LMRoomPlants::WallPlants(FVector size, FModelParams mode
 			}
 			vertices = MathVector::RotateVertices(MathPolygon::PointToBox(location, scale, "xz"), createParamsIn.rotation,
 				createParamsIn.offset);
+			vertices = ModelBase::Vertices(vertices, createParamsIn);
 		} else {
 			scale = FVector(params.width, size.Y - params.sideOffset * 2, size.Z - params.zOffset * 2);
 			if (wall == "back") {
@@ -162,6 +153,7 @@ TMap<FString, FPolygon> LMRoomPlants::WallPlants(FVector size, FModelParams mode
 			}
 			vertices = MathVector::RotateVertices(MathPolygon::PointToBox(location, scale, "yz"), createParamsIn.rotation,
 				createParamsIn.offset);
+			vertices = ModelBase::Vertices(vertices, createParamsIn);
 		}
 		// plants
 		uName = Lodash::GetInstanceId("wallPlants");

@@ -48,6 +48,7 @@ void DrawVertices::LoadVertices() {
 		LandNature::PlaceNature();
 	}
 
+	ModelBase* modelBase = ModelBase::GetInstance();
 	// Paths
 	// Roads.
 	FString uName;
@@ -73,11 +74,20 @@ void DrawVertices::LoadVertices() {
 		location = Elem.Value.vertices[0];
 		pairs.Add("loc", DataConvert::VectorToString(location));
 		if (pairs.Contains("mesh")) {
-			meshKey = ModelBase::InstancedMeshFromPairs(pairs);
-			if (meshKey.Len() > 0) {
-				auto [location1, rotation, scale] = ModelBase::PairsToTransform(pairs);
-				instancedMesh->CreateInstance(meshKey, location,
-					DataConvert::VectorToRotator(rotation), scale);
+			if (pairs.Contains("movable")) {
+				auto [key, modelParams] = ModelBase::ModelParamsFromPairs(pairs);
+				if (key.Len() > 0) {
+					auto [location1, rotation, scale] = ModelBase::PairsToTransform(pairs);
+					modelBase->CreateActor(Elem.Key, location, rotation, scale,
+						FActorSpawnParameters(), modelParams);
+				}
+			} else {
+				meshKey = ModelBase::InstancedMeshFromPairs(pairs);
+				if (meshKey.Len() > 0) {
+					auto [location1, rotation, scale] = ModelBase::PairsToTransform(pairs);
+					instancedMesh->CreateInstance(meshKey, location,
+						DataConvert::VectorToRotator(rotation), scale);
+				}
 			}
 		} else {
 			type = Elem.Value.type;

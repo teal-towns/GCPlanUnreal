@@ -55,8 +55,10 @@ UWorld* ModelBase::GetWorld() {
 }
 
 void ModelBase::DestroyActors() {
+	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	for (auto& Elem : _spawnedActors) {
 		if (IsValid(Elem.Value)) {
+			unrealGlobal->RemoveAttachedActors(Elem.Value);
 			Elem.Value->Destroy();
 			// UE_LOG(LogTemp, Display, TEXT("destroying %s"), *Elem.Key);
 		} else {
@@ -68,6 +70,32 @@ void ModelBase::DestroyActors() {
 
 void ModelBase::CleanUp() {
 	DestroyActors();
+}
+
+void ModelBase::DestroyActorByKey(FString key) {
+	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+	if (_spawnedActors.Contains(key)) {
+		if (IsValid(_spawnedActors[key])) {
+			unrealGlobal->RemoveAttachedActors(_spawnedActors[key]);
+			_spawnedActors[key]->Destroy();
+		}
+		_spawnedActors.Remove(key);
+	}
+}
+
+AActor* ModelBase::GetActorByName(FString name, bool checkScene) {
+	if (_spawnedActors.Contains(name)) {
+		return _spawnedActors[name];
+	}
+	if (checkScene) {
+		UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+		AActor* actor1 = unrealGlobal->GetActorByName(name, AStaticMeshActor::StaticClass());
+		if (actor1) {
+			_spawnedActors.Add(name, actor1);
+			return actor1;
+		}
+	}
+	return nullptr;
 }
 
 void ModelBase::SetInputs(FModelingBase modelingBase) {
@@ -190,6 +218,7 @@ AStaticMeshActor* ModelBase::CreateActorEmpty(FString name, FModelParams modelPa
 		return (AStaticMeshActor*)actor1;
 	}
 	FActorSpawnParameters spawnParams;
+	spawnParams.Name = FName(name);
 	AStaticMeshActor* actor = (AStaticMeshActor*)World->SpawnActor<AStaticMeshActor>(
 		AStaticMeshActor::StaticClass(), FVector(0,0,0), FRotator(0,0,0), spawnParams);
 	_spawnedActors.Add(name, actor);
@@ -241,6 +270,10 @@ AStaticMeshActor* ModelBase::CreateActor(FString name, FVector location, FVector
 	if (modelParams.parent) {
 		actor->AttachToComponent(modelParams.parent, FAttachmentTransformRules::KeepRelativeTransform);
 	}
+	if (modelParams.movable) {
+		USceneComponent* component = actor->FindComponentByClass<USceneComponent>();
+		component->SetMobility(EComponentMobility::Movable);
+	}
 	return actor;
 }
 
@@ -257,22 +290,47 @@ void ModelBase::SetMeshMaterialFromParams(UStaticMeshComponent* meshComponent, F
 		meshComponent->SetStaticMesh(mesh);
 	}
 
+	UMaterialInterface* material = GetMaterial(modelParams);
+	if (material) {
+		meshComponent->SetMaterial(0, material);
+	}
+	// if (modelParams.materialPath.Len() < 1 && modelParams.materialKey.Len() > 0) {
+	// 	modelParams.materialPath = loadContent->Material(modelParams.materialKey);
+	// }
+	// if (modelParams.dynamicMaterial) {
+	// 	meshComponent->SetMaterial(0, modelParams.dynamicMaterial);
+	// } else if (modelParams.materialPath.Len() > 0) {
+	// 	if (modelParams.materialPath.Contains(".MaterialInstance")) {
+	// 		UMaterialInstance* material = Cast<UMaterialInstance>(StaticLoadObject(UMaterialInstance::StaticClass(), NULL,
+	// 			*modelParams.materialPath));
+	// 		meshComponent->SetMaterial(0, material);
+	// 	} else {
+	// 		UMaterial* material = Cast<UMaterial>(StaticLoadObject(UMaterial::StaticClass(), NULL,
+	// 			*modelParams.materialPath));
+	// 		meshComponent->SetMaterial(0, material);
+	// 	}
+	// }
+}
+
+UMaterialInterface* ModelBase::GetMaterial(FModelParams modelParams) {
+	LoadContent* loadContent = LoadContent::GetInstance();
 	if (modelParams.materialPath.Len() < 1 && modelParams.materialKey.Len() > 0) {
 		modelParams.materialPath = loadContent->Material(modelParams.materialKey);
 	}
 	if (modelParams.dynamicMaterial) {
-		meshComponent->SetMaterial(0, modelParams.dynamicMaterial);
+		return (UMaterialInterface*)modelParams.dynamicMaterial;
 	} else if (modelParams.materialPath.Len() > 0) {
 		if (modelParams.materialPath.Contains(".MaterialInstance")) {
 			UMaterialInstance* material = Cast<UMaterialInstance>(StaticLoadObject(UMaterialInstance::StaticClass(), NULL,
 				*modelParams.materialPath));
-			meshComponent->SetMaterial(0, material);
+			return (UMaterialInterface*)material;
 		} else {
 			UMaterial* material = Cast<UMaterial>(StaticLoadObject(UMaterial::StaticClass(), NULL,
 				*modelParams.materialPath));
-			meshComponent->SetMaterial(0, material);
+			return (UMaterialInterface*)material;
 		}
 	}
+	return nullptr;
 }
 
 std::tuple<FVector, FVector, FVector> ModelBase::PairsToTransform(TMap<FString, FString> pairs, FVector scale) {
@@ -314,6 +372,9 @@ std::tuple<FString, FModelParams> ModelBase::ModelParamsFromPairs(TMap<FString, 
 		}
 		modelParams.dynamicMaterial = dynamicMaterial->CreateTextureColor(materialName, texturePathBase,
 			texturePathNormal, DynamicMaterial::GetColor(colorKey));
+	}
+	if (pairs.Contains("movable")) {
+		modelParams.movable = true;
 	}
 	// Invalid without a mesh.
 	if (!hasMesh) {

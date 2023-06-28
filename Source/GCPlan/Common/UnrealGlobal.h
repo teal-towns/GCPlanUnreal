@@ -2,7 +2,9 @@
 
 #include <mutex>
 
+#include "../CanvasTextWidget.h"
 #include "../DataStructsActor.h"
+#include "../GlobalActor.h"
 #include "../SocketActor.h"
 
 class UnrealGlobal {
@@ -24,9 +26,12 @@ public:
 
 	FDataSettings* _settings = nullptr;
 	ASocketActor* SocketActor = nullptr;
+	AGlobalActor* _globalActor = nullptr;
+	UCanvasTextWidget* _canvasTextWidget = nullptr;
 	TMap<FString, AActor*> _actors;
 
 	static UnrealGlobal *GetInstance();
+	void SetWidgets(UCanvasTextWidget* canvasTextWidget);
 	void InitAll(UWorld*, TArray<FString> skipKeys = {});
 	void InitCommon(UWorld*);
 	void InitWeb(UWorld*);

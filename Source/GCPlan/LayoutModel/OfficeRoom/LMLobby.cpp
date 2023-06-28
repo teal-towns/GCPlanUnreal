@@ -41,6 +41,7 @@ TMap<FString, FPolygon> LMLobby::Create(FVector size, FModelParams modelParams,
 	pairsString = "meshRule=roomCube&mat=white&bottomMat=marbleTile&scale=" + DataConvert::VectorToString(size) +
 		ModelBase::AddRotationString(createParamsIn.rotation);
 	vertices = { createParamsIn.offset };
+	vertices = ModelBase::Vertices(vertices, createParamsIn);
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
 
 	FWallPlanterBox plantParams;
@@ -67,6 +68,7 @@ TMap<FString, FPolygon> LMLobby::TwoTables(FVector size, FModelParams modelParam
 	pairsString = "meshRule=roomCube&mat=white&bottomMat=marbleTile&scale=" + DataConvert::VectorToString(size) +
 		ModelBase::AddRotationString(createParamsIn.rotation);
 	vertices = { createParamsIn.offset };
+	vertices = ModelBase::Vertices(vertices, createParamsIn);
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
 
 	FWallPlants plantParams;
@@ -108,23 +110,27 @@ TMap<FString, FPolygon> LMLobby::CouchesCoffeeTables(FVector size, FModelParams 
 	pairsString = "mesh=couch2Cushions&dMat=leather&dMatColor=beige" +
 		ModelBase::AddRotationString(createParamsIn.rotation, FVector(0,0,90));
 	vertices = { MathVector::RotateVector(FVector(0,-3,0), createParamsIn.rotation) + createParamsIn.offset };
+	vertices = ModelBase::Vertices(vertices, createParamsIn);
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "couch", "point", pairsString));
 
 	uName = Lodash::GetInstanceId("Couch");
 	pairsString = "mesh=couch3Cushions&dMat=leather&dMatColor=beige" +
 		ModelBase::AddRotationString(createParamsIn.rotation);
 	vertices = { MathVector::RotateVector(FVector(-3,0,0), createParamsIn.rotation) + createParamsIn.offset };
+	vertices = ModelBase::Vertices(vertices, createParamsIn);
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "couch", "point", pairsString));
 
 	uName = Lodash::GetInstanceId("Table");
 	pairsString = "meshRule=tableRoundShort&scale=1.3,1.3,0.7" +
 		ModelBase::AddRotationString(createParamsIn.rotation);
 	vertices = { MathVector::RotateVector(FVector(0,0,0), createParamsIn.rotation) + createParamsIn.offset };
+	vertices = ModelBase::Vertices(vertices, createParamsIn);
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "table", "point", pairsString));
 	uName = Lodash::GetInstanceId("Table");
 	pairsString = "meshRule=tableRoundShort&scale=0.6,0.6,0.7" +
 		ModelBase::AddRotationString(createParamsIn.rotation);
 	vertices = { MathVector::RotateVector(FVector(-1,-1,0), createParamsIn.rotation) + createParamsIn.offset };
+	vertices = ModelBase::Vertices(vertices, createParamsIn);
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "table", "point", pairsString));
 	uName = Lodash::GetInstanceId("Table");
 	pairsString = "meshRule=tableRoundShort&scale=0.6,0.6,0.7" +
@@ -136,11 +142,13 @@ TMap<FString, FPolygon> LMLobby::CouchesCoffeeTables(FVector size, FModelParams 
 	pairsString = "mesh=chair" + 
 		ModelBase::AddRotationString(createParamsIn.rotation, FVector(0,0,-115));
 	vertices = { MathVector::RotateVector(FVector(0.5,2.5,0), createParamsIn.rotation) + createParamsIn.offset };
+	vertices = ModelBase::Vertices(vertices, createParamsIn);
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "chair", "point", pairsString));
 	uName = Lodash::GetInstanceId("Chair");
 	pairsString = "mesh=chair" + 
 		ModelBase::AddRotationString(createParamsIn.rotation, FVector(0,0,-145));
 	vertices = { MathVector::RotateVector(FVector(1.5,1.5,0), createParamsIn.rotation) + createParamsIn.offset };
+	vertices = ModelBase::Vertices(vertices, createParamsIn);
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "chair", "point", pairsString));
 
 	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();

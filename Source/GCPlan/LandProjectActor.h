@@ -6,6 +6,7 @@
 
 #include "BuildingStructsActor.h"
 #include "DataStructsActor.h"
+#include "CanvasTextWidget.h"
 
 #include "LandProjectActor.generated.h"
 
@@ -51,9 +52,14 @@ public:
 	UFUNCTION(CallInEditor)
 	void Test();
 
+	UPROPERTY(EditAnywhere)
+	UCanvasTextWidget* CanvasTextWidget;
+
 	void Init();
 	void InitSocketOn();
 	void Login();
+
+	void CreateUI();
 
 private:
 	bool Inited = false;

@@ -129,6 +129,7 @@ FString Lodash::ToFixed(float value, int digits) {
 	// NumberFormat.MaximumIntegralDigits = 10000;
 	NumberFormat.MinimumFractionalDigits = digits;
 	NumberFormat.MaximumFractionalDigits = digits;
+	NumberFormat.UseGrouping = false;
 	return FText::AsNumber(value, &NumberFormat).ToString();
 }
 
@@ -173,7 +174,13 @@ TMap<FString, FString> Lodash::PairsStringToObject(FString pairsString) {
 	TArray<FString> tempArray;
 	for (int ii = 0; ii < keyValsArray.Num(); ii++) {
 		keyValsArray[ii].ParseIntoArray(tempArray, TEXT("="), true);
-		keyVals.Add(tempArray[0], tempArray[1]);
+		if (tempArray.Num() == 2) {
+			keyVals.Add(tempArray[0], tempArray[1]);
+		} else if (tempArray.Num() == 1) {
+			keyVals.Add(tempArray[0], "1");
+		} else {
+			UE_LOG(LogTemp, Warning, TEXT("Lodash.PairsStringToObject no length, skipping"));
+		}
 	}
 	return keyVals;
 }

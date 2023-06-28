@@ -37,6 +37,7 @@ TMap<FString, FPolygon> LMServerRoom::Create(FVector size, FModelParams modelPar
 	pairsString = "meshRule=roomCube&mat=white&bottomMat=black&scale=" + DataConvert::VectorToString(size) +
 		ModelBase::AddRotationString(createParamsIn.rotation);
 	vertices = { createParamsIn.offset };
+	vertices = ModelBase::Vertices(vertices, createParamsIn);
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
 
 	meshKey = "computerServer";
