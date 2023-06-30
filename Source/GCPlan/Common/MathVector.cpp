@@ -76,3 +76,27 @@ TArray<FVector> MathVector::RotateAround(TArray<FVector> vertices, FVector rotat
 	}
 	return vertices;
 }
+
+// https://youtu.be/xVF9pnarOX4?t=319
+TArray<FVector> MathVector::BeizerCurvePoints(FVector start, FVector end, FVector control, int count) {
+	TArray<FVector> points = {};
+	FVector startControlPoint, endControlPoint, startEndDiff, startEndPoint;
+	FVector startControlDiff = control - start;
+	FVector endControlDiff = end - control;
+	float ratioPerIteration = (float)(1 / (float)count);
+	float startControlLength = startControlDiff.Size();
+	float endControlLength = endControlDiff.Size();
+	float startEndLength;
+	for (int ii = 0; ii < count; ii++) {
+		startControlPoint = start + startControlDiff.GetClampedToMaxSize(startControlLength * ratioPerIteration * ii);
+		endControlPoint = control + endControlDiff.GetClampedToMaxSize(endControlLength * ratioPerIteration * ii);
+		startEndDiff = endControlPoint - startControlPoint;
+		startEndLength = startEndDiff.Size();
+		startEndPoint = startControlPoint + startEndDiff.GetClampedToMaxSize(startEndLength * ratioPerIteration * ii);
+		points.Add(startEndPoint);
+		// UE_LOG(LogTemp, Display, TEXT("ii %d point %s startControlPoint %s endControlPoint %s"), ii, *startEndPoint.ToString(), *startControlPoint.ToString(), *endControlPoint.ToString());
+	}
+	// Add end point.
+	points.Add(end);
+	return points;
+}

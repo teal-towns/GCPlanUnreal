@@ -182,11 +182,13 @@ void UnrealGlobal::SetActorFolder(AActor* actor, FString path) {
 
 void UnrealGlobal::RemoveAttachedActors(AActor* actor) {
 	TArray<AActor*> OutActors;
-	if (actor) {
+	if (IsValid(actor)) {
 		actor->GetAttachedActors(OutActors);
-		for (AActor* a : OutActors) {
-			if (IsValid(a)) {
-				a->Destroy();
+		if (OutActors.Num() > 0) {
+			for (AActor* a : OutActors) {
+				if (IsValid(a)) {
+					a->Destroy();
+				}
 			}
 		}
 	}

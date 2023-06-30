@@ -91,3 +91,8 @@
 - https://en.cppreference.com/w/c/language/struct_initialization
 - https://blog.jamesbrooks.net/posts/struct-to-json-serialization/
 - https://unrealcommunity.wiki/logging-lgpidy6i
+
+
+## Sequencer
+
+- Any actors that are moved must NOT be "spatially loaded" https://forums.unrealengine.com/t/5-1-level-sequence-cannot-play-in-a-world-partition-level/694103/4 or they will not work in play mode (but will in Sequencer Editor)

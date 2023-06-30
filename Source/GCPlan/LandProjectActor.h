@@ -3,6 +3,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Landscape.h"
+#include "LevelSequence.h"
+#include "LevelSequenceActor.h"
 
 #include "BuildingStructsActor.h"
 #include "DataStructsActor.h"
@@ -51,9 +53,13 @@ public:
 	void SetVertices();
 	UFUNCTION(CallInEditor)
 	void Test();
+	UFUNCTION(CallInEditor)
+	void InitSequencer();
 
 	UPROPERTY(EditAnywhere)
 	UCanvasTextWidget* CanvasTextWidget;
+	UPROPERTY(EditAnywhere)
+	ALevelSequenceActor* LisbonSequence;
 
 	void Init();
 	void InitSocketOn();

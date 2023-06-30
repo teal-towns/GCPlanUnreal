@@ -61,6 +61,8 @@ void LisbonSequence::Start() {
 	// UI text
 	if (unrealGlobal->_canvasTextWidget) {
 		unrealGlobal->_canvasTextWidget->SetText(Lodash::GetInstanceId("TextHere_"));
+	} else {
+		UE_LOG(LogTemp, Warning, TEXT("_canvasTextWidget not inited"));
 	}
 
 	// // 3D text

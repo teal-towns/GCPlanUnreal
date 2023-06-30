@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Engine/StaticMeshActor.h"
 
 // #include "CanvasTextWidget.h"
 
@@ -22,10 +23,19 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable)
-	static void LisbonExteriors();
+	void LisbonExteriors();
+	UFUNCTION(BlueprintCallable)
+	void LisbonWorld();
+	UFUNCTION(BlueprintCallable)
+	void LisbonWorldReScale();
+
+	UFUNCTION(CallInEditor)
+	void Test();
 
 	// UPROPERTY(EditAnywhere)
 	// UCanvasTextWidget* CanvasTextWidget;
+	UPROPERTY(EditAnywhere)
+	AStaticMeshActor* LineActorTemplate;
 
 	// void CreateUI();
 
