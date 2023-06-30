@@ -103,7 +103,7 @@ void ASocketActor::Close() {
 }
 
 bool ASocketActor::IsConnected() {
-	return WebSocket->IsConnected();
+	return WebSocket && WebSocket->IsConnected();
 }
 
 TMap<FString, FString> ASocketActor::GetAuth() {

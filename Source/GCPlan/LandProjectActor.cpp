@@ -3,6 +3,8 @@
 #include "Blueprint/UserWidget.h"
 #include "JsonObjectConverter.h"
 #include "Engine/World.h"
+#include "LevelSequence.h"
+#include "LevelSequenceActor.h"
 #include "Kismet/GameplayStatics.h"
 
 #include "BuildingStructsActor.h"
@@ -96,25 +98,37 @@ void ALandProjectActor::Login() {
 }
 
 void ALandProjectActor::Init() {
-	TArray<FString> Keys = {"socket"};
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+	// TArray<FString> Keys = {"socket"};
 	// unrealGlobal->InitAll(GetWorld());
-	if (unrealGlobal->IsIniteds(Keys) && unrealGlobal->SocketActor->IsConnected()) {
-		Inited = true;
-		this->InitSocketOn();
-		this->Login();
+	// if (unrealGlobal->IsIniteds(Keys) && unrealGlobal->SocketActor->IsConnected()) {
+	// 	Inited = true;
+	// 	// this->InitSocketOn();
+	// 	// this->Login();
 
-		VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
-		verticesEdit->LoadFromFiles();
-		verticesEdit->CheckSubdividePolygons("plot");
-		verticesEdit->Hide();
+	// 	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
+	// 	verticesEdit->LoadFromFiles();
+	// 	verticesEdit->CheckSubdividePolygons("plot");
+	// 	verticesEdit->Hide();
 
-		// CreateUI();
+	// 	// CreateUI();
 
-		// MoveObject* moveObject = MoveObject::GetInstance();
-		// moveObject->CleanUp();
-		// LisbonSequence* lisbonSequence = LisbonSequence::GetInstance();
-		// lisbonSequence->Start();
+	// 	// MoveObject* moveObject = MoveObject::GetInstance();
+	// 	// moveObject->CleanUp();
+	// 	// LisbonSequence* lisbonSequence = LisbonSequence::GetInstance();
+	// 	// lisbonSequence->Start();
+
+	// 	if (LisbonSequence && LisbonSequence->SequencePlayer) {
+	// 		LisbonSequence->SequencePlayer->Play();
+	// 	} else {
+	// 		UE_LOG(LogTemp, Warning, TEXT("Missing LisbonSequence, skipping"));
+	// 	}
+	// }
+
+	if (LisbonSequence && LisbonSequence->SequencePlayer) {
+		LisbonSequence->SequencePlayer->Play();
+	} else {
+		UE_LOG(LogTemp, Warning, TEXT("Missing LisbonSequence, skipping"));
 	}
 }
 
@@ -246,4 +260,11 @@ void ALandProjectActor::CreateUI() {
 		UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 		unrealGlobal->SetWidgets(CanvasTextWidget);
 	}
+}
+
+void ALandProjectActor::InitSequencer() {
+	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+	unrealGlobal->InitAll(GetWorld());
+
+	// CreateUI();
 }

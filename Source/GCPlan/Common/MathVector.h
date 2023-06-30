@@ -14,4 +14,5 @@ public:
 	static TArray<FVector> RotateVertices(TArray<FVector> vertices, FVector rotation,
 		FVector offset = FVector(0,0,0));
 	static TArray<FVector> RotateAround(TArray<FVector> vertices, FVector rotation, FVector center);
+	static TArray<FVector> BeizerCurvePoints(FVector start, FVector end, FVector control, int count);
 };
