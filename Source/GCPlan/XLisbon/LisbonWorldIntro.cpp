@@ -2,6 +2,7 @@
 
 #include "Engine/StaticMeshActor.h"
 
+// #include "../CanvasTextWidget.h"
 #include "../Common/Lodash.h"
 #include "../Common/MathVector.h"
 #include "../Common/UnrealGlobal.h"
@@ -28,6 +29,7 @@ LisbonWorldIntro *LisbonWorldIntro::GetInstance() {
 }
 
 void LisbonWorldIntro::Cables(UWorld* world, AStaticMeshActor* LineActorTemplate) {
+	// _world = world;
 	MovePolyLine* movePolyLine = MovePolyLine::GetInstance();
 	movePolyLine->SetWorld(world);
 	// If try to destroy actors, causes a crash the 2nd time play mode happens.
@@ -143,5 +145,32 @@ void LisbonWorldIntro::Cables(UWorld* world, AStaticMeshActor* LineActorTemplate
 
 void LisbonWorldIntro::ReScaleCables() {
 	MovePolyLine* movePolyLine = MovePolyLine::GetInstance();
-	movePolyLine->ReScale(10, 450);
+	movePolyLine->ReScale(0, 450);
 }
+
+// void LisbonWorldIntro::UI(UCanvasTextWidget* CanvasTextWidget, int step) {
+// 	if (!_world) {
+// 		UE_LOG(LogTemp, Warning, TEXT("LisbonWorldIntro.UI world not set, skipping"));
+// 	} else {
+// 		if (step == 0) {
+// 			CanvasTextWidget->SetText("Edged Lison");
+// 			// _uiDelegate.BindUFunction(this, "UI", (step + 1));
+// 			// _world->GetTimerManager().SetTimer(_uiTimer, _uiDelegate, 5, false);
+// 			_world->GetTimerManager().SetTimer(_uiTimer, this, &LisbonWorldIntro::UI, 5, false);
+// 		} else if (step == 1) {
+// 			CanvasTextWidget->SetText("");
+// 			// _uiDelegate.BindUFunction(this, "UI", (step + 1));
+// 			// _world->GetTimerManager().SetTimer(_uiTimer, _uiDelegate, 5, false);
+// 			_world->GetTimerManager().SetTimer(_uiTimer, this, &LisbonWorldIntro::UI, 5, false);
+// 		} else if (step == 2) {
+// 			CanvasTextWidget->SetText("Europe's highest capacity fiber crossroads is now the site for Portugal's greenest data center.");
+// 			// _uiDelegate.BindUFunction(this, "UI", (step + 1));
+// 			// _world->GetTimerManager().SetTimer(_uiTimer, _uiDelegate, 5, false);
+// 			_world->GetTimerManager().SetTimer(_uiTimer, this, &LisbonWorldIntro::UI, 5, false);
+// 		} else if (step == 3) {
+// 			CanvasTextWidget->SetText("");
+// 			// _uiDelegate.BindUFunction(this, "UI", (step + 1));
+// 			// _world->GetTimerManager().SetTimer(_uiTimer, _uiDelegate, 5, false);
+// 		}
+// 	}
+// }

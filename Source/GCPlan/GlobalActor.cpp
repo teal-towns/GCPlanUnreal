@@ -1,6 +1,8 @@
 #include "GlobalActor.h"
 
-// #include "CanvasTextWidget.h"
+#include "Fonts/SlateFontInfo.h"
+
+#include "CanvasTextWidget.h"
 #include "Common/Lodash.h"
 #include "Common/MathVector.h"
 #include "Common/UnrealGlobal.h"
@@ -68,6 +70,17 @@ void AGlobalActor::LisbonWorld() {
 
 	LisbonWorldIntro* lisbonWorldIntro = LisbonWorldIntro::GetInstance();
 	lisbonWorldIntro->Cables(GetWorld(), LineActorTemplate);
+
+	if (!CanvasTextWidget) {
+		UE_LOG(LogTemp, Warning, TEXT("GlobalActor.CreateUI missing CanvasTextWidget"));
+	} else {
+		CanvasTextWidget->AddToViewport(0);
+		// CanvasTextWidget->SetText(Lodash::GetInstanceId("TextHere_"));
+		// lisbonWorldIntro->UI(CanvasTextWidget);
+		_world = GetWorld();
+		// _step = 0;
+		LisbonWorldUI();
+	}
 }
 
 void AGlobalActor::LisbonWorldReScale() {
@@ -125,6 +138,39 @@ void AGlobalActor::Test() {
 				FVector scale = FVector(currentMaxScaleX, zScale, zScale);
 				actor->SetActorScale3D(scale);
 			}
+		}
+	}
+}
+
+void AGlobalActor::LisbonWorldUI(int step) {
+	// UE_LOG(LogTemp, Display, TEXT("step %d"), step);
+	if (!_world) {
+		UE_LOG(LogTemp, Warning, TEXT("LisbonWorldIntro.UI world not set, skipping"));
+	} else {
+		if (step == 0) {
+			// _step = step + 1;
+			FSlateFontInfo fontInfo = CanvasTextWidget->GetFont();
+			fontInfo.Size = 80;
+			CanvasTextWidget->SetFont(fontInfo);
+			CanvasTextWidget->SetText("Edged Lisbon");
+			_uiDelegate.BindUFunction(this, "LisbonWorldUI", (step + 1));
+			_world->GetTimerManager().SetTimer(_uiTimer, _uiDelegate, 5, false);
+		} else if (step == 1) {
+			// _step = step + 1;
+			CanvasTextWidget->SetText("");
+			_uiDelegate.BindUFunction(this, "LisbonWorldUI", (step + 1));
+			_world->GetTimerManager().SetTimer(_uiTimer, _uiDelegate, 10, false);
+		} else if (step == 2) {
+			// _step = step + 1;
+			FSlateFontInfo fontInfo = CanvasTextWidget->GetFont();
+			fontInfo.Size = 40;
+			CanvasTextWidget->SetFont(fontInfo);
+			CanvasTextWidget->SetText("Europe's highest capacity fiber crossroads is now the site for Portugal's greenest data center.");
+			_uiDelegate.BindUFunction(this, "LisbonWorldUI", (step + 1));
+			_world->GetTimerManager().SetTimer(_uiTimer, _uiDelegate, 10, false);
+		} else if (step == 3) {
+			// _step = step + 1;
+			CanvasTextWidget->SetText("");
 		}
 	}
 }
