@@ -224,6 +224,18 @@ void AGlobalActor::LisbonWorldText3D(int step) {
 		// float zOffset = 500000;
 		float zOffset = 100000;
 		DrawHighlight* drawHighlight = DrawHighlight::GetInstance();
+		MovePolyLine* movePolyLine = MovePolyLine::GetInstance();
+
+		TArray<FVector> vertices;
+		int numPoints = 50;
+		// TArray<FString> colors = { "blueEmissive", "greenEmissive", "orangeEmissive", "purpleEmissive", "redEmissive", "yellowEmissive" };
+		// int colorsCount = colors.Num();
+		float moveSpeed = 100000;
+		float zScale = 1500;
+		FVector control;
+		float zGround = 10000;
+		FVector start = FVector(0,0,zGround);
+
 		if (step == 0) {
 			// First is to wait.
 			_text3DDelegate.BindUFunction(this, "LisbonWorldText3D", (step + 1));
@@ -273,23 +285,55 @@ void AGlobalActor::LisbonWorldText3D(int step) {
 			_text3DDelegate.BindUFunction(this, "LisbonWorldText3D", (step + 1));
 			_world->GetTimerManager().SetTimer(_text3DTimer, _text3DDelegate, 1, false);
 		} else if (step == 6) {
-			createParams.offset = FVector(-10523, 38913, 10000);
+			createParams.offset = FVector(-10523, 38913, zGround);
 			paramsText.text = "Sexial";
 			drawHighlight->CreateOne("sexial", scale, modelParams, createParams, {}, paramsText);
+
+			control = FVector(8645, 23612, zGround);
+			// vertices = MathVector::BeizerCurvePoints(start, createParams.offset,
+			// 	control, numPoints);
+			vertices = { start, FVector(2661, 12667, zGround), FVector(6167, 26339, zGround),
+				FVector(-1895, 36505, zGround), createParams.offset
+			};
+			movePolyLine->Move(Lodash::GetInstanceId("sexial"), vertices, LineActorTemplate, "blueEmissive",
+				moveSpeed, FVector(0,zScale,zScale));
+
 			_text3DDelegate.BindUFunction(this, "LisbonWorldText3D", (step + 1));
 			_world->GetTimerManager().SetTimer(_text3DTimer, _text3DDelegate, 1, false);
 		} else if (step == 7) {
-			createParams.offset = FVector(-11768, 58054, 10000);
+			createParams.offset = FVector(-11768, 58054, zGround);
 			paramsText.text = "Sesimbra";
 			drawHighlight->CreateOne("sesimbra", scale, modelParams, createParams, {}, paramsText);
+
+			control = FVector(9666, 32344, zGround);
+			// vertices = MathVector::BeizerCurvePoints(start, createParams.offset,
+			// 	control, numPoints);
+			vertices = { start, FVector(7920, 22483, zGround), FVector(1960, 38959, zGround),
+				createParams.offset
+			};
+			movePolyLine->Move(Lodash::GetInstanceId("sesimbra"), vertices, LineActorTemplate, "greenEmissive",
+				moveSpeed, FVector(0,zScale,zScale));
+
 			_text3DDelegate.BindUFunction(this, "LisbonWorldText3D", (step + 1));
 			_world->GetTimerManager().SetTimer(_text3DTimer, _text3DDelegate, 1, false);
 		} else if (step == 8) {
-			createParams.offset = FVector(-33489, 31478, 10000);
+			createParams.offset = FVector(-33489, 31478, zGround);
 			paramsText.text = "Carcavelos";
 			drawHighlight->CreateOne("carcavelos", scale, modelParams, createParams, {}, paramsText);
+
+			control = FVector(-13464, 23184, zGround);
+			// vertices = MathVector::BeizerCurvePoints(start, createParams.offset,
+			// 	control, numPoints);
+			vertices = { start, FVector(-9608, 10914, zGround), FVector(-12763, 25638, zGround),
+				createParams.offset
+			};
+			movePolyLine->Move(Lodash::GetInstanceId("carcavelos"), vertices, LineActorTemplate, "yellowEmissive",
+				moveSpeed, FVector(0,zScale,zScale));
+
 			_text3DDelegate.BindUFunction(this, "LisbonWorldText3D", (step + 1));
-			_world->GetTimerManager().SetTimer(_text3DTimer, _text3DDelegate, 1, false);
+			_world->GetTimerManager().SetTimer(_text3DTimer, _text3DDelegate, 3, false);
+		} else if (step == 9) {
+			movePolyLine->ReScale(0, 450);
 		}
 	}
 }
