@@ -227,6 +227,11 @@ AStaticMeshActor* ModelBase::CreateActorEmpty(FString name, FModelParams modelPa
 	if (modelParams.parent) {
 		actor->AttachToComponent(modelParams.parent, FAttachmentTransformRules::KeepRelativeTransform);
 	}
+	// Can not do this yet otherwise will get error that cannot attach static component / actor to a non static actor...
+	// if (modelParams.movable) {
+	// 	USceneComponent* component = actor->FindComponentByClass<USceneComponent>();
+	// 	component->SetMobility(EComponentMobility::Movable);
+	// }
 	return actor;
 }
 
@@ -266,15 +271,18 @@ AStaticMeshActor* ModelBase::CreateActor(FString name, FVector location, FVector
 	LoadContent* loadContent = LoadContent::GetInstance();
 	UStaticMeshComponent* meshComponent = actor->FindComponentByClass<UStaticMeshComponent>();
 	actor->SetRootComponent(meshComponent);
-	SetMeshMaterialFromParams(meshComponent, modelParams);
 
+	// Must be BEFORE set mesh, otherwise it will fail (get warning "Calling SetStaticMesh... but Mobility is Static")
 	if (modelParams.parent) {
 		actor->AttachToComponent(modelParams.parent, FAttachmentTransformRules::KeepRelativeTransform);
 	}
 	if (modelParams.movable) {
 		USceneComponent* component = actor->FindComponentByClass<USceneComponent>();
 		component->SetMobility(EComponentMobility::Movable);
+		meshComponent->SetMobility(EComponentMobility::Movable);
 	}
+
+	SetMeshMaterialFromParams(meshComponent, modelParams);
 	return actor;
 }
 
@@ -417,7 +425,13 @@ TArray<FVector> ModelBase::Vertices(TArray<FVector> vertices, FModelCreateParams
 	return vertices;
 }
 
-void ModelBase::SetTransformFromParams(AActor* actor, FModelCreateParams createParams) {
+void ModelBase::SetTransformFromParams(AActor* actor, FModelCreateParams createParams,
+	FModelParams modelParams) {
+	// Must be before try to move.
+	if (modelParams.movable) {
+		USceneComponent* component = actor->FindComponentByClass<USceneComponent>();
+		component->SetMobility(EComponentMobility::Movable);
+	}
 	SetTransform(actor, createParams.offset, createParams.rotation);
 }
 

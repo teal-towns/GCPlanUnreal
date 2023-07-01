@@ -3,6 +3,7 @@
 #include <mutex>
 
 #include "../Modeling/ModelBase.h"
+#include "../Modeling/Common/ModelHighlight.h"
 #include "../ModelingStructsActor.h"
 
 class DrawHighlight {
@@ -15,7 +16,7 @@ public:
 	static DrawHighlight *GetInstance();
 
 	void CreateOne(FString key, FVector size, FModelParams modelParams,
-		FModelCreateParams createParamsIn, TMap<FString, FString> pairs, FString text);
+		FModelCreateParams createParamsIn, TMap<FString, FString> pairs, FHighlightText params);
 	void DestroyOne(FString key);
 	void CleanUp();
 

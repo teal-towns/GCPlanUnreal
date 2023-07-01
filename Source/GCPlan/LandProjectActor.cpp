@@ -189,10 +189,14 @@ void ALandProjectActor::Test() {
 	FModelCreateParams createParams;
 	createParams.offset = FVector(-400,-121,26);
 	createParams.rotation = FVector(0,0,-45);
-	// ModelHighlight::Create(FVector(5,5,5), FModelParams(), createParams, {}, "testing1");
+	FHighlightText paramsText;
+	// paramsText.text = "testing1";
+	// ModelHighlight::Create(FVector(5,5,5), FModelParams(), createParams, {}, paramsText);
 	DrawHighlight* drawHighlight = DrawHighlight::GetInstance();
-	// drawHighlight->CreateOne("key1", FVector(5,5,5), FModelParams(), createParams, {}, Lodash::GetInstanceId("testing1"));
-	drawHighlight->CreateOne("trainStation", FVector(5,5,5), FModelParams(), createParams, {}, "Train Station");
+	// paramsText.text = Lodash::GetInstanceId("testing1");
+	// drawHighlight->CreateOne("key1", FVector(5,5,5), FModelParams(), createParams, {}, paramsText);
+	paramsText.text = "Train Station";
+	drawHighlight->CreateOne("trainStation", FVector(5,5,5), FModelParams(), createParams, {}, paramsText);
 }
 
 void ALandProjectActor::Clear() {

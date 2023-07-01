@@ -2,6 +2,7 @@
 
 #include "Engine/StaticMeshActor.h"
 
+// #include "../CanvasTextWidget.h"
 #include "../Common/Lodash.h"
 #include "../Common/MathVector.h"
 #include "../Common/UnrealGlobal.h"
@@ -28,12 +29,14 @@ LisbonWorldIntro *LisbonWorldIntro::GetInstance() {
 }
 
 void LisbonWorldIntro::Cables(UWorld* world, AStaticMeshActor* LineActorTemplate) {
+	// _world = world;
 	MovePolyLine* movePolyLine = MovePolyLine::GetInstance();
 	movePolyLine->SetWorld(world);
 	// If try to destroy actors, causes a crash the 2nd time play mode happens.
 	movePolyLine->CleanUp();
 
-	float zScale = 10000;
+	// float zScale = 10000;
+	float zScale = 5000;
 	float speed;
 	float speedMin = 200000;
 	float speedMax = 1000000;
@@ -43,16 +46,16 @@ void LisbonWorldIntro::Cables(UWorld* world, AStaticMeshActor* LineActorTemplate
 	TArray<FString> colors = { "blueEmissive", "greenEmissive", "orangeEmissive", "purpleEmissive", "redEmissive", "yellowEmissive" };
 	int colorsCount = colors.Num();
 	// Default point (Lisbon data center) 38.988267, -8.965344
-	float zGround = 0;
+	float zGround = -40000;
 	TMap<FString, FVector> locations = {
-		{ "barcelona", FVector(750000, -200000, zGround) },
-		{ "bilbao", FVector(450000, -450000, zGround) },
+		{ "barcelona", FVector(890000, -320000, zGround) },
+		{ "bilbao", FVector(500000, -500000, zGround) },
 		{ "brazil", FVector(-5000000, 4000000, -3000000) },
 		{ "canary", FVector(-500000, 1200000, zGround) },
 		{ "cairo", FVector(2000000, 0, zGround) },
 		{ "italy", FVector(2000000, -2000000, zGround) },
 		{ "lagos", FVector(1000000, 2000000, zGround) },
-		{ "lisbon", FVector(-100, 100, zGround) },
+		{ "lisbon", FVector(-100, 100, 0) },
 		{ "london", FVector(500000, -1000000, zGround) },
 		{ "newYork", FVector(-4800000, -1500000, -1800000) },
 	};
@@ -143,5 +146,32 @@ void LisbonWorldIntro::Cables(UWorld* world, AStaticMeshActor* LineActorTemplate
 
 void LisbonWorldIntro::ReScaleCables() {
 	MovePolyLine* movePolyLine = MovePolyLine::GetInstance();
-	movePolyLine->ReScale(10, 450);
+	movePolyLine->ReScale(0, 450);
 }
+
+// void LisbonWorldIntro::UI(UCanvasTextWidget* CanvasTextWidget, int step) {
+// 	if (!_world) {
+// 		UE_LOG(LogTemp, Warning, TEXT("LisbonWorldIntro.UI world not set, skipping"));
+// 	} else {
+// 		if (step == 0) {
+// 			CanvasTextWidget->SetText("Edged Lison");
+// 			// _uiDelegate.BindUFunction(this, "UI", (step + 1));
+// 			// _world->GetTimerManager().SetTimer(_uiTimer, _uiDelegate, 5, false);
+// 			_world->GetTimerManager().SetTimer(_uiTimer, this, &LisbonWorldIntro::UI, 5, false);
+// 		} else if (step == 1) {
+// 			CanvasTextWidget->SetText("");
+// 			// _uiDelegate.BindUFunction(this, "UI", (step + 1));
+// 			// _world->GetTimerManager().SetTimer(_uiTimer, _uiDelegate, 5, false);
+// 			_world->GetTimerManager().SetTimer(_uiTimer, this, &LisbonWorldIntro::UI, 5, false);
+// 		} else if (step == 2) {
+// 			CanvasTextWidget->SetText("Europe's highest capacity fiber crossroads is now the site for Portugal's greenest data center.");
+// 			// _uiDelegate.BindUFunction(this, "UI", (step + 1));
+// 			// _world->GetTimerManager().SetTimer(_uiTimer, _uiDelegate, 5, false);
+// 			_world->GetTimerManager().SetTimer(_uiTimer, this, &LisbonWorldIntro::UI, 5, false);
+// 		} else if (step == 3) {
+// 			CanvasTextWidget->SetText("");
+// 			// _uiDelegate.BindUFunction(this, "UI", (step + 1));
+// 			// _world->GetTimerManager().SetTimer(_uiTimer, _uiDelegate, 5, false);
+// 		}
+// 	}
+// }

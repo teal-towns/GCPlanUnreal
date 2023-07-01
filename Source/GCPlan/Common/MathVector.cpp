@@ -3,6 +3,8 @@
 #define _USE_MATH_DEFINES		// for pi
 #include "math.h"
 
+#include "./Lodash.h"
+
 MathVector::MathVector() {
 }
 
@@ -87,12 +89,20 @@ TArray<FVector> MathVector::BeizerCurvePoints(FVector start, FVector end, FVecto
 	float startControlLength = startControlDiff.Size();
 	float endControlLength = endControlDiff.Size();
 	float startEndLength;
+	FVector crossAxisLine;
+	float sign = 0;
 	for (int ii = 0; ii < count; ii++) {
 		startControlPoint = start + startControlDiff.GetClampedToMaxSize(startControlLength * ratioPerIteration * ii);
 		endControlPoint = control + endControlDiff.GetClampedToMaxSize(endControlLength * ratioPerIteration * ii);
 		startEndDiff = endControlPoint - startControlPoint;
 		startEndLength = startEndDiff.Size();
 		startEndPoint = startControlPoint + startEndDiff.GetClampedToMaxSize(startEndLength * ratioPerIteration * ii);
+		// Give some jitter
+		// if (randomOffset != 0) {
+		// 	sign = Lodash::RandomRangeInt(0,1) == 0 ? 1 : -1;
+		// 	crossAxisLine = startEndDiff.RotateAngleAxis(sign * 90, FVector(0,0,1));
+		// 	startEndPoint += crossAxisLine.GetClampedToMaxSize(randomOffset);
+		// }
 		points.Add(startEndPoint);
 		// UE_LOG(LogTemp, Display, TEXT("ii %d point %s startControlPoint %s endControlPoint %s"), ii, *startEndPoint.ToString(), *startControlPoint.ToString(), *endControlPoint.ToString());
 	}

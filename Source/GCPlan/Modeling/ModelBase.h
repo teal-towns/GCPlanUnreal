@@ -95,7 +95,8 @@ public:
 		FString meshKey = "");
 	static TArray<FVector> Vertices(TArray<FVector> vertices, FModelCreateParams createParams,
 		FVector rotation = FVector(0,0,0));
-	static void SetTransformFromParams(AActor* actor, FModelCreateParams createParams);
+	static void SetTransformFromParams(AActor* actor, FModelCreateParams createParams,
+		FModelParams modelParams = FModelParams());
 	static void SetTransform(AActor* actor, FVector location = FVector(0,0,0),
 		FVector rotation = FVector(0,0,0), FVector scale = FVector(1,1,1));
 

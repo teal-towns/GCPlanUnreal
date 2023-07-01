@@ -74,7 +74,7 @@ void MovePolyLine::Tick(float DeltaTime) {
 					if (Elem.Value.maxScale >= 0 && Elem.Value.scale.Y > Elem.Value.maxScale) {
 						_movingLines[key].scale.Y -= Elem.Value.scaleSpeed * DeltaTime;
 						_movingLines[key].scale.Z -= Elem.Value.scaleSpeed * DeltaTime;
-						UE_LOG(LogTemp, Display, TEXT("key %s new scale %f"), *key, _movingLines[key].scale.Y);
+						// UE_LOG(LogTemp, Display, TEXT("key %s new scale %f"), *key, _movingLines[key].scale.Y);
 						if (_movingLines[key].scale.Y < Elem.Value.maxScale) {
 							_movingLines[key].scale.Y = Elem.Value.maxScale;
 						}
@@ -97,7 +97,7 @@ void MovePolyLine::Tick(float DeltaTime) {
 						}
 					} else {
 						_movingLines[key].scalingActive = false;
-						UE_LOG(LogTemp, Display, TEXT("key %s scaling done max %f current %f"), *key, Elem.Value.maxScale, Elem.Value.scale.Y);
+						// UE_LOG(LogTemp, Display, TEXT("key %s scaling done max %f current %f"), *key, Elem.Value.maxScale, Elem.Value.scale.Y);
 					}
 				}
 			}

@@ -17,4 +17,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetText(FString text);
+
+	UFUNCTION(BlueprintCallable)
+	void SetFont(FSlateFontInfo fontInfo);
+
+	UFUNCTION(BlueprintCallable)
+	FSlateFontInfo GetFont();
 };

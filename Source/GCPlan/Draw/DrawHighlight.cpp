@@ -22,9 +22,9 @@ DrawHighlight *DrawHighlight::GetInstance() {
 }
 
 void DrawHighlight::CreateOne(FString key, FVector size, FModelParams modelParams,
-	FModelCreateParams createParamsIn, TMap<FString, FString> pairs, FString text) {
+	FModelCreateParams createParamsIn, TMap<FString, FString> pairs, FHighlightText params) {
 	DestroyOne(key);
-	AActor* actor = ModelHighlight::Create(size, modelParams, createParamsIn, pairs, text);
+	AActor* actor = ModelHighlight::Create(size, modelParams, createParamsIn, pairs, params);
 	_activeKeys.Add({ key, actor->GetName() });
 }
 
