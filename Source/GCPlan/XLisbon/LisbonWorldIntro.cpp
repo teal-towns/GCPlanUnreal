@@ -35,7 +35,8 @@ void LisbonWorldIntro::Cables(UWorld* world, AStaticMeshActor* LineActorTemplate
 	// If try to destroy actors, causes a crash the 2nd time play mode happens.
 	movePolyLine->CleanUp();
 
-	float zScale = 10000;
+	// float zScale = 10000;
+	float zScale = 5000;
 	float speed;
 	float speedMin = 200000;
 	float speedMax = 1000000;
@@ -45,16 +46,16 @@ void LisbonWorldIntro::Cables(UWorld* world, AStaticMeshActor* LineActorTemplate
 	TArray<FString> colors = { "blueEmissive", "greenEmissive", "orangeEmissive", "purpleEmissive", "redEmissive", "yellowEmissive" };
 	int colorsCount = colors.Num();
 	// Default point (Lisbon data center) 38.988267, -8.965344
-	float zGround = 0;
+	float zGround = -40000;
 	TMap<FString, FVector> locations = {
-		{ "barcelona", FVector(750000, -200000, zGround) },
-		{ "bilbao", FVector(450000, -450000, zGround) },
+		{ "barcelona", FVector(890000, -320000, zGround) },
+		{ "bilbao", FVector(500000, -500000, zGround) },
 		{ "brazil", FVector(-5000000, 4000000, -3000000) },
 		{ "canary", FVector(-500000, 1200000, zGround) },
 		{ "cairo", FVector(2000000, 0, zGround) },
 		{ "italy", FVector(2000000, -2000000, zGround) },
 		{ "lagos", FVector(1000000, 2000000, zGround) },
-		{ "lisbon", FVector(-100, 100, zGround) },
+		{ "lisbon", FVector(-100, 100, 0) },
 		{ "london", FVector(500000, -1000000, zGround) },
 		{ "newYork", FVector(-4800000, -1500000, -1800000) },
 	};

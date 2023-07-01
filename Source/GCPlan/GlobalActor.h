@@ -31,6 +31,8 @@ public:
 	UFUNCTION()
 	// void LisbonWorldUI(UCanvasTextWidget* CanvasTextWidget1, int step = 0);
 	void LisbonWorldUI(int step = 0);
+	UFUNCTION()
+	void LisbonWorldText3D(int step = 0);
 
 	UFUNCTION(CallInEditor)
 	void Test();
@@ -49,4 +51,6 @@ private:
 	FTimerHandle _uiTimer;
 	FTimerDelegate _uiDelegate;
 	// int _step = 0;
+	FTimerHandle _text3DTimer;
+	FTimerDelegate _text3DDelegate;
 };
