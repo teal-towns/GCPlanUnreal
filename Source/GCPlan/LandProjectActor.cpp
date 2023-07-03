@@ -21,6 +21,7 @@
 
 #include "CanvasTextWidget.h"
 #include "Draw/DrawHighlight.h"
+#include "LayoutModel/LMParkingLot.h"
 #include "LayoutModel/OfficeRoom/LMCafeteria.h"
 #include "LayoutModel/OfficeRoom/LMConferenceRoom.h"
 #include "LayoutModel/OfficeRoom/LMLobby.h"
@@ -246,6 +247,9 @@ void ALandProjectActor::SetVertices() {
 	LMCafeteria::Create(FVector(10,12,4), modelParams, createParams);
 	createParams.offset = FVector(0,0,4);
 	LMServerRoom::Create(FVector(10,12,4), modelParams, createParams);
+	createParams.offset = FVector(0, 0, 0);
+	createParams.rotation = FVector(0, 0, 0);
+	LMParkingLot::Create(FVector(0, 0, 0), modelParams, createParams);
 
 	createParams.rotation = FVector(0,0,-60);
 	// createParams.offset = FVector(-401,-149,3);
