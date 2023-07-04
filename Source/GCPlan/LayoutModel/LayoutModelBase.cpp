@@ -6,6 +6,7 @@
 #include "../Modeling/ModelBase.h"
 #include "../ModelingStructsActor.h"
 #include "OfficeRoom/LMLobby.h"
+#include "LMParkingLot.h"
 
 LayoutModelBase* LayoutModelBase::pinstance_{nullptr};
 std::mutex LayoutModelBase::mutex_;
@@ -81,5 +82,9 @@ void LayoutModelBase::Create() {
 
 	if (_layoutParams.subCategory == "lobby") {
 		LMLobby::CreateFromInputs();
+	}
+	else if (_layoutParams.subCategory == "parking")
+	{
+		LMParkingLot::CreateFromInputs();
 	}
 }
