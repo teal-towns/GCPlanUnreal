@@ -4,6 +4,7 @@
 #include "../Common/DataConvert.h"
 #include "../Common/Lodash.h"
 #include "../Landscape/VerticesEdit.h"
+#include "../LayoutModel/LMLights.h"
 #include "../LayoutModel/LMWall.h"
 #include "../LayoutModel/OfficeRoom/LMCafeteria.h"
 #include "../LayoutModel/OfficeRoom/LMConferenceRoom.h"
@@ -47,6 +48,8 @@ TMap<FString, FPolygon> LisbonInteriors::Rooms() {
 	FLayoutWall wallParams;
 	wallParams.meshesByTags["door"] = { "doorWood1" };
 
+	FLayoutLights lightsParams;
+
 	// Lobby
 	// Walls
 	uName = Lodash::GetInstanceId("Room");
@@ -55,7 +58,6 @@ TMap<FString, FPolygon> LisbonInteriors::Rooms() {
 	vertices = { location + createParamsIn.offset };
 	vertices = ModelBase::Vertices(vertices, createParamsIn);
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
-
 	// Back wall & door
 	wallParams.doorLeft = roomSize.Y - 1.5;
 	wallParams.offset = roomPos + FVector(roomSize.X / -2,0,0);
@@ -68,6 +70,8 @@ TMap<FString, FPolygon> LisbonInteriors::Rooms() {
 	wallParams.wallRotation = FVector(0,90,0);
 	wallParams.rotation = FVector(0,0,0);
 	LMWall::Wall(FVector(roomSize.Z, roomSize.Y, 0.01), modelParams, createParamsIn, wallParams);
+	lightsParams.offset = roomPos;
+	LMLights::Ceiling(roomSize, modelParams, createParamsIn, lightsParams);
 
 	createParams.offset = createParamsIn.offset + roomPos;
 	LMLobby::Create(roomSize, modelParams, createParams);
@@ -85,7 +89,6 @@ TMap<FString, FPolygon> LisbonInteriors::Rooms() {
 	vertices = { location + createParamsIn.offset };
 	vertices = ModelBase::Vertices(vertices, createParamsIn);
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
-
 	// Shared back wall, so already have it.
 	// Left wall & door
 	wallParams.doorLeft = 0.5;
@@ -93,6 +96,8 @@ TMap<FString, FPolygon> LisbonInteriors::Rooms() {
 	wallParams.wallRotation = FVector(0,90,-90);
 	wallParams.rotation = FVector(0,0,-90);
 	LMWall::Wall(FVector(roomSize.Z, roomSize.X, 0.01), modelParams, createParamsIn, wallParams);
+	lightsParams.offset = roomPos;
+	LMLights::Ceiling(roomSize, modelParams, createParamsIn, lightsParams);
 
 	createParams.offset = createParamsIn.offset + roomPos;
 	LMCafeteria::Create(roomSize, modelParams, createParams);
@@ -110,7 +115,6 @@ TMap<FString, FPolygon> LisbonInteriors::Rooms() {
 	vertices = { location + createParamsIn.offset };
 	vertices = ModelBase::Vertices(vertices, createParamsIn);
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
-
 	// Shared right wall, so already have it.
 	// Front wall & door
 	wallParams.doorLeft = roomSize.Y - 1.5;
@@ -118,6 +122,8 @@ TMap<FString, FPolygon> LisbonInteriors::Rooms() {
 	wallParams.wallRotation = FVector(0,90,0);
 	wallParams.rotation = FVector(0,0,0);
 	LMWall::Wall(FVector(roomSize.Z, roomSize.Y, 0.01), modelParams, createParamsIn, wallParams);
+	lightsParams.offset = roomPos;
+	LMLights::Ceiling(roomSize, modelParams, createParamsIn, lightsParams);
 
 	createParams.offset = createParamsIn.offset + roomPos;
 	LMOfficeDesks::Desks(roomSize, modelParams, createParams);
@@ -135,7 +141,6 @@ TMap<FString, FPolygon> LisbonInteriors::Rooms() {
 	vertices = { location + createParamsIn.offset };
 	vertices = ModelBase::Vertices(vertices, createParamsIn);
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
-
 	// Shared back wall, so already have it.
 	// Left wall & door
 	wallParams.doorLeft = roomSize.X - 2;
@@ -143,6 +148,8 @@ TMap<FString, FPolygon> LisbonInteriors::Rooms() {
 	wallParams.wallRotation = FVector(0,90,-90);
 	wallParams.rotation = FVector(0,0,-90);
 	LMWall::Wall(FVector(roomSize.Z, roomSize.X, 0.01), modelParams, createParamsIn, wallParams);
+	lightsParams.offset = roomPos;
+	LMLights::Ceiling(roomSize, modelParams, createParamsIn, lightsParams);
 
 	createParams.offset = createParamsIn.offset + roomPos;
 	LMLobby::TwoTables(roomSize, modelParams, createParams);
@@ -160,8 +167,10 @@ TMap<FString, FPolygon> LisbonInteriors::Rooms() {
 	vertices = { location + createParamsIn.offset };
 	vertices = ModelBase::Vertices(vertices, createParamsIn);
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
-
 	// Shared right wall, so already have it.
+	lightsParams.offset = roomPos;
+	LMLights::Ceiling(roomSize, modelParams, createParamsIn, lightsParams);
+
 	createParams.offset = createParamsIn.offset + roomPos;
 	LMConferenceRoom::Create(roomSize, modelParams, createParams);
 	roomSizePrev = roomSize;
@@ -170,6 +179,17 @@ TMap<FString, FPolygon> LisbonInteriors::Rooms() {
 	// Server room (not directly connected)
 	roomSize = FVector(10,12,4);
 	roomPos = roomPos + FVector(roomSizePrev.X / 2 + roomSize.X / 2, 0, 0) + FVector(1,0,0);
+	// Walls
+	uName = Lodash::GetInstanceId("Room");
+	location = roomPos;
+	pairsString = "meshRule=roomCube&mat=white&bottomMat=black&scale=" + DataConvert::VectorToString(roomSize) +
+		ModelBase::AddRotationString(createParamsIn.rotation);
+	vertices = { location + createParamsIn.offset };
+	vertices = ModelBase::Vertices(vertices, createParamsIn);
+	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
+	lightsParams.offset = roomPos;
+	LMLights::Ceiling(roomSize, modelParams, createParamsIn, lightsParams);
+
 	createParams.offset = createParamsIn.offset + roomPos;
 	LMServerRoom::Create(roomSize, modelParams, createParams);
 

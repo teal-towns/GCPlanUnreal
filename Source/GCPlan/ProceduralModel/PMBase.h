@@ -70,7 +70,7 @@ public:
 	static void AddMesh(AStaticMeshActor* actor, UStaticMesh* mesh, FString materialPath = "");
 	static UProceduralMeshComponent* CreateMesh(FString name, UObject* parentObject,
 		USceneComponent* parent = nullptr);
-	static std::tuple<UProceduralMeshComponent*, AActor*> GetMesh();
+	static std::tuple<UProceduralMeshComponent*, AActor*> GetMesh(FString name = "");
 	static void DestroyMesh(AActor* actor, UProceduralMeshComponent* proceduralMesh);
 	static void AddMeshSection(UProceduralMeshComponent* ProceduralMesh, TArray<FVector> Vertices,
 		TArray<FVector2D> UV0, TArray<int> Triangles, TArray<FVector> Normals = {},

@@ -33,6 +33,10 @@ public:
 	void LisbonWorldUI(int step = 0);
 	UFUNCTION()
 	void LisbonWorldText3D(int step = 0);
+	UFUNCTION(BlueprintCallable)
+	void LisbonInteriorsStart();
+	UFUNCTION()
+	void LisbonInteriors(int step = 0);
 
 	UFUNCTION(CallInEditor)
 	void Test();
@@ -53,4 +57,7 @@ private:
 	// int _step = 0;
 	FTimerHandle _text3DTimer;
 	FTimerDelegate _text3DDelegate;
+
+	FTimerHandle _interiorsTimer;
+	FTimerDelegate _interiorsDelegate;
 };

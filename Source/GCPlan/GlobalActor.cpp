@@ -337,3 +337,66 @@ void AGlobalActor::LisbonWorldText3D(int step) {
 		}
 	}
 }
+
+void AGlobalActor::LisbonInteriorsStart() {
+	_world = GetWorld();
+	if (!CanvasTextWidget) {
+		UE_LOG(LogTemp, Warning, TEXT("GlobalActor.LisbonInteriorsStart missing CanvasTextWidget"));
+	} else {
+		CanvasTextWidget->AddToViewport(0);
+		LisbonInteriors();
+	}
+}
+
+void AGlobalActor::LisbonInteriors(int step) {
+	// 90 - 300 - 510 - 720 - 930 - 1140 - 1350
+	if (step == 0) {
+		CanvasTextWidget->SetText("LOBBY");
+		_interiorsDelegate.BindUFunction(this, "LisbonInteriors", (step + 1));
+		_world->GetTimerManager().SetTimer(_interiorsTimer, _interiorsDelegate, 5, false);
+	} else if (step == 1) {
+		CanvasTextWidget->SetText("");
+		_interiorsDelegate.BindUFunction(this, "LisbonInteriors", (step + 1));
+		_world->GetTimerManager().SetTimer(_interiorsTimer, _interiorsDelegate, 2, false);
+	} else if (step == 2) {
+		CanvasTextWidget->SetText("KITCHEN");
+		_interiorsDelegate.BindUFunction(this, "LisbonInteriors", (step + 1));
+		_world->GetTimerManager().SetTimer(_interiorsTimer, _interiorsDelegate, 5, false);
+	} else if (step == 3) {
+		CanvasTextWidget->SetText("");
+		_interiorsDelegate.BindUFunction(this, "LisbonInteriors", (step + 1));
+		_world->GetTimerManager().SetTimer(_interiorsTimer, _interiorsDelegate, 2, false);
+	} else if (step == 4) {
+		CanvasTextWidget->SetText("OPERATIONS CENTER");
+		_interiorsDelegate.BindUFunction(this, "LisbonInteriors", (step + 1));
+		_world->GetTimerManager().SetTimer(_interiorsTimer, _interiorsDelegate, 5, false);
+	} else if (step == 5) {
+		CanvasTextWidget->SetText("");
+		_interiorsDelegate.BindUFunction(this, "LisbonInteriors", (step + 1));
+		_world->GetTimerManager().SetTimer(_interiorsTimer, _interiorsDelegate, 2, false);
+	} else if (step == 6) {
+		CanvasTextWidget->SetText("LOUNGE");
+		_interiorsDelegate.BindUFunction(this, "LisbonInteriors", (step + 1));
+		_world->GetTimerManager().SetTimer(_interiorsTimer, _interiorsDelegate, 5, false);
+	} else if (step == 7) {
+		CanvasTextWidget->SetText("");
+		_interiorsDelegate.BindUFunction(this, "LisbonInteriors", (step + 1));
+		_world->GetTimerManager().SetTimer(_interiorsTimer, _interiorsDelegate, 2, false);
+	} else if (step == 8) {
+		CanvasTextWidget->SetText("CONFERENCE ROOM");
+		_interiorsDelegate.BindUFunction(this, "LisbonInteriors", (step + 1));
+		_world->GetTimerManager().SetTimer(_interiorsTimer, _interiorsDelegate, 5, false);
+	} else if (step == 9) {
+		CanvasTextWidget->SetText("");
+		_interiorsDelegate.BindUFunction(this, "LisbonInteriors", (step + 1));
+		_world->GetTimerManager().SetTimer(_interiorsTimer, _interiorsDelegate, 2, false);
+	} else if (step == 10) {
+		CanvasTextWidget->SetText("DATA SERVERS");
+		_interiorsDelegate.BindUFunction(this, "LisbonInteriors", (step + 1));
+		_world->GetTimerManager().SetTimer(_interiorsTimer, _interiorsDelegate, 5, false);
+	} else if (step == 11) {
+		CanvasTextWidget->SetText("");
+		_interiorsDelegate.BindUFunction(this, "LisbonInteriors", (step + 1));
+		_world->GetTimerManager().SetTimer(_interiorsTimer, _interiorsDelegate, 2, false);
+	}
+}

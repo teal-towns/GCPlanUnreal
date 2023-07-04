@@ -56,7 +56,6 @@ void BuildingRoom::Wall(FVector size, FModelParams modelParams,
 		rightY = minY + holeYMax;
 		bottomX = minX + holeXMin;
 		topX = minX + holeXMax;
-		UE_LOG(LogTemp, Display, TEXT("door1 %f %f %f %f"), leftY, rightY, bottomX, topX);
 		wallParams.holesVertices.Add({
 			FVector(bottomX, leftY, z), FVector(topX, leftY, z),
 			FVector(topX, rightY, z), FVector(bottomX, rightY, z)
@@ -71,7 +70,6 @@ void BuildingRoom::Wall(FVector size, FModelParams modelParams,
 		rightY = minY + holeYMax;
 		bottomX = minX + holeXMin;
 		topX = minX + holeXMax;
-		UE_LOG(LogTemp, Display, TEXT("window1 %f %f %f %f"), leftY, rightY, bottomX, topX);
 		wallParams.holesVertices.Add({
 			FVector(bottomX, leftY, z), FVector(topX, leftY, z),
 			FVector(topX, rightY, z), FVector(bottomX, rightY, z)

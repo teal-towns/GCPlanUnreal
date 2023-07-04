@@ -47,7 +47,7 @@ AActor* PMPlane::Create(FString name, FVector size, TArray<FPlaneOffsets> xOffse
 
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 
-	auto [proceduralMesh, meshActor] = PMBase::GetMesh();
+	auto [proceduralMesh, meshActor] = PMBase::GetMesh("PMPlane");
 
 	TArray<FVector> Vertices = {};
 	TArray<FVector2D> UV0 = {};

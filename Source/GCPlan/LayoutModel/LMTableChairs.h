@@ -7,7 +7,8 @@ struct FTableChairs {
 	TMap<FString, TArray<FString>> meshesByTags = {
 		{ "table", {} },
 		{ "chair", {} },
-		{ "flower", {} }
+		{ "flower", {} },
+		{ "people", {} }
 	};
 	float tableWidth = 1;
 	float tableHeight = 1;
@@ -22,6 +23,7 @@ struct FTableChairs {
 	FVector rotation = FVector(0,0,0);
 	TArray<FString> chairPositions = { "front", "back", "left", "right" };
 	float tableItemsProbability = 0.5;
+	float chairPersonProbability = 0.5;
 };
 
 class LMTableChairs {

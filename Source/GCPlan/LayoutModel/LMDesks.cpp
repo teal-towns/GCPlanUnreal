@@ -51,6 +51,7 @@ TMap<FString, FPolygon> LMDesks::TwoDesksRow(FVector size, FModelParams modelPar
 	FVector offsetBase = params.offset;
 	FVector rotationBase = params.rotation;
 	FVector rotateAroundBase = createParamsIn.rotateAround;
+	float peopleProbabilityOriginal = params.peopleProbability;
 	float rotationZ;
 	float xTemp;
 	FPlanterBox plantParams;
@@ -100,12 +101,33 @@ TMap<FString, FPolygon> LMDesks::TwoDesksRow(FVector size, FModelParams modelPar
 				if (rotationZ != 0) {
 					createParamsIn.rotateAround = MathVector::RotateVector(location, createParamsIn.rotation) + createParamsIn.offset;
 				}
+				// To prevent the same person twice, check here instead.
+				if (Lodash::RandomRangeFloat(0,1) <= params.peopleProbability) {
+					params.peopleProbability = 1;
+					if (Lodash::RandomRangeInt(0, 1) == 1) {
+						params.forceStandingDesk = 1;
+					} else {
+						params.forceSittingDesk = 1;
+					}
+				} else {
+					params.peopleProbability = 0;
+				}
 				Desk(scale, modelParams, createParamsIn, params);
 				currentYStart += deskYSize;
 				// Reset.
 				params.offset = offsetBase;
 				params.rotation = rotationBase;
 				createParamsIn.rotateAround = rotateAroundBase;
+
+				params.peopleProbability = peopleProbabilityOriginal;
+				if (params.forceSittingDesk) {
+					params.peopleSittingIndex += 1;
+				}
+				if (params.forceStandingDesk) {
+					params.peopleStandingIndex += 1;
+				}
+				params.forceSittingDesk = 0;
+				params.forceStandingDesk = 0;
 			}
 		}
 		currentX += rowXSize;
@@ -134,10 +156,12 @@ TMap<FString, FPolygon> LMDesks::Desk(FVector size, FModelParams modelParams,
 	params.meshesByTags = meshesByTags;
 
 	float deskScaleX = size.X - params.chairWidth;
+	bool standing = false;
 	// Sitting vs standing.
 	float deskHeight = params.deskHeightMin;
-	if (Lodash::RandomRangeInt(0, 1) == 1) {
+	if (!params.forceSittingDesk && (params.forceStandingDesk || Lodash::RandomRangeInt(0, 1) == 1)) {
 		deskHeight = Lodash::RandomRangeFloat(params.deskHeightMax - 0.3, params.deskHeightMax);
+		standing = true;
 	}
 	uName = Lodash::GetInstanceId("Desk");
 	FString uNameBase = uName;
@@ -156,14 +180,42 @@ TMap<FString, FPolygon> LMDesks::Desk(FVector size, FModelParams modelParams,
 	// Chair in back
 	uName = uNameBase + "_Chair";
 	location = FVector(size.X / -2 + params.chairWidth / 2, 0, 0) + params.offset;
+	if (standing) {
+		location += FVector(-0.3, 0, 0);
+	}
 	meshKey = params.meshesByTags["officeChair"][Lodash::RandomRangeInt(0, params.meshesByTags["officeChair"].Num() - 1)];
 	pairsString = "mesh=" + meshKey + ModelBase::AddRotationString(createParamsIn.rotation, params.rotation, meshKey);
 	vertices = { MathVector::RotateVector(location, createParamsIn.rotation) + createParamsIn.offset };
 	vertices = ModelBase::Vertices(vertices, createParamsIn, params.rotation);
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "chair", "point", pairsString));
 
+	bool havePerson = 0;
+	if (Lodash::RandomRangeFloat(0,1) <= params.peopleProbability) {
+		bool valid1 = false;
+		if (deskHeight > params.deskHeightMax - 0.3 &&
+			params.peopleStandingIndex < params.meshesByTags["peopleStanding"].Num()) {
+			// Standing
+			meshKey = params.meshesByTags["peopleStanding"][params.peopleStandingIndex];
+			location += FVector(0.5, 0, 0);
+			valid1 = 1;
+		} else if (params.peopleSittingIndex < params.meshesByTags["peopleSitting"].Num()) {
+			// Sitting
+			meshKey = params.meshesByTags["peopleSitting"][params.peopleSittingIndex];
+			location += FVector(0.2, 0, 0.02);
+			valid1 = 1;
+		}
+		if (valid1) {
+			havePerson = true;
+			uName = uNameBase + "_Person";
+			pairsString = "mesh=" + meshKey + ModelBase::AddRotationString(createParamsIn.rotation, params.rotation, meshKey);
+			vertices = { MathVector::RotateVector(location, createParamsIn.rotation) + createParamsIn.offset };
+			vertices = ModelBase::Vertices(vertices, createParamsIn, params.rotation);
+			polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "person", "point", pairsString));
+		}
+	}
+
 	// desk items
-	if (params.meshesByTags["pcMonitor"].Num() > 0 && Lodash::RandomRangeFloat(0,1) < params.deskItemsProbability) {
+	if (params.meshesByTags["pcMonitor"].Num() > 0 && Lodash::RandomRangeFloat(0,1) <= params.deskItemsProbability) {
 		uName = uNameBase + "_pcMonitor";
 		location =  deskLocation + FVector(Lodash::RandomRangeFloat(0.5 * deskScale.X / 2, 0.8 * deskScale.X / 2),
 			Lodash::RandomRangeFloat(-0.6 * deskScale.Y / 2, 0.6 * deskScale.Y / 2), deskLocation.Z + deskScale.Z);
@@ -174,7 +226,7 @@ TMap<FString, FPolygon> LMDesks::Desk(FVector size, FModelParams modelParams,
 		vertices = ModelBase::Vertices(vertices, createParamsIn, params.rotation);
 		polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "pcMonitor", "point", pairsString));
 	}
-	if (params.meshesByTags["laptop"].Num() > 0 && Lodash::RandomRangeFloat(0,1) < params.deskItemsProbability) {
+	if (params.meshesByTags["laptop"].Num() > 0 && (havePerson || Lodash::RandomRangeFloat(0,1) <= params.deskItemsProbability)) {
 		uName = uNameBase + "_laptop";
 		location =  deskLocation + FVector(Lodash::RandomRangeFloat(-0.7 * deskScale.X / 2, 0 * deskScale.X / 2),
 			Lodash::RandomRangeFloat(-0.7 * deskScale.Y / 2, 0.7 * deskScale.Y / 2), deskLocation.Z + deskScale.Z);

@@ -134,9 +134,9 @@ UProceduralMeshComponent* PMBase::CreateMesh(FString name, UObject* parentObject
 	return ProceduralMesh;
 }
 
-std::tuple<UProceduralMeshComponent*, AActor*> PMBase::GetMesh() {
+std::tuple<UProceduralMeshComponent*, AActor*> PMBase::GetMesh(FString name) {
 	ModelBase* modelBase = ModelBase::GetInstance();
-	FString name = Lodash::GetInstanceId("PMGetMesh_");
+	name = Lodash::GetInstanceId(name + "PMGetMesh_");
 	AStaticMeshActor* actor = modelBase->CreateActor(name);
 	UObject* parentObject = (UObject*)actor;
 	UProceduralMeshComponent* proceduralMesh = PMBase::CreateMesh(name + "_Mesh", parentObject);

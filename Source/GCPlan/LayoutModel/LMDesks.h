@@ -12,7 +12,10 @@ struct FDesks {
 		{ "pcMonitor", {} },
 		{ "pcKeyboard", {} },
 		{ "pcMouse", {} },
-		{ "pcTablet", {} }
+		{ "pcTablet", {} },
+		{ "peopleSitting", { "manSittingLaptop2", "womanSittingPhone", "womanSitting" } },
+		{ "peopleStanding", { "manStandingSuit", "womanStandingCup", "manStandingCup", "manStandingPhone",
+			"womanStanding", "womanStandingTablet" } }
 	};
 	FVector offset = FVector(0,0,0);
 	FVector rotation = FVector(0,0,0);
@@ -21,9 +24,14 @@ struct FDesks {
 	float chairWidth = 1;
 	float deskWidth = 1;
 	float deskHeightMin = 0.7;
-	float deskHeightMax = 1.5;
+	float deskHeightMax = 1.3;
 	float deskItemsProbability = 0.5;
-	int plantsPerDeskRow = 3;
+	float peopleProbability = 0.67;
+	int peopleSittingIndex = 0;
+	int peopleStandingIndex = 0;
+	bool forceStandingDesk = 0;
+	bool forceSittingDesk = 0;
+	int plantsPerDeskRow = 2;
 };
 
 class LMDesks {

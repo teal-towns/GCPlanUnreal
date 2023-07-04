@@ -46,10 +46,23 @@ TMap<FString, FPolygon> LMOfficeDesks::Desks(FVector size, FModelParams modelPar
 	float maxX = size.X / 2 - scale.X / 2 - buffer;
 	// along left wall.
 	float currentY = size.Y / -2 + buffer + scale.Y / 2;
+	int counter = 0;
 	while (currentX <= maxX) {
 		deskParams.offset = FVector(currentX, currentY, 0);
+		// Ensure no repeat people.
+		if (counter == 0) {
+			deskParams.meshesByTags["peopleSitting"] = { "manSittingLaptop2", "womanSittingPhone" };
+			deskParams.meshesByTags["peopleStanding"] = { "manStandingSuit", "womanStandingCup", "manStandingCup" };
+		} else if (counter == 1) {
+			deskParams.meshesByTags["peopleSitting"] = { "womanSitting" };
+			deskParams.meshesByTags["peopleStanding"] = { "manStandingPhone", "womanStanding", "womanStandingTablet" };
+		} else {
+			deskParams.meshesByTags["peopleSitting"] = {};
+			deskParams.meshesByTags["peopleStanding"] = {};
+		}
 		LMDesks::TwoDesksRow(scale, modelParams, createParamsIn, deskParams);
 		currentX += xStep;
+		counter += 1;
 	}
 
 	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();

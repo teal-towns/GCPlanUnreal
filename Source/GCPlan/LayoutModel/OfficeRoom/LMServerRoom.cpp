@@ -33,12 +33,12 @@ TMap<FString, FPolygon> LMServerRoom::Create(FVector size, FModelParams modelPar
 	TMap<FString, FPolygon> polygons = {};
 	LoadContent* loadContent = LoadContent::GetInstance();
 
-	uName = Lodash::GetInstanceId("Room");
-	pairsString = "meshRule=roomCube&mat=white&bottomMat=black&scale=" + DataConvert::VectorToString(size) +
-		ModelBase::AddRotationString(createParamsIn.rotation);
-	vertices = { createParamsIn.offset };
-	vertices = ModelBase::Vertices(vertices, createParamsIn);
-	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
+	// uName = Lodash::GetInstanceId("Room");
+	// pairsString = "meshRule=roomCube&mat=white&bottomMat=black&scale=" + DataConvert::VectorToString(size) +
+	// 	ModelBase::AddRotationString(createParamsIn.rotation);
+	// vertices = { createParamsIn.offset };
+	// vertices = ModelBase::Vertices(vertices, createParamsIn);
+	// polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
 
 	meshKey = "computerServer";
 	FVector size1 = loadContent->GetMeshSize(meshKey);

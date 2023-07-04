@@ -13,6 +13,18 @@ ModelLight::ModelLight() {
 ModelLight::~ModelLight() {
 }
 
+void ModelLight::Build(TMap<FString, FString> pairs) {
+	auto [key, modelParams] = ModelBase::ModelParamsFromPairs(pairs);
+	auto [location, rotation, scale] = ModelBase::PairsToTransform(pairs, FVector(0,0,0));
+	FModelCreateParams createParams;
+	createParams.offset = location;
+	createParams.rotation = rotation;
+	if (!pairs.Contains("meshRule")) {
+		pairs.Add("meshRule", "");
+	}
+	Create(scale, modelParams, createParams, pairs);
+}
+
 AActor* ModelLight::CreateFromInputs() {
 	ModelBase* modelBase = ModelBase::GetInstance();
 	auto [modelingBase, modelParams] = modelBase->GetInputs("Light", FVector(0.3,0.3,1));
@@ -22,7 +34,7 @@ AActor* ModelLight::CreateFromInputs() {
 }
 
 AActor* ModelLight::Create(FVector size, FModelParams modelParams,
-	FModelCreateParams createParamsIn) {
+	FModelCreateParams createParamsIn, TMap<FString, FString> pairs) {
 	ModelBase* modelBase = ModelBase::GetInstance();
 	FString name = Lodash::GetInstanceId("Light_");
 	FVector rotation = FVector(0,0,0), location = FVector(0,0,0), scale = FVector(1,1,1);

@@ -28,10 +28,11 @@ LMCafeteria::~LMCafeteria() {
 TMap<FString, FPolygon> LMCafeteria::Create(FVector size, FModelParams modelParams,
 	FModelCreateParams createParamsIn) {
 	FVector rotation = FVector(0,0,0), location = FVector(0,0,0), scale = FVector(1,1,1);
-	FString uName, type, pairsString, scaleString;
+	FString uName, type, pairsString, scaleString, meshKey;
 	TArray<FVector> vertices;
 	TMap<FString, FPolygon> polygons = {};
 	LoadContent* loadContent = LoadContent::GetInstance();
+	FString uNameBase = Lodash::GetInstanceId("cafeteria");
 
 	// uName = Lodash::GetInstanceId("Room");
 	// pairsString = "meshRule=roomCube&mat=white&bottomMat=marbleTile&scale=" + DataConvert::VectorToString(size) +
@@ -45,7 +46,7 @@ TMap<FString, FPolygon> LMCafeteria::Create(FVector size, FModelParams modelPara
 	FWallPlanterBox plantParams;
 	FString meshes = Lodash::Join(loadContent->GetMeshNamesByTags({"indoorBush"}), ",");
 	plantParams.width = planterBoxXScale;
-	plantParams.pairsStringPlants = "meshes=" + meshes + "&placeOffsetAverage=0.5";
+	plantParams.pairsStringPlants = "meshes=" + meshes + "&placeOffsetAverage=0.3";
 	plantParams.walls = { "back" };
 	LMRoomPlants::WallPlanterBox(size, modelParams, createParamsIn, plantParams);
 
@@ -66,6 +67,15 @@ TMap<FString, FPolygon> LMCafeteria::Create(FVector size, FModelParams modelPara
 	FKitchen kitchenParams;
 	kitchenParams.offset = FVector(currentX - kitchenScale.X / 2, 0, 0);
 	LMKitchen::OfficeWall(kitchenScale, modelParams, createParamsIn, kitchenParams);
+
+	uName = uNameBase + "_personKitchen";
+	location = FVector(currentX - 2, -2, 0);
+	rotation = FVector(0,0,180);
+	meshKey = "manStandingBag";
+	pairsString = "mesh=" + meshKey + ModelBase::AddRotationString(createParamsIn.rotation, rotation, meshKey);
+	vertices = { MathVector::RotateVector(location, createParamsIn.rotation) + createParamsIn.offset };
+	vertices = ModelBase::Vertices(vertices, createParamsIn);
+	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "person", "point", pairsString));
 
 	// hanging plants above kitchen
 	FHangingPlants hangingParams;
@@ -89,6 +99,7 @@ TMap<FString, FPolygon> LMCafeteria::Create(FVector size, FModelParams modelPara
 	tableParams.offset = location;
 	tableParams.meshesByTags["table"] = { "tableRoundCenterLeg" };
 	tableParams.meshesByTags["chair"] = { "chairWood" };
+	tableParams.meshesByTags["people"] = { "manSittingLaptop", "womanSittingBook" };
 	tableParams.chairPositions = { "left", "right" };
 	tableParams.placeOffsetX = 1.75;
 	LMTableChairs::TablesAndChairs(scale, modelParams, createParamsIn, tableParams);

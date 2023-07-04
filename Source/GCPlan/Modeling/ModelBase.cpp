@@ -359,7 +359,7 @@ std::tuple<FVector, FVector, FVector> ModelBase::PairsToTransform(TMap<FString, 
 // E.g. pairsString = "mesh=couch2Cushions&dMat=leather&dMatColor=beige";
 std::tuple<FString, FModelParams> ModelBase::ModelParamsFromPairs(TMap<FString, FString> pairs) {
 	FModelParams modelParams;
-	FString key = "";
+	FString  key = "";
 	bool hasMesh = false;
 	if (pairs.Contains("mesh")) {
 		modelParams.meshKey = pairs["mesh"];
