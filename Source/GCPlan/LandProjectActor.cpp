@@ -21,18 +21,18 @@
 
 #include "CanvasTextWidget.h"
 #include "Draw/DrawHighlight.h"
-#include "LayoutModel/OfficeRoom/LMCafeteria.h"
-#include "LayoutModel/OfficeRoom/LMConferenceRoom.h"
-#include "LayoutModel/OfficeRoom/LMLobby.h"
-#include "LayoutModel/OfficeRoom/LMOfficeDesks.h"
-#include "LayoutModel/OfficeRoom/LMServerRoom.h"
 #include "LayoutModel/TrainStation/LMTrain.h"
 #include "Modeling/Common/ModelHighlight.h"
 #include "Move/MoveObject.h"
 #include "XLisbon/LisbonSequence.h"
+#include "XLisbon/LisbonInteriors.h"
+#include "ProceduralModel/PMWall.h"
+#include "Common/DataConvert.h"
+#include "Building/BuildingRoom.h"
 
 #include "Common/MathVector.h"
 #include "Layout/LayoutPolygon.h"
+#include "LayoutModel/OfficeRoom/LMConferenceRoom.h"
 
 ALandProjectActor::ALandProjectActor()
 {
@@ -186,17 +186,87 @@ void ALandProjectActor::Test() {
 	// vertices = MathVector::RotateAround(vertices, rotation, FVector(0,0,0));
 	// UE_LOG(LogTemp, Display, TEXT("rotate around %s"), *vertices[0].ToString());
 
-	FModelCreateParams createParams;
-	createParams.offset = FVector(-400,-121,26);
-	createParams.rotation = FVector(0,0,-45);
-	FHighlightText paramsText;
-	// paramsText.text = "testing1";
-	// ModelHighlight::Create(FVector(5,5,5), FModelParams(), createParams, {}, paramsText);
-	DrawHighlight* drawHighlight = DrawHighlight::GetInstance();
-	// paramsText.text = Lodash::GetInstanceId("testing1");
-	// drawHighlight->CreateOne("key1", FVector(5,5,5), FModelParams(), createParams, {}, paramsText);
-	paramsText.text = "Train Station";
-	drawHighlight->CreateOne("trainStation", FVector(5,5,5), FModelParams(), createParams, {}, paramsText);
+	// FModelCreateParams createParams;
+	// createParams.offset = FVector(-400,-121,26);
+	// createParams.rotation = FVector(0,0,-45);
+	// FHighlightText paramsText;
+	// // paramsText.text = "testing1";
+	// // ModelHighlight::Create(FVector(5,5,5), FModelParams(), createParams, {}, paramsText);
+	// DrawHighlight* drawHighlight = DrawHighlight::GetInstance();
+	// // paramsText.text = Lodash::GetInstanceId("testing1");
+	// // drawHighlight->CreateOne("key1", FVector(5,5,5), FModelParams(), createParams, {}, paramsText);
+	// paramsText.text = "Train Station";
+	// drawHighlight->CreateOne("trainStation", FVector(5,5,5), FModelParams(), createParams, {}, paramsText);
+
+	// FVector size = FVector(5,10,1);
+	// FWall wallParams;
+	// float z = 0;
+	// // Door 1 meter from left, 1 meter wide, 3 meters tall.
+	// float doorLeftY = size.Y / -2 + 1;
+	// float doorRightY = doorLeftY + 1;
+	// float doorBottomX = size.X / -2;
+	// float doorTopX = size.X / -2 + 3;
+	// // Window 2 meters from right, 1 meter from bottom, 0.5 meters wide, 2 meters tall.
+	// float windowLeftY = size.Y / 2 - 2;
+	// float windowRightY = windowLeftY + 0.5;
+	// float windowBottomX = size.X / -2 + 1;
+	// float windowTopX = windowBottomX + 2;
+	// wallParams.holesVertices = {
+	// 	{
+	// 		FVector(doorBottomX, doorLeftY, z), FVector(doorTopX, doorLeftY, z),
+	// 		FVector(doorTopX, doorRightY, z), FVector(doorBottomX, doorRightY, z)
+	// 	},
+	// 	{
+	// 		FVector(windowBottomX, windowLeftY, z), FVector(windowTopX, windowLeftY, z),
+	// 		FVector(windowTopX, windowRightY, z), FVector(windowBottomX, windowRightY, z)
+	// 	}
+	// };
+	// FModelCreateParams createParams;
+	// FModelParams modelParams;
+	// modelParams.materialKey = "leather";
+	// PMWall::Create(size, createParams, modelParams, wallParams);
+	// // Create other side
+	// createParams.offset += FVector(0,0,-0.01);
+	// wallParams.triangleDirection = "clockwise";
+	// PMWall::Create(size, createParams, modelParams, wallParams);
+
+	// TMap<FString, FString> pairs = Lodash::PairsStringToObject("meshRule=roomWall&mat=white&scale=4,12,0.0100&door1=1&door1YMin=10.50&window1=1&window1YMin=2");
+	// // TMap<FString, FString> pairs = Lodash::PairsStringToObject("meshRule=roomWall&mat=white&scale=4,12,0.0100&door1=1&window1=1");
+	// FVector location = FVector(0,0,4);
+	// pairs.Add("loc", DataConvert::VectorToString(location));
+	// BuildingRoom::Build(pairs);
+
+
+	// FModelParams modelParams;
+	// FModelCreateParams createParams;
+	// LMConferenceRoom::Create(FVector(10,12,4), modelParams, createParams);
+
+	TArray<FVector> vertices;
+	TArray<FString> meshNames = { "brackenFern" };
+	FPlaceParams placeParams;
+	placeParams.offsetAverage = 0.3;
+
+	placeParams.rotMinY = 265;
+	placeParams.rotMaxY = 275;
+	placeParams.plane = "yz";
+	vertices = {
+		FVector(-4.9750,-5.0000,0.5000),
+		FVector(-4.9750,-5.0000,3.5000),
+		FVector(-4.9750,5.0000,3.5000),
+		FVector(-4.9750,5.0000,0.5000)
+	};
+
+	// placeParams.rotMinX = 85;
+	// placeParams.rotMaxX = 95;
+	// placeParams.plane = "xz";
+	// vertices = {
+	// 	FVector(-4.0000,-5.9750,0.5000),
+	// 	FVector(-4.0000,-5.9750,3.5000),
+	// 	FVector(4.0000,-5.9750,3.5000),
+	// 	FVector(4.0000,-5.9750,0.5000)
+	// };
+
+	LayoutPolygon::PlaceInPolygon(vertices, meshNames, placeParams);
 }
 
 void ALandProjectActor::Clear() {
@@ -230,23 +300,11 @@ void ALandProjectActor::SetVertices() {
 
 	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
 	verticesEdit->DestroyItems();
-	// Hardcoded - varies by project (usually these are manually drawn / set via UI).
+
+	LisbonInteriors::Rooms();
+
 	FModelParams modelParams;
 	FModelCreateParams createParams;
-	createParams.rotation = FVector(0,0,30);
-	createParams.offset = FVector(-285,20,3);
-	LMLobby::Create(FVector(10,12,4), modelParams, createParams);
-	createParams.offset = FVector(-279,9,3);
-	LMOfficeDesks::Desks(FVector(11,12,4), modelParams, createParams);
-	createParams.offset = FVector(-275,25,3);
-	LMConferenceRoom::Create(FVector(10,12,4), modelParams, createParams);
-	createParams.offset = FVector(-269,15,3);
-	LMLobby::TwoTables(FVector(10,12,4), modelParams, createParams);
-	createParams.offset = FVector(-291,31,3);
-	LMCafeteria::Create(FVector(10,12,4), modelParams, createParams);
-	createParams.offset = FVector(0,0,4);
-	LMServerRoom::Create(FVector(10,12,4), modelParams, createParams);
-
 	createParams.rotation = FVector(0,0,-60);
 	// createParams.offset = FVector(-401,-149,3);
 	// createParams.offset = FVector(135,-1124,3);
@@ -266,9 +324,9 @@ void ALandProjectActor::CreateUI() {
 	}
 }
 
-void ALandProjectActor::InitSequencer() {
-	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
-	unrealGlobal->InitAll(GetWorld());
+// void ALandProjectActor::InitSequencer() {
+// 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+// 	unrealGlobal->InitAll(GetWorld());
 
-	// CreateUI();
-}
+// 	// CreateUI();
+// }

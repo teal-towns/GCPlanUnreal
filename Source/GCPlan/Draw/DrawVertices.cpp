@@ -99,7 +99,7 @@ void DrawVertices::LoadVertices() {
 					ModelDesk::Build(pairs);
 				} else if (type == "planterBox") {
 					ModelPlanterBox::Build(pairs);
-				} else if (type == "room") {
+				} else if (type == "room" || type == "wall") {
 					BuildingRoom::Build(pairs);
 				} else if (type == "table") {
 					ModelTable::Build(pairs);

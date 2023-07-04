@@ -30,15 +30,17 @@ TMap<FString, FPolygon> LMConferenceRoom::Create(FVector size, FModelParams mode
 	FString uName, type, pairsString, scaleString;
 	TArray<FVector> vertices;
 	TMap<FString, FPolygon> polygons = {};
-	uName = Lodash::GetInstanceId("Room");
-	pairsString = "meshRule=roomCube&mat=wood&bottomMat=marbleTile&scale=" + DataConvert::VectorToString(size) +
-		ModelBase::AddRotationString(createParamsIn.rotation);
-	vertices = { createParamsIn.offset };
-	vertices = ModelBase::Vertices(vertices, createParamsIn);
-	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
+
+	// uName = Lodash::GetInstanceId("Room");
+	// pairsString = "meshRule=roomCube&mat=wood&bottomMat=marbleTile&scale=" + DataConvert::VectorToString(size) +
+	// 	ModelBase::AddRotationString(createParamsIn.rotation);
+	// vertices = { createParamsIn.offset };
+	// vertices = ModelBase::Vertices(vertices, createParamsIn);
+	// polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
 
 	FWallPlants plantParams;
 	plantParams.pairsStringPlants = "meshes=brackenFern,solidFern,cinnamonFern&placeOffsetAverage=0.3";
+	plantParams.walls = { "left", "back", "front" };
 	LMRoomPlants::WallPlants(size, modelParams, createParamsIn, plantParams);
 
 	// scale = FVector(size.X / 2, size.Y / 2, -1);
