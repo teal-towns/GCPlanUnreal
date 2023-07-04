@@ -46,7 +46,7 @@ AActor* PMCorner::Create(FVector size, TArray<FString> tags, FModelCreateParams 
 	// Move up since using negative value for radius (going down).
 	FVector offsetCorner = FVector(0,0,size.Z);
 
-	auto [proceduralMesh, meshActor] = PMBase::GetMesh();
+	auto [proceduralMesh, meshActor] = PMBase::GetMesh("PMCorner");
 
 	FVector2D verticesCount = FVector2D(xOffsets.Num(), yOffsets.Num());
 	int vertexIndex, vertexBottomLeftIndex, vertexBottomRightIndex,

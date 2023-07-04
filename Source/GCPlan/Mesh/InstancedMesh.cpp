@@ -67,7 +67,7 @@ void InstancedMesh::InitMeshes() {
 	// LoadContent* loadContent = LoadContent::GetInstance();
 	// TODO - replace and / or reference these all from load content
 	AddMesh("RoadRoundabout", "/Script/Engine.StaticMesh'/Game/Landscape/Roundabout1.Roundabout1'",
-		"/Script/Engine.Material'/Game/Landscape/Asphalt_M.Asphalt_M'");
+		"/Script/Engine.MaterialInstanceConstant'/Game/Landscape/Spline_M_Inst_Asphalt.Spline_M_Inst_Asphalt'");
 	AddMesh("VertexWhite", "/Script/Engine.StaticMesh'/Game/Landscape/VerticesEdit/VertexWhite.VertexWhite'",
 		"");
 	AddMesh("EdgeBlack", "/Script/Engine.StaticMesh'/Game/Landscape/VerticesEdit/EdgeBlack.EdgeBlack'",
@@ -98,32 +98,12 @@ void InstancedMesh::AddMesh(FString name, FString meshPath, FString materialPath
 		if (actor) {
 			_instancedMeshActors.Add(name, actor);
 		} else {
-			// PMBase* pmBase = PMBase::GetInstance();
-			// ModelBase* modelBase = ModelBase::GetInstance();
-			USceneComponent* meshesParent = _instancedMeshesActor->FindComponentByClass<USceneComponent>();
-			FActorSpawnParameters spawnParams;
-			spawnParams.Name = FName(name);
-			actor = (AActor*)World->SpawnActor<AActor>(
-				AActor::StaticClass(), FVector(0,0,0) * unrealGlobal->GetScale(), FRotator(0,0,0), spawnParams);
-			actor->SetActorLabel(name);
-			_instancedMeshActors.Add(name, actor);
-
-			USceneComponent* parent = actor->FindComponentByClass<USceneComponent>();
-			UObject* parentObject = (UObject*)actor;
-			FString nameTemp = name + "_ISM";
-			UInstancedStaticMeshComponent* instancedStaticMesh = NewObject<UInstancedStaticMeshComponent>(parentObject,
-				UInstancedStaticMeshComponent::StaticClass(), *nameTemp);
-			instancedStaticMesh->CreationMethod = EComponentCreationMethod::Instance;
-			instancedStaticMesh->RegisterComponent();
-			// instancedStaticMesh->AttachToComponent(parent, FAttachmentTransformRules::KeepRelativeTransform);
-			actor->SetRootComponent(instancedStaticMesh);
-			// Must be after has root component.
-			actor->AttachToComponent(meshesParent, FAttachmentTransformRules::KeepRelativeTransform);
-			instancedStaticMesh->SetMobility(EComponentMobility::Static);
-
+			UStaticMesh* mesh;
+			bool meshValid = false;
 			LoadContent* loadContent = LoadContent::GetInstance();
 			if (modelParams.mesh) {
-				instancedStaticMesh->SetStaticMesh(modelParams.mesh);
+				mesh = modelParams.mesh;
+				meshValid = true;
 			} else {
 				if (meshPath.Len() < 1) {
 					if (modelParams.meshPath.Len() < 1 && modelParams.meshKey.Len() > 0) {
@@ -131,39 +111,67 @@ void InstancedMesh::AddMesh(FString name, FString meshPath, FString materialPath
 					}
 					meshPath = modelParams.meshPath;
 				}
-				UStaticMesh* mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL,
-					*meshPath));
+				mesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL, *meshPath));
 				if (!mesh) {
 					UE_LOG(LogTemp, Warning, TEXT("InstancedMesh.AddMesh mesh load error, skipping %s"), *meshPath);
 				} else {
-					instancedStaticMesh->SetStaticMesh(mesh);
+					meshValid = true;
 				}
 			}
 
-			if (modelParams.dynamicMaterial) {
-				instancedStaticMesh->SetMaterial(0, modelParams.dynamicMaterial);
-			} else {
-				if (materialPath.Len() < 1) {
-					if (modelParams.materialPath.Len() < 1 && modelParams.materialKey.Len() > 0) {
-						modelParams.materialPath = loadContent->Material(modelParams.materialKey);
-					}
-					materialPath = modelParams.materialPath;
-				}
-				if (materialPath.Contains(".MaterialInstance")) {
-					UMaterialInstance* material = Cast<UMaterialInstance>(StaticLoadObject(UMaterialInstance::StaticClass(), NULL,
-						*materialPath));
-					if (!material) {
-						UE_LOG(LogTemp, Warning, TEXT("InstancedMesh.AddMesh material load error, skipping %s"), *materialPath);
-					} else {
-						instancedStaticMesh->SetMaterial(0, material);
-					}
+			if (meshValid) {
+				// PMBase* pmBase = PMBase::GetInstance();
+				// ModelBase* modelBase = ModelBase::GetInstance();
+				USceneComponent* meshesParent = _instancedMeshesActor->FindComponentByClass<USceneComponent>();
+				FActorSpawnParameters spawnParams;
+				spawnParams.Name = FName(name);
+				actor = (AActor*)World->SpawnActor<AActor>(
+					AActor::StaticClass(), FVector(0,0,0) * unrealGlobal->GetScale(), FRotator(0,0,0), spawnParams);
+				actor->SetActorLabel(name);
+				_instancedMeshActors.Add(name, actor);
+
+				USceneComponent* parent = actor->FindComponentByClass<USceneComponent>();
+				UObject* parentObject = (UObject*)actor;
+				FString nameTemp = name + "_ISM";
+				UInstancedStaticMeshComponent* instancedStaticMesh = NewObject<UInstancedStaticMeshComponent>(parentObject,
+					UInstancedStaticMeshComponent::StaticClass(), *nameTemp);
+				instancedStaticMesh->CreationMethod = EComponentCreationMethod::Instance;
+				instancedStaticMesh->RegisterComponent();
+				// instancedStaticMesh->AttachToComponent(parent, FAttachmentTransformRules::KeepRelativeTransform);
+				actor->SetRootComponent(instancedStaticMesh);
+				// Must be after has root component.
+				actor->AttachToComponent(meshesParent, FAttachmentTransformRules::KeepRelativeTransform);
+				instancedStaticMesh->SetMobility(EComponentMobility::Static);
+
+				instancedStaticMesh->SetStaticMesh(mesh);
+
+				if (modelParams.dynamicMaterial) {
+					instancedStaticMesh->SetMaterial(0, modelParams.dynamicMaterial);
 				} else {
-					UMaterial* material = Cast<UMaterial>(StaticLoadObject(UMaterial::StaticClass(), NULL,
-						*materialPath));
-					if (!material) {
-						UE_LOG(LogTemp, Warning, TEXT("InstancedMesh.AddMesh material load error, skipping %s"), *materialPath);
-					} else {
-						instancedStaticMesh->SetMaterial(0, material);
+					if (materialPath.Len() < 1) {
+						if (modelParams.materialPath.Len() < 1 && modelParams.materialKey.Len() > 0) {
+							modelParams.materialPath = loadContent->Material(modelParams.materialKey);
+						}
+						materialPath = modelParams.materialPath;
+					}
+					if (materialPath.Len() > 0) {
+						if (materialPath.Contains(".MaterialInstance")) {
+							UMaterialInstance* material = Cast<UMaterialInstance>(StaticLoadObject(UMaterialInstance::StaticClass(), NULL,
+								*materialPath));
+							if (!material) {
+								UE_LOG(LogTemp, Warning, TEXT("InstancedMesh.AddMesh material load error, skipping %s"), *materialPath);
+							} else {
+								instancedStaticMesh->SetMaterial(0, material);
+							}
+						} else {
+							UMaterial* material = Cast<UMaterial>(StaticLoadObject(UMaterial::StaticClass(), NULL,
+								*materialPath));
+							if (!material) {
+								UE_LOG(LogTemp, Warning, TEXT("InstancedMesh.AddMesh material load error, skipping %s"), *materialPath);
+							} else {
+								instancedStaticMesh->SetMaterial(0, material);
+							}
+						}
 					}
 				}
 			}

@@ -38,7 +38,7 @@ PMWall::~PMWall() {
 AActor* PMWall::Create(FVector size, FModelCreateParams createParamsIn, FModelParams modelParams,
 	FWall params) {
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
-	auto [proceduralMesh, meshActor] = PMBase::GetMesh();
+	auto [proceduralMesh, meshActor] = PMBase::GetMesh("PMWall");
 	TArray<FVector> Vertices = {};
 	TArray<FVector2D> UV0 = {};
 	TArray<int> Triangles = {};
@@ -59,10 +59,6 @@ AActor* PMWall::Create(FVector size, FModelCreateParams createParamsIn, FModelPa
 				break;
 			}
 		}
-	}
-	// TESTING
-	for (int ii = 0; ii < params.holesVertices.Num(); ii++) {
-		UE_LOG(LogTemp, Display, TEXT("ii %d y %f"), ii, params.holesVertices[ii][0].Y);
 	}
 
 	float currentY = size.Y / -2;

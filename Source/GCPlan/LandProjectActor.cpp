@@ -125,11 +125,11 @@ void ALandProjectActor::Init() {
 	// 	}
 	// }
 
-	if (LisbonSequence && LisbonSequence->SequencePlayer) {
-		LisbonSequence->SequencePlayer->Play();
-	} else {
-		UE_LOG(LogTemp, Warning, TEXT("Missing LisbonSequence, skipping"));
-	}
+	// if (LisbonSequence && LisbonSequence->SequencePlayer) {
+	// 	LisbonSequence->SequencePlayer->Play();
+	// } else {
+	// 	UE_LOG(LogTemp, Warning, TEXT("Missing LisbonSequence, skipping"));
+	// }
 }
 
 void ALandProjectActor::GetProject(FString UName) {

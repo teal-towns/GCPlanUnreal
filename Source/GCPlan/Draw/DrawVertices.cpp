@@ -16,6 +16,7 @@
 #include "../Modeling/ModelBase.h"
 #include "../Modeling/Common/ModelCord.h"
 #include "../Modeling/Furniture/ModelDesk.h"
+#include "../Modeling/Furniture/ModelLight.h"
 #include "../Modeling/Furniture/ModelPlanterBox.h"
 #include "../Modeling/Furniture/ModelTable.h"
 #include "../Plot/PlotBuild.h"
@@ -97,6 +98,8 @@ void DrawVertices::LoadVertices() {
 					ModelCord::Build(pairs);
 				} else if (type == "desk") {
 					ModelDesk::Build(pairs);
+				} else if (type == "light") {
+					ModelLight::Build(pairs);
 				} else if (type == "planterBox") {
 					ModelPlanterBox::Build(pairs);
 				} else if (type == "room" || type == "wall") {
