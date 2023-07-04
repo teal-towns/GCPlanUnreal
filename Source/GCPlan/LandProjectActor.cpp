@@ -308,7 +308,7 @@ void ALandProjectActor::SetVertices() {
 	FModelCreateParams createParams;
 	createParams.offset = FVector(0, 0, 0);
 	createParams.rotation = FVector(0, 0, 0);
-	LMParkingLot::Create(FVector(0, 0, 0), modelParams, createParams);
+	LMParkingLot::Create(FVector(150, 50, 0), modelParams, createParams);
 	createParams.rotation = FVector(0,0,-60);
 	// createParams.offset = FVector(-401,-149,3);
 	// createParams.offset = FVector(135,-1124,3);

@@ -12,6 +12,6 @@ public:
     static TMap<FString, FPolygon> CreateFromInputs();
     static TMap<FString, FPolygon> Create(FVector size, FModelParams modelParams = FModelParams(),
                                           FModelCreateParams createParamsIn = FModelCreateParams());
-    static TMap<FString, FPolygon> CreateStrip(FVector size, FModelParams modelParams = FModelParams(),
-                                               FModelCreateParams createParamsIn = FModelCreateParams());
+    static TMap<FString, FPolygon> CreateRow(FVector size, FModelParams modelParams = FModelParams(),
+                                             FModelCreateParams createParamsIn = FModelCreateParams());
 };
