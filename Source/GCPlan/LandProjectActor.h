@@ -53,8 +53,8 @@ public:
 	void SetVertices();
 	UFUNCTION(CallInEditor)
 	void Test();
-	UFUNCTION(CallInEditor)
-	void InitSequencer();
+	// UFUNCTION(CallInEditor)
+	// void InitSequencer();
 
 	UPROPERTY(EditAnywhere)
 	UCanvasTextWidget* CanvasTextWidget;

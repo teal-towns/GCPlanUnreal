@@ -30,12 +30,12 @@ TMap<FString, FPolygon> LMOfficeDesks::Desks(FVector size, FModelParams modelPar
 	TArray<FVector> vertices;
 	TMap<FString, FPolygon> polygons = {};
 
-	uName = Lodash::GetInstanceId("Room");
-	pairsString = "meshRule=roomCube&mat=wood&bottomMat=carpetBlue&scale=" + DataConvert::VectorToString(size) +
-		ModelBase::AddRotationString(createParamsIn.rotation);
-	vertices = { createParamsIn.offset };
-	vertices = ModelBase::Vertices(vertices, createParamsIn);
-	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
+	// uName = Lodash::GetInstanceId("Room");
+	// pairsString = "meshRule=roomCube&mat=wood&bottomMat=carpetBlue&scale=" + DataConvert::VectorToString(size) +
+	// 	ModelBase::AddRotationString(createParamsIn.rotation);
+	// vertices = { createParamsIn.offset };
+	// vertices = ModelBase::Vertices(vertices, createParamsIn);
+	// polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
 
 	FDesks deskParams;
 	// Rows of desks along left side of room.

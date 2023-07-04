@@ -37,15 +37,16 @@ TMap<FString, FPolygon> LMLobby::Create(FVector size, FModelParams modelParams,
 	FString uName, type, pairsString, scaleString;
 	TArray<FVector> vertices;
 	TMap<FString, FPolygon> polygons = {};
-	uName = Lodash::GetInstanceId("Room");
-	pairsString = "meshRule=roomCube&mat=white&bottomMat=marbleTile&scale=" + DataConvert::VectorToString(size) +
-		ModelBase::AddRotationString(createParamsIn.rotation);
-	vertices = { createParamsIn.offset };
-	vertices = ModelBase::Vertices(vertices, createParamsIn);
-	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
+	// uName = Lodash::GetInstanceId("Room");
+	// pairsString = "meshRule=roomCube&mat=white&bottomMat=marbleTile&scale=" + DataConvert::VectorToString(size) +
+	// 	ModelBase::AddRotationString(createParamsIn.rotation);
+	// vertices = { createParamsIn.offset };
+	// vertices = ModelBase::Vertices(vertices, createParamsIn);
+	// polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
 
 	FWallPlanterBox plantParams;
-	plantParams.pairsStringPlants = "meshes=brackenFern,solidFern,cinnamonFern&placeOffsetAverage=0.5";
+	plantParams.walls = { "front", "back", "left" };
+	plantParams.pairsStringPlants = "meshes=brackenFern,solidFern,cinnamonFern&placeOffsetAverage=0.3";
 	LMRoomPlants::WallPlanterBox(size, modelParams, createParamsIn, plantParams);
 
 	// Lights
@@ -64,16 +65,17 @@ TMap<FString, FPolygon> LMLobby::TwoTables(FVector size, FModelParams modelParam
 	FString uName, type, pairsString, scaleString;
 	TArray<FVector> vertices;
 	TMap<FString, FPolygon> polygons = {};
-	uName = Lodash::GetInstanceId("Room");
-	pairsString = "meshRule=roomCube&mat=white&bottomMat=marbleTile&scale=" + DataConvert::VectorToString(size) +
-		ModelBase::AddRotationString(createParamsIn.rotation);
-	vertices = { createParamsIn.offset };
-	vertices = ModelBase::Vertices(vertices, createParamsIn);
-	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
+
+	// uName = Lodash::GetInstanceId("Room");
+	// pairsString = "meshRule=roomCube&mat=white&bottomMat=marbleTile&scale=" + DataConvert::VectorToString(size) +
+	// 	ModelBase::AddRotationString(createParamsIn.rotation);
+	// vertices = { createParamsIn.offset };
+	// vertices = ModelBase::Vertices(vertices, createParamsIn);
+	// polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
 
 	FWallPlants plantParams;
 	plantParams.pairsStringPlants = "meshes=brackenFern,solidFern,cinnamonFern&placeOffsetAverage=0.3";
-	plantParams.walls = { "front", "back" };
+	plantParams.walls = { "front", "right" };
 	plantParams.zOffset = 0;
 	plantParams.sideOffset = 0;
 	LMRoomPlants::WallPlants(size, modelParams, createParamsIn, plantParams);
@@ -91,7 +93,7 @@ TMap<FString, FPolygon> LMLobby::TwoTables(FVector size, FModelParams modelParam
 	scale = FVector(4.5 + 1 * 1.5, 3 + 1 * 2, 1);
 	tableParams.meshesByTags["table"] = { "tableGlassLine" };
 	tableParams.meshesByTags["chair"] = { "chair" };
-	tableParams.offset = FVector(1,3,0);
+	tableParams.offset = FVector(1,2.5,0);
 	// createParamsTemp.offset = createParamsIn.offset + FVector(1,4,0);
 	LMTableChairs::TableWithChairs(scale, modelParams, createParamsIn, tableParams);
 

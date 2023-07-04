@@ -106,7 +106,7 @@ TMap<FString, FMeshTransform> LayoutPolygon::PlaceInPolygon(TArray<FVector> vert
 	if (inParams.plane == "yz") {
 		axis = "y";
 	}
-	TArray<FVector> minMaxPoints = MathPolygon::MinMaxPoints(vertices);
+	TArray<FVector> minMaxPoints = MathPolygon::MinMaxPoints(vertices, axis);
 
 	if (inParams.spreadPattern == "random") {
 		if (inParams.maxCount < 0) {
@@ -143,7 +143,7 @@ TMap<FString, FMeshTransform> LayoutPolygon::PlaceInPolygon(TArray<FVector> vert
 			curX = min.Z;
 			minX = min.Z;
 			maxX = max.Z;
-			offsetMaxX = offsetAverage * offsetMaxFactorX;
+			offsetMaxX = offsetAverage * offsetMaxFactorZ;
 		}
 		float offsetXBase = inParams.offsetX > 0 ? inParams.offsetX : offsetAverage;
 		float offsetYBase = inParams.offsetY > 0 ? inParams.offsetY : offsetAverage;
