@@ -42,7 +42,7 @@ AActor* PMWall::Create(FVector size, FModelCreateParams createParamsIn, FModelPa
 	TArray<FVector> Vertices = {};
 	TArray<FVector2D> UV0 = {};
 	TArray<int> Triangles = {};
-	int vertexIndex, vertexBottomLeftIndex, vertexBottomRightIndex,
+	int vertexBottomLeftIndex, vertexBottomRightIndex,
 		vertexTopLeftIndex, vertexTopRightIndex;
 
 	// Go left to right and when get to hole, add vertices for it and above and below it but
