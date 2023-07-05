@@ -37,10 +37,8 @@ void LisbonWorldIntro::Cables(UWorld* world, AStaticMeshActor* LineActorTemplate
 
 	// float zScale = 10000;
 	float zScale = 5000;
-	float speed;
 	float speedMin = 200000;
 	float speedMax = 1000000;
-	int startTickDelay;
 	int startTickDelayMin = 0;
 	int startTickDelayMax = 300;
 	TArray<FString> colors = { "blueEmissive", "greenEmissive", "orangeEmissive", "purpleEmissive", "redEmissive", "yellowEmissive" };
