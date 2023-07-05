@@ -21,11 +21,11 @@
 
 #include "CanvasTextWidget.h"
 #include "Draw/DrawHighlight.h"
-#include "LayoutModel/LMParkingLot.h"
 #include "LayoutModel/TrainStation/LMTrain.h"
 #include "Modeling/Common/ModelHighlight.h"
 #include "Move/MoveObject.h"
 #include "XLisbon/LisbonSequence.h"
+#include "XLisbon/LisbonExteriors.h"
 #include "XLisbon/LisbonInteriors.h"
 #include "ProceduralModel/PMWall.h"
 #include "Common/DataConvert.h"
@@ -303,12 +303,10 @@ void ALandProjectActor::SetVertices() {
 	verticesEdit->DestroyItems();
 
 	LisbonInteriors::Rooms();
+	LisbonExteriors::ParkingLots();
 
 	FModelParams modelParams;
 	FModelCreateParams createParams;
-	createParams.offset = FVector(0, 0, 0);
-	createParams.rotation = FVector(0, 0, 0);
-	LMParkingLot::Create(FVector(150, 50, 0), modelParams, createParams);
 	createParams.rotation = FVector(0,0,-60);
 	// createParams.offset = FVector(-401,-149,3);
 	// createParams.offset = FVector(135,-1124,3);
