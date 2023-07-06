@@ -18,6 +18,7 @@
 /Source/GCPlan/CCDefines.h
 /Source/ThirdParty/cppdelaunay/libcppdelaunay
 
+/Content/Datasmith
 /Content/EuropeanBeech
 /Content/KiteDemo
 /Content/MS_LushPlants
@@ -30,5 +31,6 @@
 /Content/TMChairsAndTablesPack1
 /Content/TMHighTechPack1
 /Content/TMStoragesPack1
+/Content/Twinmotion
 /Content/TwinmotionReadyposed
 Scanned3DPeoplePack.png
