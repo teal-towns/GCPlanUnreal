@@ -350,8 +350,11 @@ void AGlobalActor::LisbonInteriorsStart() {
 
 void AGlobalActor::LisbonInteriors(int step) {
 	// 90 - 300 - 510 - 720 - 930 - 1140 - 1350
+	FString animateInFunction = "SlideInFadeIn";
+	// FString animateInFunction = "AnimateTextLetters";
+	FString animateOutFunction = "FadeOut";
 	if (step == 0) {
-		CanvasTextWidget->SetText("LOBBY");
+		CanvasTextWidget->SetText("LOBBY", animateInFunction, 4, animateOutFunction);
 		_interiorsDelegate.BindUFunction(this, "LisbonInteriors", (step + 1));
 		_world->GetTimerManager().SetTimer(_interiorsTimer, _interiorsDelegate, 5, false);
 	} else if (step == 1) {
@@ -359,7 +362,7 @@ void AGlobalActor::LisbonInteriors(int step) {
 		_interiorsDelegate.BindUFunction(this, "LisbonInteriors", (step + 1));
 		_world->GetTimerManager().SetTimer(_interiorsTimer, _interiorsDelegate, 2, false);
 	} else if (step == 2) {
-		CanvasTextWidget->SetText("KITCHEN");
+		CanvasTextWidget->SetText("KITCHEN", animateInFunction, 4, animateOutFunction);
 		_interiorsDelegate.BindUFunction(this, "LisbonInteriors", (step + 1));
 		_world->GetTimerManager().SetTimer(_interiorsTimer, _interiorsDelegate, 5, false);
 	} else if (step == 3) {
@@ -367,7 +370,7 @@ void AGlobalActor::LisbonInteriors(int step) {
 		_interiorsDelegate.BindUFunction(this, "LisbonInteriors", (step + 1));
 		_world->GetTimerManager().SetTimer(_interiorsTimer, _interiorsDelegate, 2, false);
 	} else if (step == 4) {
-		CanvasTextWidget->SetText("OPERATIONS CENTER");
+		CanvasTextWidget->SetText("OPERATIONS CENTER", animateInFunction, 4, animateOutFunction);
 		_interiorsDelegate.BindUFunction(this, "LisbonInteriors", (step + 1));
 		_world->GetTimerManager().SetTimer(_interiorsTimer, _interiorsDelegate, 5, false);
 	} else if (step == 5) {
@@ -375,7 +378,7 @@ void AGlobalActor::LisbonInteriors(int step) {
 		_interiorsDelegate.BindUFunction(this, "LisbonInteriors", (step + 1));
 		_world->GetTimerManager().SetTimer(_interiorsTimer, _interiorsDelegate, 2, false);
 	} else if (step == 6) {
-		CanvasTextWidget->SetText("LOUNGE");
+		CanvasTextWidget->SetText("LOUNGE", animateInFunction, 4, animateOutFunction);
 		_interiorsDelegate.BindUFunction(this, "LisbonInteriors", (step + 1));
 		_world->GetTimerManager().SetTimer(_interiorsTimer, _interiorsDelegate, 5, false);
 	} else if (step == 7) {
@@ -383,7 +386,7 @@ void AGlobalActor::LisbonInteriors(int step) {
 		_interiorsDelegate.BindUFunction(this, "LisbonInteriors", (step + 1));
 		_world->GetTimerManager().SetTimer(_interiorsTimer, _interiorsDelegate, 2, false);
 	} else if (step == 8) {
-		CanvasTextWidget->SetText("CONFERENCE ROOM");
+		CanvasTextWidget->SetText("CONFERENCE ROOM", animateInFunction, 4, animateOutFunction);
 		_interiorsDelegate.BindUFunction(this, "LisbonInteriors", (step + 1));
 		_world->GetTimerManager().SetTimer(_interiorsTimer, _interiorsDelegate, 5, false);
 	} else if (step == 9) {
@@ -391,7 +394,7 @@ void AGlobalActor::LisbonInteriors(int step) {
 		_interiorsDelegate.BindUFunction(this, "LisbonInteriors", (step + 1));
 		_world->GetTimerManager().SetTimer(_interiorsTimer, _interiorsDelegate, 2, false);
 	} else if (step == 10) {
-		CanvasTextWidget->SetText("DATA SERVERS");
+		CanvasTextWidget->SetText("DATA SERVERS", animateInFunction, 4, animateOutFunction);
 		_interiorsDelegate.BindUFunction(this, "LisbonInteriors", (step + 1));
 		_world->GetTimerManager().SetTimer(_interiorsTimer, _interiorsDelegate, 5, false);
 	} else if (step == 11) {
