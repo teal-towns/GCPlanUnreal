@@ -303,6 +303,7 @@ void ALandProjectActor::SetVertices() {
 	verticesEdit->DestroyItems();
 
 	LisbonInteriors::Rooms();
+	LisbonExteriors::Buildings();
 	LisbonExteriors::ParkingLots();
 
 	FModelParams modelParams;

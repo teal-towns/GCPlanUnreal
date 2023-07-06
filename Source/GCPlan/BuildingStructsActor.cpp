@@ -79,7 +79,8 @@ FPolygonSimplified ABuildingStructsActor::PolygonToSimplified(FPolygon polygon) 
 	return FPolygonSimplified(polygon._id, polygon.uName, DataConvert::VectorsToStrings(polygon.vertices),
 		DataConvert::VectorToString(polygon.posCenter), polygon.type, polygon.shape,
 		polygon.pairsString, polygon.jsonDataString, polygon.squareMeters,
-		polygon.parentUName, polygon.childUNames, polygon.verticesBuffer, polygon.averageChildDiameter);
+		polygon.parentUName, polygon.childUNames, polygon.verticesBuffer,
+		polygon.averageChildDiameter, polygon.skip);
 }
 
 FPolygon ABuildingStructsActor::PolygonFromSimplified(FPolygonSimplified polygonSimplified) {
@@ -87,7 +88,8 @@ FPolygon ABuildingStructsActor::PolygonFromSimplified(FPolygonSimplified polygon
 		DataConvert::StringToVector(polygonSimplified.posCenter), polygonSimplified.type,
 		polygonSimplified.shape, polygonSimplified.pairsString,
 		polygonSimplified.jsonDataString, polygonSimplified.squareMeters, polygonSimplified.parentUName,
-		polygonSimplified.childUNames, polygonSimplified.verticesBuffer, polygonSimplified.averageChildDiameter);
+		polygonSimplified.childUNames, polygonSimplified.verticesBuffer,
+		polygonSimplified.averageChildDiameter, polygonSimplified.skip);
 }
 
 TMap<FString, FPolygonSimplified> ABuildingStructsActor::PolygonsToSimplified(TMap<FString, FPolygon> polygons) {

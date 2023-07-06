@@ -6,6 +6,10 @@
 struct FParkingLot {
 	FVector offset = FVector(0,0,0);
 	FVector rotation = FVector(0,0,0);
+	TMap<FString, TArray<FString>> meshesByTags = {
+		{ "car", {} },
+	};
+	float carProbability = 0.75;
 };
 
 class LMParkingLot

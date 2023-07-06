@@ -373,13 +373,15 @@ struct FPolygon {
 	float verticesBuffer;
 	UPROPERTY()
 	float averageChildDiameter;
+	UPROPERTY()
+	int skip;
 
 	FPolygon() {};
 	FPolygon(FString id_, FString uName_, TArray<FVector> vertices_, FVector posCenter_,
 		FString type_ = "", FString shape_ = "", FString pairsString_ = "",
 		FString jsonDataString_ = "", float squareMeters_ = -1,
 		FString parentUName_ = "", TArray<FString> childUNames_ = {}, float verticesBuffer_ = -25,
-		float averageChildDiameter_ = 100) {
+		float averageChildDiameter_ = 100, int skip_ = 0) {
 		_id = id_;
 		uName = uName_;
 		vertices = vertices_;
@@ -395,6 +397,7 @@ struct FPolygon {
 		childUNames = childUNames_;
 		verticesBuffer = verticesBuffer_;
 		averageChildDiameter = averageChildDiameter_;
+		skip = skip_;
 	};
 };
 
@@ -428,12 +431,14 @@ struct FPolygonSimplified {
 	float verticesBuffer;
 	UPROPERTY()
 	float averageChildDiameter;
+	UPROPERTY()
+	int skip;
 
 	FPolygonSimplified() {};
 	FPolygonSimplified(FString id_, FString uName_, TArray<FString> vertices_, FString posCenter_,
 		FString type_ = "", FString shape_ = "", FString pairsString_ = "", FString jsonDataString_ = "",
 		float squareMeters_ = -1, FString parentUName_ = "", TArray<FString> childUNames_ = {},
-		float verticesBuffer_ = -25, float averageChildDiameter_ = 100) {
+		float verticesBuffer_ = -25, float averageChildDiameter_ = 100, int skip_ = 0) {
 		_id = id_;
 		uName = uName_;
 		vertices = vertices_;
@@ -447,6 +452,7 @@ struct FPolygonSimplified {
 		childUNames = childUNames_;
 		verticesBuffer = verticesBuffer_;
 		averageChildDiameter = averageChildDiameter_;
+		skip = skip_;
 	};
 };
 

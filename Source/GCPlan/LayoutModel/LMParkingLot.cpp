@@ -38,7 +38,6 @@ TMap<FString, FPolygon> LMParkingLot::Create(FVector size, FModelParams modelPar
 
 	// Resize to section lengths.
 	size.X = float(floor(size.X / 22) * 22);
-	UE_LOG(LogTemp, Display, TEXT("size.X %f"), size.X);
 
 	float parkingStripDepth = 7;
 	// float treeStripDepth = 1;
@@ -108,6 +107,14 @@ TMap<FString, FPolygon> LMParkingLot::CreateRow(FVector size, FModelParams model
 	FString uName, type, pairsString, scaleString, meshKey;
 	TArray<FVector> vertices;
 	TMap<FString, FPolygon> polygons = {};
+	LoadContent* loadContent = LoadContent::GetInstance();
+
+	auto [valid, meshesByTags] = loadContent->FillMeshesByTags(params.meshesByTags, { });
+	if (!valid) {
+		UE_LOG(LogTemp, Warning, TEXT("LMParkingLot.CreateRow missing meshesByTags, skipping"));
+		return polygons;
+	}
+	params.meshesByTags = meshesByTags;
 
 	uName = Lodash::GetInstanceId("ParkingRoad");
 	// Give extra road on side to drive into parking spots
@@ -160,24 +167,26 @@ TMap<FString, FPolygon> LMParkingLot::CreateRow(FVector size, FModelParams model
 		float slot1CarProb = Lodash::RandomRangeFloat(0, 1);
 		float slot2CarProb = Lodash::RandomRangeFloat(0, 1);
 
-		if (slot1CarProb > 0.5)
+		if (slot1CarProb <= params.carProbability)
 		{
 			uName = Lodash::GetInstanceId("Car");
-			location = FVector(slot1X - 2, 5, 0) + params.offset;
+			location = FVector(slot1X, 0, 0) + params.offset;
 			rotation = FVector(0,0,0) + params.rotation;
-			pairsString = "mesh=mercedes" + ModelBase::AddRotationString(createParamsIn.rotation, rotation);
+			meshKey = params.meshesByTags["car"][Lodash::RandomRangeInt(0, params.meshesByTags["car"].Num() - 1)];
+			pairsString = "mesh=" + meshKey + ModelBase::AddRotationString(createParamsIn.rotation, rotation);
 			// note: this car mesh seems not centered in the model
 			vertices = { MathVector::RotateVector(location, createParamsIn.rotation) + createParamsIn.offset };
 			vertices = ModelBase::Vertices(vertices, createParamsIn, params.rotation);
 			polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0, 0, 0), "parkingLot", "point", pairsString));
 		}
 
-		if (slot2CarProb > 0.5)
+		if (slot2CarProb <= params.carProbability)
 		{
 			uName = Lodash::GetInstanceId("Car");
-			location = FVector(slot2X - 2, 5, 0) + params.offset;
+			location = FVector(slot2X, 0, 0) + params.offset;
 			rotation = FVector(0,0,0) + params.rotation;
-			pairsString = "mesh=mercedes" + ModelBase::AddRotationString(createParamsIn.rotation, rotation);
+			meshKey = params.meshesByTags["car"][Lodash::RandomRangeInt(0, params.meshesByTags["car"].Num() - 1)];
+			pairsString = "mesh=" + meshKey + ModelBase::AddRotationString(createParamsIn.rotation, rotation);
 			vertices = { MathVector::RotateVector(location, createParamsIn.rotation) + createParamsIn.offset };
 			vertices = ModelBase::Vertices(vertices, createParamsIn, params.rotation);
 			polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0, 0, 0), "parkingLot", "point", pairsString));

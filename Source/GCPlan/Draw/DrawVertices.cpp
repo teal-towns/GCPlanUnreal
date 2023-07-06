@@ -72,7 +72,10 @@ void DrawVertices::LoadVertices() {
 	TArray<FString> skipTypes = { "train" };
 	polygons = verticesEdit->FilterByShapes({ "point" });
 	for (auto& Elem : polygons) {
-		if (!skipTypes.Contains(Elem.Value.type)) {
+		if (Elem.Value.type == "building") {
+			UE_LOG(LogTemp, Display, TEXT("building skip %d"), Elem.Value.skip);
+		}
+		if (!skipTypes.Contains(Elem.Value.type) && Elem.Value.skip <= 0) {
 			pairs = Lodash::PairsStringToObject(Elem.Value.pairsString);
 			location = Elem.Value.vertices[0];
 			pairs.Add("loc", DataConvert::VectorToString(location));

@@ -529,7 +529,8 @@ void VerticesEdit::ImportPolygons(TMap<FString, FPolygon> polygons) {
 		} else {
 			_items.Add(uName, FPolygon(uName, uName, Elem.Value.vertices, Elem.Value.posCenter, Elem.Value.type,
 				Elem.Value.shape, Elem.Value.pairsString, Elem.Value.jsonDataString, Elem.Value.squareMeters,
-				Elem.Value.parentUName, Elem.Value.childUNames, Elem.Value.verticesBuffer, Elem.Value.averageChildDiameter));
+				Elem.Value.parentUName, Elem.Value.childUNames, Elem.Value.verticesBuffer,
+				Elem.Value.averageChildDiameter, Elem.Value.skip));
 			DrawItem(uName);
 		}
 	}
@@ -558,7 +559,8 @@ void VerticesEdit::LoadFromFiles() {
 				uName = Elem.Key;
 				_items.Add(uName, FPolygon(uName, uName, Elem.Value.vertices, Elem.Value.posCenter, Elem.Value.type,
 					Elem.Value.shape, Elem.Value.pairsString, Elem.Value.jsonDataString, Elem.Value.squareMeters,
-					Elem.Value.parentUName, Elem.Value.childUNames, Elem.Value.verticesBuffer, Elem.Value.averageChildDiameter));
+					Elem.Value.parentUName, Elem.Value.childUNames, Elem.Value.verticesBuffer,
+					Elem.Value.averageChildDiameter, Elem.Value.skip));
 				DrawItem(uName);
 			}
 		}
@@ -629,7 +631,8 @@ void VerticesEdit::AddAndSave(TMap<FString, FPolygon> polygons) {
 		uName = Elem.Key;
 		_items.Add(uName, FPolygon(uName, uName, Elem.Value.vertices, Elem.Value.posCenter, Elem.Value.type,
 			Elem.Value.shape, Elem.Value.pairsString, Elem.Value.jsonDataString, Elem.Value.squareMeters,
-			Elem.Value.parentUName, Elem.Value.childUNames, Elem.Value.verticesBuffer, Elem.Value.averageChildDiameter));
+			Elem.Value.parentUName, Elem.Value.childUNames, Elem.Value.verticesBuffer,
+			Elem.Value.averageChildDiameter, Elem.Value.skip));
 		if (!types.Contains(Elem.Value.type)) {
 			types.Add(Elem.Value.type);
 		}

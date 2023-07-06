@@ -3,6 +3,12 @@
 #include <mutex>
 
 #include "../BuildingStructsActor.h"
+#include "../Modeling/ModelBase.h"
+
+struct FCondenser {
+	FVector offset = FVector(0,0,0);
+	FVector rotation = FVector(0,0,0);
+};
 
 class LisbonExteriors {
 public:
@@ -15,6 +21,11 @@ public:
 
 	static LisbonExteriors *GetInstance();
 
+	static void Buildings();
+	static TMap<FString, FPolygon> BuildingCondensers(FVector size, FModelParams modelParams,
+		FModelCreateParams createParamsIn = FModelCreateParams());
+	static TMap<FString, FPolygon> CondenserGroup(FVector size, FModelParams modelParams,
+		FModelCreateParams createParamsIn = FModelCreateParams(), FCondenser params = FCondenser());
 	static TMap<FString, FPolygon> ParkingLots();
 
 private:
