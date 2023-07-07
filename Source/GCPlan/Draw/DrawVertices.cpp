@@ -119,7 +119,7 @@ void DrawVertices::LoadVertices() {
 	LayoutPolygon* layoutPolygon = LayoutPolygon::GetInstance();
 	FPlaceParams placeParams;
 	TArray<FString> meshNames, meshTypes;
-	types = { "tree", "bush", "flower" };
+	types = { "tree", "bush", "flower", "outdoorBush" };
 	polygons = verticesEdit->FilterByTypes(types);
 	for (auto& Elem : polygons) {
 		pairs = Lodash::PairsStringToObject(Elem.Value.pairsString);

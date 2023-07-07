@@ -30,7 +30,7 @@ public:
 	TArray<FString> GetMeshNamesByTypes(TArray<FString> types);
 	TArray<FString> GetMeshNamesByTags(TArray<FString> tags);
 	std::tuple<bool, TMap<FString, TArray<FString>>> FillMeshesByTags(TMap<FString, TArray<FString>> meshesByTags,
-		TArray<FString> required = { "[all] "});
+		TArray<FString> required = { "[all]" });
 	FString Material(FString key);
 	FString Texture(FString key);
 	FString Mesh(FString key);

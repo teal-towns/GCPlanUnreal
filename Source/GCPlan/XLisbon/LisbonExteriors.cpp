@@ -164,9 +164,8 @@ TMap<FString, FPolygon> LisbonExteriors::Trees(float zOffset) {
 	FString uNameBase = Lodash::GetInstanceId("Trees");
 
 	LoadContent* loadContent = LoadContent::GetInstance();
-	auto [valid, meshesByTags] = loadContent->FillMeshesByTags({}, { "tree", "outdoorBush" });
-	FString meshesTrees = Lodash::Join(meshesByTags["tree"], ",");
-	FString meshesBushes = Lodash::Join(meshesByTags["outdoorBush"], ",");
+	FString meshesTrees = Lodash::Join(loadContent->GetMeshNamesByTags({ "tree" }), ",");
+	FString meshesBushes = Lodash::Join(loadContent->GetMeshNamesByTags({ "outdoorBush" }), ",");
 
 	float z = zOffset + 1;
 	// polygons
