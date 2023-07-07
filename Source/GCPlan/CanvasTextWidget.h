@@ -18,7 +18,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetText(FString text, FString animateInFunction = "",
 		int animateOutSeconds = -1, FString animateOutFunction = "",
-		float timePerTextLetter = 0.01);
+		float timePerTextLetter = 0.01, int lettersPerGroup = 1);
 	UFUNCTION(BlueprintCallable)
 	void SetFont(FSlateFontInfo fontInfo);
 	UFUNCTION(BlueprintCallable)
@@ -41,6 +41,7 @@ private:
 	FTimerDelegate _animateInDelegate;
 
 	float _timePerTextLetter = 0.01;
+	int _lettersPerGroup = 1;
 	FString _fullText = "";
 	int _textIndex = 0;
 	FString _currentText = "";

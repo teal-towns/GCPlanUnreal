@@ -33,6 +33,8 @@ void AGlobalActor::Tick(float DeltaTime)
 	moveObject->Tick(DeltaTime);
 	MovePolyLine* movePolyLine = MovePolyLine::GetInstance();
 	movePolyLine->Tick(DeltaTime);
+	DrawHighlight* drawHighlight = DrawHighlight::GetInstance();
+	drawHighlight->Tick(DeltaTime);
 }
 
 // void AGlobalActor::Init() {
@@ -51,15 +53,6 @@ void AGlobalActor::Tick(float DeltaTime)
 // 		unrealGlobal->SetWidgets(CanvasTextWidget);
 // 	}
 // }
-
-void AGlobalActor::LisbonExteriors() {
-	// CreateUI();
-	UE_LOG(LogTemp, Display, TEXT("LisbonExteriors"));
-	// Init();
-	// TODO - not working well; just doing all with sequencer..
-	LisbonSequence* lisbonSequence = LisbonSequence::GetInstance();
-	lisbonSequence->Start();
-}
 
 void AGlobalActor::LisbonWorld() {
 	UE_LOG(LogTemp, Display, TEXT("LisbonWorldIntro"));
@@ -401,5 +394,190 @@ void AGlobalActor::LisbonInteriors(int step) {
 		CanvasTextWidget->SetText("");
 		_interiorsDelegate.BindUFunction(this, "LisbonInteriors", (step + 1));
 		_world->GetTimerManager().SetTimer(_interiorsTimer, _interiorsDelegate, 2, false);
+	}
+}
+
+void AGlobalActor::LisbonExteriorsTrainStart() {
+	_world = GetWorld();
+	if (!CanvasTextWidget) {
+		UE_LOG(LogTemp, Warning, TEXT("GlobalActor.LisbonExteriorsTrainStart missing CanvasTextWidget"));
+	} else {
+		CanvasTextWidget->AddToViewport(0);
+		LisbonExteriorsTrain();
+	}
+	// Init();
+	// TODO - not working well; just doing all with sequencer..
+	// LisbonSequence* lisbonSequence = LisbonSequence::GetInstance();
+	// lisbonSequence->Start();
+}
+
+void AGlobalActor::LisbonExteriorsTrain(int step) {
+	FString animateInFunction = "SlideInFadeIn";
+	// FString animateInFunction = "AnimateTextLetters";
+	FString animateOutFunction = "FadeOut";
+
+	FModelCreateParams createParams;
+	FHighlightText paramsText;
+	paramsText.dotScale = FVector(2,2,2);
+	FVector Text3DScale = FVector(5,5,5);
+	FVector Text3DScaleSmall = FVector(0.1,0.1,0.1);
+	FModelParams modelParams;
+	modelParams.movable = true;
+	DrawHighlight* drawHighlight = DrawHighlight::GetInstance();
+	FDrawHighlight drawParams;
+	drawParams.scaleSpeed = 10;
+
+	if (step == 0) {
+		// First is to wait.
+		_exteriorsTrainDelegate.BindUFunction(this, "LisbonExteriorsTrain", (step + 1));
+		_world->GetTimerManager().SetTimer(_exteriorsTrainTimer, _exteriorsTrainDelegate, 2, false);
+	} else if (step == 1) {
+		CanvasTextWidget->SetText("Accessible by rail", animateInFunction, 4, animateOutFunction);
+		_exteriorsTrainDelegate.BindUFunction(this, "LisbonExteriorsTrain", (step + 1));
+		_world->GetTimerManager().SetTimer(_exteriorsTrainTimer, _exteriorsTrainDelegate, 5, false);
+	} else if (step == 2) {
+		CanvasTextWidget->SetText("");
+		_exteriorsTrainDelegate.BindUFunction(this, "LisbonExteriorsTrain", (step + 1));
+		_world->GetTimerManager().SetTimer(_exteriorsTrainTimer, _exteriorsTrainDelegate, 2, false);
+	} else if (step == 3) {
+		CanvasTextWidget->SetText("Advanced zero water cooling system", animateInFunction, 4, animateOutFunction);
+
+		createParams.offset = FVector(-206, -120, 22);
+		createParams.rotation = FVector(0,-60,30);
+		paramsText.text = "Waterless cooling";
+		drawParams.scale = Text3DScaleSmall;
+		drawParams.targetScale = Text3DScale;
+		drawHighlight->CreateOne("rail", Text3DScale, modelParams, createParams, {}, paramsText, drawParams);
+
+		_exteriorsTrainDelegate.BindUFunction(this, "LisbonExteriorsTrain", (step + 1));
+		_world->GetTimerManager().SetTimer(_exteriorsTrainTimer, _exteriorsTrainDelegate, 5, false);
+	} else if (step == 4) {
+		drawParams.targetScale = Text3DScaleSmall;
+		drawHighlight->UpdateTargetScale("rail", Text3DScaleSmall);
+		CanvasTextWidget->SetText("");
+		_exteriorsTrainDelegate.BindUFunction(this, "LisbonExteriorsTrain", (step + 1));
+		_world->GetTimerManager().SetTimer(_exteriorsTrainTimer, _exteriorsTrainDelegate, 1, false);
+	} else if (step == 5) {
+		drawHighlight->DestroyOne("rail");
+		FSlateFontInfo fontInfo = CanvasTextWidget->GetFont();
+		fontInfo.Size = 80;
+		CanvasTextWidget->SetFont(fontInfo);
+		CanvasTextWidget->SetText("1.15 PUE", animateInFunction, 4, animateOutFunction);
+		_exteriorsTrainDelegate.BindUFunction(this, "LisbonExteriorsTrain", (step + 1));
+		_world->GetTimerManager().SetTimer(_exteriorsTrainTimer, _exteriorsTrainDelegate, 5, false);
+	} else if (step == 4) {
+		// Reset
+		FSlateFontInfo fontInfo = CanvasTextWidget->GetFont();
+		fontInfo.Size = 40;
+		CanvasTextWidget->SetFont(fontInfo);
+		CanvasTextWidget->SetText("");
+		_exteriorsTrainDelegate.BindUFunction(this, "LisbonExteriorsTrain", (step + 1));
+		_world->GetTimerManager().SetTimer(_exteriorsTrainTimer, _exteriorsTrainDelegate, 1, false);
+	}
+}
+
+void AGlobalActor::LisbonExteriorsTwoStart() {
+	_world = GetWorld();
+	if (!CanvasTextWidget) {
+		UE_LOG(LogTemp, Warning, TEXT("GlobalActor.LisbonExteriorsTwoStart missing CanvasTextWidget"));
+	} else {
+		CanvasTextWidget->AddToViewport(0);
+		LisbonExteriorsTwo();
+	}
+}
+
+void AGlobalActor::LisbonExteriorsTwo(int step) {
+	FString animateInFunction = "SlideInFadeIn";
+	// FString animateInFunction = "AnimateTextLetters";
+	FString animateOutFunction = "FadeOut";
+
+	FModelCreateParams createParams;
+	FHighlightText paramsText;
+	paramsText.dotScale = FVector(2,2,2);
+	FVector Text3DScale = FVector(5,5,5);
+	FVector Text3DScaleSmall = FVector(0.1,0.1,0.1);
+	FModelParams modelParams;
+	modelParams.movable = true;
+	DrawHighlight* drawHighlight = DrawHighlight::GetInstance();
+	FDrawHighlight drawParams;
+	drawParams.scaleSpeed = 10;
+
+	if (step == 0) {
+		// First is to wait.
+		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
+		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 1, false);
+	} else if (step == 1) {
+		CanvasTextWidget->SetText("High speed vehicle charging", animateInFunction, 4, animateOutFunction);
+
+		createParams.offset = FVector(-206, -120, 22);
+		createParams.rotation = FVector(0,-60,30);
+		paramsText.text = "GridBlock EV Charging";
+		drawParams.scale = Text3DScaleSmall;
+		drawParams.targetScale = Text3DScale;
+		drawHighlight->CreateOne("gridBlock", Text3DScale, modelParams, createParams, {}, paramsText, drawParams);
+
+		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
+		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 5, false);
+	} else if (step == 2) {
+		drawParams.targetScale = Text3DScaleSmall;
+		drawHighlight->UpdateTargetScale("gridBlock", Text3DScaleSmall);
+		CanvasTextWidget->SetText("");
+		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
+		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 2, false);
+	} else if (step == 3) {
+		drawHighlight->DestroyOne("gridBlock");
+
+		createParams.offset = FVector(-206, -120, 22);
+		createParams.rotation = FVector(0,-60,30);
+		paramsText.text = "200 MWh battery storage";
+		drawParams.scale = Text3DScaleSmall;
+		drawParams.targetScale = Text3DScale;
+		drawHighlight->CreateOne("batteryStorage", Text3DScale, modelParams, createParams, {}, paramsText, drawParams);
+
+		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
+		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 4, false);
+	} else if (step == 4) {
+		drawParams.targetScale = Text3DScaleSmall;
+		drawHighlight->UpdateTargetScale("batteryStorage", Text3DScaleSmall);
+
+		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
+		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 1, false);
+	} else if (step == 5) {
+		drawHighlight->DestroyOne("batteryStorage");
+
+		createParams.offset = FVector(-206, -120, 22);
+		createParams.rotation = FVector(0,-60,30);
+		paramsText.text = "Substation";
+		drawParams.scale = Text3DScaleSmall;
+		drawParams.targetScale = Text3DScale;
+		drawHighlight->CreateOne("substation", Text3DScale, modelParams, createParams, {}, paramsText, drawParams);
+
+		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
+		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 4, false);
+	} else if (step == 6) {
+		drawParams.targetScale = Text3DScaleSmall;
+		drawHighlight->UpdateTargetScale("substation", Text3DScaleSmall);
+		
+		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
+		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 1, false);
+	} else if (step == 7) {
+		drawHighlight->DestroyOne("substation");
+		CanvasTextWidget->SetText("Carbon neutral", animateInFunction, 4, animateOutFunction);
+		
+		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
+		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 5, false);
+	} else if (step == 8) {
+		CanvasTextWidget->SetText("");
+		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
+		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 1, false);
+	} else if (step == 9) {
+		CanvasTextWidget->SetText("16,000 square meters premium office space in a pedestrian oriented campus",
+			"AnimateTextLetters", 4, animateOutFunction, 0.01, 3);
+		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
+		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 5, false);
+	} else if (step == 10) {
+		CanvasTextWidget->SetText("");
+		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
+		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 1, false);
 	}
 }

@@ -23,8 +23,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable)
-	void LisbonExteriors();
-	UFUNCTION(BlueprintCallable)
 	void LisbonWorld();
 	UFUNCTION(BlueprintCallable)
 	void LisbonWorldReScale();
@@ -33,10 +31,21 @@ public:
 	void LisbonWorldUI(int step = 0);
 	UFUNCTION()
 	void LisbonWorldText3D(int step = 0);
+
 	UFUNCTION(BlueprintCallable)
 	void LisbonInteriorsStart();
 	UFUNCTION()
 	void LisbonInteriors(int step = 0);
+
+	UFUNCTION(BlueprintCallable)
+	void LisbonExteriorsTrainStart();
+	UFUNCTION()
+	void LisbonExteriorsTrain(int step = 0);
+
+	UFUNCTION(BlueprintCallable)
+	void LisbonExteriorsTwoStart();
+	UFUNCTION()
+	void LisbonExteriorsTwo(int step = 0);
 
 	UFUNCTION(CallInEditor)
 	void Test();
@@ -60,4 +69,10 @@ private:
 
 	FTimerHandle _interiorsTimer;
 	FTimerDelegate _interiorsDelegate;
+
+	FTimerHandle _exteriorsTrainTimer;
+	FTimerDelegate _exteriorsTrainDelegate;
+
+	FTimerHandle _exteriorsTwoTimer;
+	FTimerDelegate _exteriorsTwoDelegate;
 };

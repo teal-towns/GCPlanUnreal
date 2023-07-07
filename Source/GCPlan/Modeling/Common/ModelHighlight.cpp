@@ -27,7 +27,6 @@ AActor* ModelHighlight::Create(FVector size, FModelParams modelParams,
 	FActorSpawnParameters spawnParams;
 	modelParams.materialKey = "whiteEmissive";
 
-	UE_LOG(LogTemp, Display, TEXT("dotMeshKey %s"), *params.dotMeshKey);
 	modelParams.meshKey = params.dotMeshKey;
 	scale = params.dotScale;
 	rotation = params.dotRotation;

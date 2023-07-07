@@ -3,7 +3,7 @@
 #include "Fonts/SlateFontInfo.h"
 
 void UCanvasTextWidget::SetText(FString text, FString animateInFunction, int animateOutSeconds,
-	FString animateOutFunction, float timePerTextLetter) {
+	FString animateOutFunction, float timePerTextLetter, int lettersPerGroup) {
 	bool resetTextProperties = true;
 	if (animateInFunction.Len() > 0) {
 		if (animateInFunction == "ScaleInFadeIn") {
@@ -14,6 +14,7 @@ void UCanvasTextWidget::SetText(FString text, FString animateInFunction, int ani
 			_currentText = "";
 			_textIndex = 0;
 			_timePerTextLetter = timePerTextLetter;
+			_lettersPerGroup = lettersPerGroup;
 			text = "";
 			_animateInDelegate.BindUFunction(this, "AnimateTextLetters");
 		} else {
@@ -43,7 +44,10 @@ FSlateFontInfo UCanvasTextWidget::GetFont() {
 
 void UCanvasTextWidget::AnimateTextLetters() {
 	if (_textIndex < _fullText.Len() - 1) {
-		_textIndex += 1;
+		_textIndex += _lettersPerGroup;
+		if (_textIndex > _fullText.Len() - 1) {
+			_textIndex = _fullText.Len() - 1;
+		}
 		_currentText = _fullText.Mid(0, _textIndex + 1);
 		SetText(_currentText);
 		_animateInDelegate.BindUFunction(this, "AnimateTextLetters");
