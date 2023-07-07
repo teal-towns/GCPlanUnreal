@@ -15,7 +15,7 @@ public:
 
 	static LisbonInteriors *GetInstance();
 
-	static TMap<FString, FPolygon> Rooms();
+	static TMap<FString, FPolygon> Rooms(float zOffset = 0);
 
 private:
 	static LisbonInteriors *pinstance_;

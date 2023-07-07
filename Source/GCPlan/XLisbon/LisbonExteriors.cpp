@@ -28,10 +28,10 @@ LisbonExteriors *LisbonExteriors::GetInstance() {
 	return pinstance_;
 }
 
-void LisbonExteriors::Buildings() {
+void LisbonExteriors::Buildings(float zOffset) {
 	FModelParams modelParams;
 	FModelCreateParams createParams;
-	float z = 7 + 16;
+	float z = zOffset + 19;
 	// Data center 1
 	createParams.offset = FVector(-295,69,z);
 	createParams.rotation = FVector(0, 0, -61);
@@ -109,7 +109,7 @@ TMap<FString, FPolygon> LisbonExteriors::CondenserGroup(FVector size, FModelPara
 	return polygons;
 }
 
-TMap<FString, FPolygon> LisbonExteriors::ParkingLots() {
+TMap<FString, FPolygon> LisbonExteriors::ParkingLots(float zOffset) {
 	FModelCreateParams createParamsIn;
 	FVector rotation = FVector(0,0,0), location = FVector(0,0,0), scale = FVector(1,1,1);
 	FString uName, type, pairsString, scaleString, meshKey;
@@ -119,7 +119,7 @@ TMap<FString, FPolygon> LisbonExteriors::ParkingLots() {
 	FModelParams modelParams;
 	FModelCreateParams createParams;
 
-	float z = 7;
+	float z = zOffset;
 
 	// By batteries
 	createParams.offset = FVector(44, -721, z);

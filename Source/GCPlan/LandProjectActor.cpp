@@ -302,16 +302,18 @@ void ALandProjectActor::SetVertices() {
 	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
 	verticesEdit->DestroyItems();
 
-	LisbonInteriors::Rooms();
-	LisbonExteriors::Buildings();
-	LisbonExteriors::ParkingLots();
+	// float zOffset = 4;
+	float zOffset = 0;
+	LisbonInteriors::Rooms(zOffset);
+	LisbonExteriors::Buildings(zOffset);
+	LisbonExteriors::ParkingLots(zOffset);
 
 	FModelParams modelParams;
 	FModelCreateParams createParams;
 	createParams.rotation = FVector(0,0,-60);
 	// createParams.offset = FVector(-401,-149,3);
 	// createParams.offset = FVector(135,-1124,3);
-	createParams.offset = FVector(-65.5,-777,5);
+	createParams.offset = FVector(-65.5,-777,zOffset);
 	LMTrain::Create(FVector(0,0,0), modelParams, createParams);
 }
 

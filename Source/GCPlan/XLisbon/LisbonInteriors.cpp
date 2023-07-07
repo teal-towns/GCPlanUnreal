@@ -30,7 +30,7 @@ LisbonInteriors *LisbonInteriors::GetInstance() {
 	return pinstance_;
 }
 
-TMap<FString, FPolygon> LisbonInteriors::Rooms() {
+TMap<FString, FPolygon> LisbonInteriors::Rooms(float zOffset) {
 	FModelCreateParams createParamsIn;
 	FVector rotation = FVector(0,0,0), location = FVector(0,0,0), scale = FVector(1,1,1);
 	FString uName, type, pairsString, scaleString;
@@ -41,7 +41,7 @@ TMap<FString, FPolygon> LisbonInteriors::Rooms() {
 	FModelParams modelParams;
 	FModelCreateParams createParams;
 	// createParams.rotation = FVector(0,0,30);
-	createParamsIn.offset = FVector(0,0,5);
+	createParamsIn.offset = FVector(0,0,zOffset);
 	FVector roomSize = FVector(10,12,4);
 	FVector roomSizePrev;
 	FVector roomPos = FVector(0,0,0);
