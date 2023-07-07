@@ -418,8 +418,8 @@ void AGlobalActor::LisbonExteriorsTrain(int step) {
 
 	FModelCreateParams createParams;
 	FHighlightText paramsText;
-	paramsText.dotScale = FVector(2,2,2);
-	FVector Text3DScale = FVector(5,5,5);
+	paramsText.dotScale = FVector(1,1,1);
+	FVector Text3DScale = FVector(3,3,3);
 	FVector Text3DScaleSmall = FVector(0.1,0.1,0.1);
 	FModelParams modelParams;
 	modelParams.movable = true;
@@ -442,8 +442,8 @@ void AGlobalActor::LisbonExteriorsTrain(int step) {
 	} else if (step == 3) {
 		CanvasTextWidget->SetText("Advanced zero water cooling system", animateInFunction, 4, animateOutFunction);
 
-		createParams.offset = FVector(-206, -120, 22);
-		createParams.rotation = FVector(0,-60,30);
+		createParams.offset = FVector(-216, -59, 24);
+		createParams.rotation = FVector(0,0,-20);
 		paramsText.text = "Waterless cooling";
 		drawParams.scale = Text3DScaleSmall;
 		drawParams.targetScale = Text3DScale;
