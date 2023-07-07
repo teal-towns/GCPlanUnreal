@@ -31,13 +31,13 @@ LisbonExteriors *LisbonExteriors::GetInstance() {
 void LisbonExteriors::Buildings(float zOffset) {
 	FModelParams modelParams;
 	FModelCreateParams createParams;
-	float z = zOffset + 19;
+	float z = zOffset + 23;
 	// Data center 1
-	createParams.offset = FVector(-295,69,z);
+	createParams.offset = FVector(-283,76,z);
 	createParams.rotation = FVector(0, 0, -61);
 	BuildingCondensers(FVector(82,40,1), modelParams, createParams);
 	// Data center 2
-	createParams.offset = FVector(-200,-104,z);
+	createParams.offset = FVector(-200,-75,z);
 	createParams.rotation = FVector(0, 0, -61);
 	BuildingCondensers(FVector(82,40,1), modelParams, createParams);
 }
@@ -122,12 +122,12 @@ TMap<FString, FPolygon> LisbonExteriors::ParkingLots(float zOffset) {
 	float z = zOffset;
 
 	// By batteries
-	createParams.offset = FVector(44, -721, z);
+	createParams.offset = FVector(59, -756, z);
 	createParams.rotation = FVector(0, 0, 119);
-	LMParkingLot::Create(FVector(325, 20, 0), modelParams, createParams);
-	createParams.offset = FVector(30, -743, z);
+	LMParkingLot::Create(FVector(270, 20, 0), modelParams, createParams);
+	createParams.offset = FVector(46, -776, z);
 	createParams.rotation = FVector(0, 0, 119);
-	LMParkingLot::Create(FVector(325, 20, 0), modelParams, createParams);
+	LMParkingLot::Create(FVector(270, 20, 0), modelParams, createParams);
 
 	// By Data Center
 	createParams.offset = FVector(-63, -248, z);
@@ -141,12 +141,12 @@ TMap<FString, FPolygon> LisbonExteriors::ParkingLots(float zOffset) {
 	LMParkingLot::Create(FVector(110, 16, 0), modelParams, createParams);
 
 	// By generators
-	createParams.offset = FVector(-364, 272, z);
+	createParams.offset = FVector(-364, 281, z);
 	createParams.rotation = FVector(0, 0, 28);
 	LMParkingLot::Create(FVector(60, 16, 0), modelParams, createParams);
 
 	// By train station
-	createParams.offset = FVector(-336, -67, z);
+	createParams.offset = FVector(-341, -70, z);
 	createParams.rotation = FVector(0, 0, 119);
 	LMParkingLot::Create(FVector(230, 16, 0), modelParams, createParams);
 

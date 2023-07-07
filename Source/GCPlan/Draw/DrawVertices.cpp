@@ -74,10 +74,7 @@ void DrawVertices::LoadVertices() {
 	// onlyTypes = { "building" };
 	polygons = verticesEdit->FilterByShapes({ "point" });
 	for (auto& Elem : polygons) {
-		if (Elem.Value.type == "building") {
-			UE_LOG(LogTemp, Display, TEXT("building skip %d"), Elem.Value.skip);
-		}
-		if (!skipTypes.Contains(Elem.Value.type) && Elem.Value.skip <= 0 &&
+		if (!skipTypes.Contains(Elem.Value.type) && Elem.Value.skip <= 1 &&
 			(onlyTypes.Num() < 1 || onlyTypes.Contains(Elem.Value.type))) {
 			pairs = Lodash::PairsStringToObject(Elem.Value.pairsString);
 			location = Elem.Value.vertices[0];

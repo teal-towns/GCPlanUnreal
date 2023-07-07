@@ -116,10 +116,11 @@ TMap<FString, FPolygon> LMParkingLot::CreateRow(FVector size, FModelParams model
 	}
 	params.meshesByTags = meshesByTags;
 
+	float roadHeight = 0.25;
 	uName = Lodash::GetInstanceId("ParkingRoad");
 	// Give extra road on side to drive into parking spots
-	scale = FVector(size.X, size.Y * 2, size.Z);
-	location = FVector(0,scale.Y / 2,0) + params.offset;
+	scale = FVector(size.X, size.Y * 2, roadHeight);
+	location = FVector(0,0,0) + params.offset;
 	rotation = FVector(0,0,0) + params.rotation;
 	pairsString = "mesh=cube&mat=smoothConcrete&scale=" + DataConvert::VectorToString(scale) +
 		ModelBase::AddRotationString(createParamsIn.rotation, rotation);
@@ -139,7 +140,7 @@ TMap<FString, FPolygon> LMParkingLot::CreateRow(FVector size, FModelParams model
 	for (int ii = 0; ii < solarChargingStationCount; ii++)
 	{
 		uName = Lodash::GetInstanceId("SolarChargingStation");
-		location = FVector(chargingStationStartX, 0, 0) + params.offset;
+		location = FVector(chargingStationStartX, 0, roadHeight) + params.offset;
 		rotation = FVector(0,0,0) + params.rotation;
 		pairsString = "mesh=solarChargingStation" + ModelBase::AddRotationString(createParamsIn.rotation, rotation);
 		vertices = { MathVector::RotateVector(location, createParamsIn.rotation) + createParamsIn.offset };
@@ -149,7 +150,7 @@ TMap<FString, FPolygon> LMParkingLot::CreateRow(FVector size, FModelParams model
 		float slot1X = chargingStationStartX - singleStationLength / 4;
 		float slot2X = chargingStationStartX + singleStationLength / 4;
 		uName = Lodash::GetInstanceId("EVCharger");
-		location = FVector(slot1X, -(size.Y / 2) + 0.5, 0) + params.offset;
+		location = FVector(slot1X, -(size.Y / 2) + 0.5, roadHeight) + params.offset;
 		rotation = FVector(0,0,0) + params.rotation;
 		pairsString = "mesh=evCharger" + ModelBase::AddRotationString(createParamsIn.rotation, rotation);
 		vertices = { MathVector::RotateVector(location, createParamsIn.rotation) + createParamsIn.offset };
@@ -157,7 +158,7 @@ TMap<FString, FPolygon> LMParkingLot::CreateRow(FVector size, FModelParams model
 		polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0, 0, 0), "parkingLot", "point", pairsString));
 
 		uName = Lodash::GetInstanceId("EVCharger");
-		location = FVector(slot2X, -(size.Y / 2) + 0.5, 0) + params.offset;
+		location = FVector(slot2X, -(size.Y / 2) + 0.5, roadHeight) + params.offset;
 		rotation = FVector(0,0,0) + params.rotation;
 		pairsString = "mesh=evCharger" + ModelBase::AddRotationString(createParamsIn.rotation, rotation);
 		vertices = { MathVector::RotateVector(location, createParamsIn.rotation) + createParamsIn.offset };
@@ -170,7 +171,7 @@ TMap<FString, FPolygon> LMParkingLot::CreateRow(FVector size, FModelParams model
 		if (slot1CarProb <= params.carProbability)
 		{
 			uName = Lodash::GetInstanceId("Car");
-			location = FVector(slot1X, 0, 0) + params.offset;
+			location = FVector(slot1X, 0, roadHeight) + params.offset;
 			rotation = FVector(0,0,0) + params.rotation;
 			meshKey = params.meshesByTags["car"][Lodash::RandomRangeInt(0, params.meshesByTags["car"].Num() - 1)];
 			pairsString = "mesh=" + meshKey + ModelBase::AddRotationString(createParamsIn.rotation, rotation);
@@ -183,7 +184,7 @@ TMap<FString, FPolygon> LMParkingLot::CreateRow(FVector size, FModelParams model
 		if (slot2CarProb <= params.carProbability)
 		{
 			uName = Lodash::GetInstanceId("Car");
-			location = FVector(slot2X, 0, 0) + params.offset;
+			location = FVector(slot2X, 0, roadHeight) + params.offset;
 			rotation = FVector(0,0,0) + params.rotation;
 			meshKey = params.meshesByTags["car"][Lodash::RandomRangeInt(0, params.meshesByTags["car"].Num() - 1)];
 			pairsString = "mesh=" + meshKey + ModelBase::AddRotationString(createParamsIn.rotation, rotation);

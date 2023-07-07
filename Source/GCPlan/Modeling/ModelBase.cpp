@@ -366,7 +366,10 @@ std::tuple<FString, FModelParams> ModelBase::ModelParamsFromPairs(TMap<FString, 
 		key = pairs["mesh"];
 		hasMesh = true;
 	}
-	if (pairs.Contains("dMat")) {
+	if (pairs.Contains("mat")) {
+		modelParams.materialKey = pairs["mat"];
+		key += "_" + pairs["mat"];
+	} else if (pairs.Contains("dMat")) {
 		FString materialName = pairs["dMat"];
 		key += "_" + pairs["dMat"];
 		DynamicMaterial* dynamicMaterial = DynamicMaterial::GetInstance();
