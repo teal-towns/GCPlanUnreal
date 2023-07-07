@@ -9,6 +9,7 @@
 #include "../Layout/LayoutPlace.h"
 #include "../Layout/LayoutPolygon.h"
 #include "../LayoutModel/LMParkingLot.h"
+#include "../Mesh/LoadContent.h"
 #include "../Modeling/ModelBase.h"
 
 LisbonExteriors* LisbonExteriors::pinstance_{nullptr};
@@ -149,6 +150,48 @@ TMap<FString, FPolygon> LisbonExteriors::ParkingLots(float zOffset) {
 	createParams.offset = FVector(-341, -70, z);
 	createParams.rotation = FVector(0, 0, 119);
 	LMParkingLot::Create(FVector(230, 16, 0), modelParams, createParams);
+
+	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
+	verticesEdit->AddAndSave(polygons);
+	return polygons;
+}
+
+TMap<FString, FPolygon> LisbonExteriors::Trees(float zOffset) {
+	FVector rotation = FVector(0,0,0), location = FVector(0,0,0), scale = FVector(1,1,1);
+	FString uName, type, pairsString, scaleString, meshKey;
+	TArray<FVector> vertices;
+	TMap<FString, FPolygon> polygons = {};
+	FString uNameBase = Lodash::GetInstanceId("Trees");
+
+	LoadContent* loadContent = LoadContent::GetInstance();
+	auto [valid, meshesByTags] = loadContent->FillMeshesByTags({}, { "tree", "outdoorBush" });
+	FString meshesTrees = Lodash::Join(meshesByTags["tree"], ",");
+	FString meshesBushes = Lodash::Join(meshesByTags["outdoorBush"], ",");
+
+	float z = zOffset + 1;
+	// polygons
+	TArray<TArray<FVector>> verticesGroup = {
+		{ FVector(-435,225,z), FVector(-435,245,z), FVector(-416,243,z), FVector(-416,226,z) }
+	};
+
+	for (int ii = 0; ii < verticesGroup.Num(); ii++) {
+		uName = uNameBase + "_" + FString::FromInt(ii) + "_trees";
+		vertices = verticesGroup[ii];
+		pairsString = "meshes=" + meshesTrees;
+		polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0, 0, 0), "tree", "polygon", pairsString));
+
+		uName = uNameBase + "_" + FString::FromInt(ii) + "_bushes";
+		vertices = verticesGroup[ii];
+		pairsString = "meshes=" + meshesBushes;
+		polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0, 0, 0), "outdoorBush", "polygon", pairsString));
+	}
+
+	// lines
+	verticesGroup = {
+		{ FVector(-511, 140, z), FVector(-445, 215, z) }
+	};
+
+	// TODO
 
 	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
 	verticesEdit->AddAndSave(polygons);

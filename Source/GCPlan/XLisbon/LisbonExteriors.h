@@ -27,6 +27,7 @@ public:
 	static TMap<FString, FPolygon> CondenserGroup(FVector size, FModelParams modelParams,
 		FModelCreateParams createParamsIn = FModelCreateParams(), FCondenser params = FCondenser());
 	static TMap<FString, FPolygon> ParkingLots(float zOffset = 0);
+	static TMap<FString, FPolygon> Trees(float zOffset = 0);
 
 private:
 	static LisbonExteriors *pinstance_;

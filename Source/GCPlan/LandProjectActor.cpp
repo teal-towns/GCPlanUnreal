@@ -304,9 +304,11 @@ void ALandProjectActor::SetVertices() {
 
 	// float zOffset = 4;
 	float zOffset = 0;
-	LisbonInteriors::Rooms(zOffset);
+	// TESTING
+	// LisbonInteriors::Rooms(zOffset);
 	LisbonExteriors::Buildings(zOffset);
 	LisbonExteriors::ParkingLots(zOffset);
+	LisbonExteriors::Trees(zOffset);
 
 	FModelParams modelParams;
 	FModelCreateParams createParams;
