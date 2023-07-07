@@ -60,7 +60,6 @@ TMap<FString, FPolygon> LisbonExteriors::BuildingCondensers(FVector size, FModel
 	vertices = MathPolygon::PointToBox(FVector(0,0,0), size - sizeBuffer);
 	TMap<FString, FMeshTransform> transforms = LayoutPolygon::PlaceInPolygon(vertices, {}, placeParams);
 	int counter = 0;
-	float currentZ;
 	FCondenser params;
 	for (auto& Elem : transforms) {
 		FVector locationBase = Elem.Value.location;

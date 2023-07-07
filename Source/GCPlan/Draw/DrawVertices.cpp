@@ -70,12 +70,15 @@ void DrawVertices::LoadVertices() {
 	// types = { "couch", "chair", "desk", "planterBox", "room", "table" };
 	// polygons = verticesEdit->FilterByTypes(types);
 	TArray<FString> skipTypes = { "train" };
+	TArray<FString> onlyTypes = {};
+	// onlyTypes = { "building" };
 	polygons = verticesEdit->FilterByShapes({ "point" });
 	for (auto& Elem : polygons) {
 		if (Elem.Value.type == "building") {
 			UE_LOG(LogTemp, Display, TEXT("building skip %d"), Elem.Value.skip);
 		}
-		if (!skipTypes.Contains(Elem.Value.type) && Elem.Value.skip <= 0) {
+		if (!skipTypes.Contains(Elem.Value.type) && Elem.Value.skip <= 0 &&
+			(onlyTypes.Num() < 1 || onlyTypes.Contains(Elem.Value.type))) {
 			pairs = Lodash::PairsStringToObject(Elem.Value.pairsString);
 			location = Elem.Value.vertices[0];
 			pairs.Add("loc", DataConvert::VectorToString(location));
