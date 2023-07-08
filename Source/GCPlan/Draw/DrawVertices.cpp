@@ -74,7 +74,7 @@ void DrawVertices::LoadVertices() {
 	// onlyTypes = { "building" };
 	polygons = verticesEdit->FilterByShapes({ "point" });
 	for (auto& Elem : polygons) {
-		if (!skipTypes.Contains(Elem.Value.type) && Elem.Value.skip <= 1 &&
+		if (!skipTypes.Contains(Elem.Value.type) && Elem.Value.skip <= 0 &&
 			(onlyTypes.Num() < 1 || onlyTypes.Contains(Elem.Value.type))) {
 			pairs = Lodash::PairsStringToObject(Elem.Value.pairsString);
 			location = Elem.Value.vertices[0];
@@ -149,6 +149,10 @@ void DrawVertices::LoadVertices() {
 				DataConvert::Float(pairs["placeOffsetMaxFactorX"]) : 0.5;
 			placeParams.offsetMaxFactorY = pairs.Contains("placeOffsetMaxFactorY") ?
 				DataConvert::Float(pairs["placeOffsetMaxFactorY"]) : 0.5;
+			placeParams.scaleMin = pairs.Contains("placeScaleMin") ?
+				DataConvert::Float(pairs["placeScaleMin"]) : 0.75;
+			placeParams.scaleMax = pairs.Contains("placeScaleMax") ?
+				DataConvert::Float(pairs["placeScaleMax"]) : 1.25;
 			placeParams.rotMinX = pairs.Contains("placeRotMinX") ?
 				DataConvert::Float(pairs["placeRotMinX"]) : 0;
 			placeParams.rotMaxX = pairs.Contains("placeRotMaxX") ?

@@ -170,18 +170,23 @@ TMap<FString, FPolygon> LisbonExteriors::Trees(float zOffset) {
 	float z = zOffset + 1;
 	// polygons
 	TArray<TArray<FVector>> verticesGroup = {
-		{ FVector(-435,225,z), FVector(-435,245,z), FVector(-416,243,z), FVector(-416,226,z) }
+		{ FVector(-435,225,z), FVector(-435,245,z), FVector(-416,243,z), FVector(-416,226,z) },
+		{ FVector(-273,247,z), FVector(-293,278,z), FVector(-396,222,z), FVector(-357,149,z), FVector(-344,157,z), FVector(-366,197,z) },
+		{ FVector(-356,71,z), FVector(-382,56,z), FVector(-447,183,z), FVector(-430,202,z) },
+		{ FVector(-419,11,z), FVector(-432,11,z), FVector(-370,-77,z), FVector(-382,-86,z) },
+		{ FVector(-355,-135,z), FVector(-344,-126,z), FVector(-310,-184,z), FVector(-323,-190,z) },
+		{ FVector(-172,-267,z), FVector(-144,-310,z), FVector(-213,-350,z), FVector(-241,-299,z) }
 	};
 
 	for (int ii = 0; ii < verticesGroup.Num(); ii++) {
 		uName = uNameBase + "_" + FString::FromInt(ii) + "_trees";
 		vertices = verticesGroup[ii];
-		pairsString = "meshes=" + meshesTrees;
+		pairsString = "meshes=" + meshesTrees + "&placeOffsetAverage=10&placeScaleMin=0.3&placeScaleMax=0.75";
 		polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0, 0, 0), "tree", "polygon", pairsString));
 
 		uName = uNameBase + "_" + FString::FromInt(ii) + "_bushes";
 		vertices = verticesGroup[ii];
-		pairsString = "meshes=" + meshesBushes;
+		pairsString = "meshes=" + meshesBushes + "&placeOffsetAverage=2";
 		polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0, 0, 0), "outdoorBush", "polygon", pairsString));
 	}
 
