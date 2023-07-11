@@ -100,32 +100,34 @@ void ALandProjectActor::Login() {
 }
 
 void ALandProjectActor::Init() {
+	if (false) {
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
-	// TArray<FString> Keys = {"socket"};
-	// unrealGlobal->InitAll(GetWorld());
-	// if (unrealGlobal->IsIniteds(Keys) && unrealGlobal->SocketActor->IsConnected()) {
-	// 	Inited = true;
-	// 	// this->InitSocketOn();
-	// 	// this->Login();
+	TArray<FString> Keys = {"socket"};
+	unrealGlobal->InitAll(GetWorld());
+	if (unrealGlobal->IsIniteds(Keys) && unrealGlobal->SocketActor->IsConnected()) {
+		Inited = true;
+		// this->InitSocketOn();
+		// this->Login();
 
-	// 	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
-	// 	verticesEdit->LoadFromFiles();
-	// 	verticesEdit->CheckSubdividePolygons("plot");
-	// 	verticesEdit->Hide();
+		VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
+		verticesEdit->LoadFromFiles();
+		verticesEdit->CheckSubdividePolygons("plot");
+		// verticesEdit->Hide();
 
-	// 	// CreateUI();
+		// CreateUI();
 
-	// 	// MoveObject* moveObject = MoveObject::GetInstance();
-	// 	// moveObject->CleanUp();
-	// 	// LisbonSequence* lisbonSequence = LisbonSequence::GetInstance();
-	// 	// lisbonSequence->Start();
+		// MoveObject* moveObject = MoveObject::GetInstance();
+		// moveObject->CleanUp();
+		// LisbonSequence* lisbonSequence = LisbonSequence::GetInstance();
+		// lisbonSequence->Start();
 
-	// 	if (LisbonSequence && LisbonSequence->SequencePlayer) {
-	// 		LisbonSequence->SequencePlayer->Play();
-	// 	} else {
-	// 		UE_LOG(LogTemp, Warning, TEXT("Missing LisbonSequence, skipping"));
-	// 	}
-	// }
+		// if (LisbonSequence && LisbonSequence->SequencePlayer) {
+		// 	LisbonSequence->SequencePlayer->Play();
+		// } else {
+		// 	UE_LOG(LogTemp, Warning, TEXT("Missing LisbonSequence, skipping"));
+		// }
+	}
+	}
 
 	// if (LisbonSequence && LisbonSequence->SequencePlayer) {
 	// 	LisbonSequence->SequencePlayer->Play();

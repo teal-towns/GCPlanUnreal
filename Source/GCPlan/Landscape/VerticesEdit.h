@@ -30,8 +30,8 @@ private:
 	double _timeMouseDown = -1;
 	double _timeDragDelay = 0.25;
 
-	FVector _displayScale = FVector(20,20,20);
-	FVector _displayScaleEdge = FVector(10,10,10);
+	FVector _displayScale = FVector(20,20,30);
+	FVector _displayScaleEdge = FVector(10,10,15);
 
 	TMap<FString, std::function<void(FString, FPolygon)>> _listenersSavePolygon = {};
 	TMap<FString, std::function<void(FString, FString)>> _listenersDeletePolygon = {};
@@ -92,6 +92,7 @@ public:
 	void OnMouseMove(FVector);
 	void StartDrag();
 	void StopDrag();
+	void SetDisplayScale(FVector displayScale, FVector displayScaleEdge);
 
 	void AddOnSavePolygon(FString key, std::function<void(FString, FPolygon)> callback);
 	void RemoveOnSavePolygon(FString key);

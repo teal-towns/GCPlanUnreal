@@ -16,6 +16,8 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	virtual void Tick(float DeltaTime) override;
+
 	UPROPERTY(EditAnywhere)
 	UUserWidget* MiniMap;
 	// UPROPERTY(EditAnywhere)
@@ -42,4 +44,6 @@ public:
 
 	void CreateUI();
 	void SetupMouse();
+	void SetupRotation();
+	void SetMiniMapZoom();
 };

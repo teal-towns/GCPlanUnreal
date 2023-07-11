@@ -30,7 +30,7 @@ public:
 	static FString VectorToString(FVector vector, int precision = 4);
 	static FVector StringToVector(FString input);
 	static TArray<FString> VectorsToStrings(TArray<FVector> vectors);
-	static TArray<FVector> StringsToVectors(TArray<FString> inputs);
+	static TArray<FVector> StringsToVectors(TArray<FString> inputs, float forceZ = -999);
 	static FString RotatorToString(FRotator vector, int precision = 4);
 	static FRotator StringToRotator(FString input);
 	static FRotator VectorToRotator(FVector vector);

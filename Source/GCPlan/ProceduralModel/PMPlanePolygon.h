@@ -7,6 +7,7 @@
 
 struct FPlanePolygon {
 	FString triangleDirection = "clockwise";
+	FString name = "";
 };
 
 class PMPlanePolygon {

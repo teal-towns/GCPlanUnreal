@@ -191,6 +191,11 @@ void VerticesEdit::StartDrag() {
 	_dragging = true;
 }
 
+void VerticesEdit::SetDisplayScale(FVector displayScale, FVector displayScaleEdge) {
+	_displayScale = displayScale;
+	_displayScaleEdge = displayScaleEdge;
+}
+
 FVerticesEditSelectedObject* VerticesEdit::GetItemByLocation(FVector worldLocation) {
 	float xMin = worldLocation.X - _displayScale.X;
 	float xMax = worldLocation.X + _displayScale.X;
@@ -204,49 +209,52 @@ FVerticesEditSelectedObject* VerticesEdit::GetItemByLocation(FVector worldLocati
 	float halfWidth = _displayScale.X / 2;
 	float degrees;
 	for (auto& Elem : _items) {
-		point = Elem.Value.posCenter;
-		if (point.X >= xMin && point.X <= xMax && point.Y >= yMin && point.Y <= yMax) {
-			selectedObject = new FVerticesEditSelectedObject(Elem.Key, "center");
-			found = true;
-			break;
-		}
-		verticesCount = Elem.Value.vertices.Num();
-		for (int vv = 0; vv < verticesCount; vv++) {
-			point = Elem.Value.vertices[vv];
+		// Ensure visible.
+		if (_itemsActors.Contains(Elem.Key)) {
+			point = Elem.Value.posCenter;
 			if (point.X >= xMin && point.X <= xMax && point.Y >= yMin && point.Y <= yMax) {
-				selectedObject = new FVerticesEditSelectedObject(Elem.Key, "vertex", vv);
+				selectedObject = new FVerticesEditSelectedObject(Elem.Key, "center");
 				found = true;
 				break;
 			}
-			// Edges
-			if (!found && vv < verticesCount - 1 || Elem.Value.shape == "polygon") {
-				indexNext = (vv < verticesCount - 1) ? vv + 1 : 0;
-				pointNext = Elem.Value.vertices[indexNext];
-				// Make rectangle (width along line in between vertices).
-				pathLine = pointNext - point;
-				// 45 instead of 90 since we want to not overlap vertex (to make it easy to click vertex instead of edge).
-				degrees = 45;
-				perpendicularLine = pathLine.RotateAngleAxis(degrees, FVector(0,0,1)).GetClampedToMaxSize(halfWidth);
-				polygon2D.Empty();
-				pointTemp = point + perpendicularLine;
-				polygon2D.Add(FVector2D(pointTemp.X, pointTemp.Y));
-				pointTemp = point - perpendicularLine;
-				polygon2D.Add(FVector2D(pointTemp.X, pointTemp.Y));
-				pointTemp = pointNext - perpendicularLine;
-				polygon2D.Add(FVector2D(pointTemp.X, pointTemp.Y));
-				pointTemp = pointNext + perpendicularLine;
-				polygon2D.Add(FVector2D(pointTemp.X, pointTemp.Y));
-				if (MathPolygon::IsPointInPolygon(FVector2D(worldLocation.X, worldLocation.Y), polygon2D)) {
-					selectedObject = new FVerticesEditSelectedObject(Elem.Key, "edge", vv);
+			verticesCount = Elem.Value.vertices.Num();
+			for (int vv = 0; vv < verticesCount; vv++) {
+				point = Elem.Value.vertices[vv];
+				if (point.X >= xMin && point.X <= xMax && point.Y >= yMin && point.Y <= yMax) {
+					selectedObject = new FVerticesEditSelectedObject(Elem.Key, "vertex", vv);
 					found = true;
-					// Do not break on edge since want to prioritize vertices and edges and vertices overlap so allow
-					// checking more vertices.
-					// break;
+					break;
+				}
+				// Edges
+				if (!found && vv < verticesCount - 1 || Elem.Value.shape == "polygon") {
+					indexNext = (vv < verticesCount - 1) ? vv + 1 : 0;
+					pointNext = Elem.Value.vertices[indexNext];
+					// Make rectangle (width along line in between vertices).
+					pathLine = pointNext - point;
+					// 45 instead of 90 since we want to not overlap vertex (to make it easy to click vertex instead of edge).
+					degrees = 45;
+					perpendicularLine = pathLine.RotateAngleAxis(degrees, FVector(0,0,1)).GetClampedToMaxSize(halfWidth);
+					polygon2D.Empty();
+					pointTemp = point + perpendicularLine;
+					polygon2D.Add(FVector2D(pointTemp.X, pointTemp.Y));
+					pointTemp = point - perpendicularLine;
+					polygon2D.Add(FVector2D(pointTemp.X, pointTemp.Y));
+					pointTemp = pointNext - perpendicularLine;
+					polygon2D.Add(FVector2D(pointTemp.X, pointTemp.Y));
+					pointTemp = pointNext + perpendicularLine;
+					polygon2D.Add(FVector2D(pointTemp.X, pointTemp.Y));
+					if (MathPolygon::IsPointInPolygon(FVector2D(worldLocation.X, worldLocation.Y), polygon2D)) {
+						selectedObject = new FVerticesEditSelectedObject(Elem.Key, "edge", vv);
+						found = true;
+						// Do not break on edge since want to prioritize vertices and edges and vertices overlap so allow
+						// checking more vertices.
+						// break;
+					}
 				}
 			}
-		}
-		if (found) {
-			break;
+			if (found) {
+				break;
+			}
 		}
 	}
 	if (found) {

@@ -30,11 +30,13 @@ AActor* PMPlanePolygon::Create(TArray<FVector> vertices, FModelCreateParams crea
 
 	FVector path, nextVertex, vertex, midPoint, triangleStart, point;
 	int nextVertexIndex;
-	float distance, angle, xRatio, yRatio;
+	float xRatio, yRatio;
 	// Will draw triangles from single point if possible, but if cross line out of polygon, will move it.
 	int triangleStartIndex = 0;
-	bool looping, doTriangles, atLeastOneIntersection;
+	bool doTriangles;
 	TArray<FVector> points;
+	// bool looping, atLeastOneIntersection;
+	// float distance, angle;
 	for (int ii = 0; ii < vertices.Num(); ii++) {
 		vertex = vertices[ii];
 		nextVertexIndex = ii < vertices.Num() - 1 ? ii + 1 : 0;
@@ -105,7 +107,7 @@ AActor* PMPlanePolygon::Create(TArray<FVector> vertices, FModelCreateParams crea
 	}
 
 	PMBase::AddMeshSection(proceduralMesh, Vertices, UV0, Triangles, {}, {}, modelParams);
-	AStaticMeshActor* actorFinal = PMBase::MeshToActor(Lodash::GetInstanceId("PlanePolygon_"), proceduralMesh, createParams, modelParams);
+	AStaticMeshActor* actorFinal = PMBase::MeshToActor(Lodash::GetInstanceId(params.name + "PlanePolygon_"), proceduralMesh, createParams, modelParams);
 	PMBase::DestroyMesh(meshActor, proceduralMesh);
 	return actorFinal;
 }

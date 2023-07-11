@@ -84,10 +84,14 @@ TArray<FString> DataConvert::VectorsToStrings(TArray<FVector> vectors) {
 	return outputs;
 }
 
-TArray<FVector> DataConvert::StringsToVectors(TArray<FString> inputs) {
+TArray<FVector> DataConvert::StringsToVectors(TArray<FString> inputs, float forceZ) {
 	TArray<FVector> vectors = {};
 	for (int ii = 0; ii < inputs.Num(); ii++) {
-		vectors.Add(StringToVector(inputs[ii]));
+		FVector vector = StringToVector(inputs[ii]);
+		if (forceZ != -999) {
+			vector.Z = forceZ;
+		}
+		vectors.Add(vector);
 	}
 	return vectors;
 }

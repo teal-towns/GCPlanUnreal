@@ -6,6 +6,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Layout/Geometry.h"
 
+#include "Common/Lodash.h"
 #include "Common/UnrealGlobal.h"
 #include "Landscape/HeightMap.h"
 #include "Landscape/VerticesEdit.h"
@@ -15,6 +16,13 @@ void AFlyingDefaultPawn::BeginPlay() {
 	// TESTING
 	// CreateUI();
 	// SetupMouse();
+	// SetupRotation();
+}
+
+void AFlyingDefaultPawn::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	SetMiniMapZoom();
 }
 
 void AFlyingDefaultPawn::CreateUI() {
@@ -142,5 +150,31 @@ void AFlyingDefaultPawn::SetupMouse() {
 		playerController->bShowMouseCursor = true;
 		playerController->bEnableClickEvents = true; 
 		playerController->bEnableMouseOverEvents = true;
+	}
+}
+
+void AFlyingDefaultPawn::SetupRotation() {
+	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+	AActor* actor = unrealGlobal->GetActorByName("PlayerCameraManager0", APlayerCameraManager::StaticClass(), false, true);
+	// TODO - not working - timing?
+	if (actor) {
+		FVector rotation = FVector(0,0,-90);
+		actor->SetActorRotation(FRotator(rotation.Y, rotation.Z, rotation.X));
+	} else {
+		UE_LOG(LogTemp, Display, TEXT("SetupRotation no actor"));
+	}
+}
+
+void AFlyingDefaultPawn::SetMiniMapZoom() {
+	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+	AActor* actor = unrealGlobal->GetActorByName("BP_Drone", AFlyingDefaultPawn::StaticClass(), false, true);
+	if (actor) {
+		USceneCaptureComponent2D* captureComponent = actor->FindComponentByClass<USceneCaptureComponent2D>();
+		FVector loc = actor->GetActorLocation();
+		float orthoWidth = Lodash::RangeValue(loc.Z, 1000, 50000, 2500, 250000); 
+		captureComponent->OrthoWidth = orthoWidth;
+		VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
+		float scaleX = Lodash::RangeValue(loc.Z, 1000, 50000, 1, 20);
+		verticesEdit->SetDisplayScale(FVector(scaleX, scaleX, 30), FVector(scaleX / 2, scaleX / 2, 15));
 	}
 }
