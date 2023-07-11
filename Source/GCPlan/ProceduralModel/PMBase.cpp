@@ -206,7 +206,8 @@ AStaticMeshActor* PMBase::MeshToActor(FString name, UProceduralMeshComponent* pr
 	// AddMesh(createParams.parentActor, mesh);
 	FVector rotation = FVector(0,0,0);
 	FActorSpawnParameters spawnParams;
-	FVector location = FVector(0,0,0);
+	// FVector location = FVector(0,0,0);
+	FVector location = createParams.offset;
 	FVector scale = FVector(1,1,1);
 	modelParams.mesh = mesh;
 	modelParams.parent = createParams.parent;

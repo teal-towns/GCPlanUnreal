@@ -28,6 +28,7 @@ public:
 		FModelCreateParams createParamsIn = FModelCreateParams(), FCondenser params = FCondenser());
 	static TMap<FString, FPolygon> ParkingLots(float zOffset = 0);
 	static TMap<FString, FPolygon> Trees(float zOffset = 0);
+	static void CreateBuildings();
 
 private:
 	static LisbonExteriors *pinstance_;

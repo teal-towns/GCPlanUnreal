@@ -11,6 +11,7 @@
 #include "../LayoutModel/LMParkingLot.h"
 #include "../Mesh/LoadContent.h"
 #include "../Modeling/ModelBase.h"
+#include "../Modeling/Building/ModelBuilding.h"
 
 LisbonExteriors* LisbonExteriors::pinstance_{nullptr};
 std::mutex LisbonExteriors::mutex_;
@@ -200,4 +201,76 @@ TMap<FString, FPolygon> LisbonExteriors::Trees(float zOffset) {
 	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
 	verticesEdit->AddAndSave(polygons);
 	return polygons;
+}
+
+void LisbonExteriors::CreateBuildings() {
+	FModelCreateParams createParams;
+	FModelBuilding params;
+	TArray<FVector> vertices = {
+		FVector(-10,-10,0), FVector(-10,10,0), FVector(10,10,0), FVector(10,-10,0)
+	};
+
+	float z = 0;
+	// L43
+	FVector offsetBase = FVector(50,0,0);
+	float currentZ = 0;
+	// bottom
+	params.materialsByVertex = {};
+	// params.materialsByVertex.Add(1, "black");
+
+	// vertices = { FVector(-18,32.5,z), FVector(-24,16,z), FVector(-33,21,z),
+	// 	FVector(-33,-22,z), FVector(7,-21,z), FVector(5.5,2,z), FVector(8,8.5,z), FVector(16,4.5,z), FVector(22.5,18,z),
+	// 	FVector(23.5,24.5,z), FVector(5,33,z) };
+	// // Split into two for triangles on top.
+	// currentZ = 1;
+	// createParams.offset = offsetBase + FVector(0,0,currentZ);
+	// params.height = 5;
+	// params.triangleDirection = "counterClockwise";
+	// ModelBuilding::Create(vertices, FModelParams(), createParams, params);
+
+	// Split into two for triangles on top.
+	vertices = { FVector(5.5,2,z), FVector(-24,16,z), FVector(-33,21,z), FVector(-33,-22,z), FVector(7,-21,z) };
+	// Split into two for triangles on top.
+	currentZ = 1;
+	createParams.offset = offsetBase + FVector(0,0,currentZ);
+	params.height = 5;
+	params.triangleDirection = "counterClockwise";
+	ModelBuilding::Create(vertices, FModelParams(), createParams, params);
+	vertices = { FVector(-18,32.5,z), FVector(-24,16,z), FVector(5.5,2,z), FVector(8,8.5,z), FVector(16,4.5,z), FVector(22.5,18,z),
+		FVector(23.5,24.5,z), FVector(5,33,z) };
+	// currentZ = 1;
+	createParams.offset = offsetBase + FVector(0,0,currentZ);
+	params.height = 5;
+	params.triangleDirection = "counterClockwise";
+	ModelBuilding::Create(vertices, FModelParams(), createParams, params);
+
+	// floor 1
+	// vertices = { FVector(7,-22,z), FVector(-41,-21,z), FVector(-41,27,z), FVector(-34.5,24.5,z), FVector(-27,37,z),
+	// 	FVector(24,36,z), FVector(24,19,z), FVector(17,5,z), FVector(10.5,7.5,z), FVector(7,2,z) };
+	// currentZ += params.height;
+	// createParams.offset = offsetBase + FVector(0,0,currentZ);
+	// params.height = 13;
+	// params.triangleDirection = "clockwise";
+	// ModelBuilding::Create(vertices, FModelParams(), createParams, params);
+	// Split into two for triangles on top.
+	vertices = { FVector(-34.5,24.5,z), FVector(-27,37,z),
+		FVector(24,36,z), FVector(24,19,z), FVector(17,5,z), FVector(10.5,7.5,z), FVector(7,2,z) };
+	currentZ += params.height;
+	createParams.offset = offsetBase + FVector(0,0,currentZ);
+	params.height = 13;
+	params.triangleDirection = "clockwise";
+	ModelBuilding::Create(vertices, FModelParams(), createParams, params);
+	vertices = { FVector(7,-22,z), FVector(-41,-21,z), FVector(-41,27,z), FVector(-34.5,24.5,z), FVector(7,2,z) };
+	// currentZ += params.height;
+	createParams.offset = offsetBase + FVector(0,0,currentZ);
+	params.height = 13;
+	params.triangleDirection = "clockwise";
+	ModelBuilding::Create(vertices, FModelParams(), createParams, params);
+
+	// floor 2
+	vertices = { FVector(-10.5,-15,z), FVector(-38,-1,z), FVector(-21,34,z), FVector(6.5,18.5,z) };
+	currentZ += params.height;
+	createParams.offset = offsetBase + FVector(0,0,currentZ);
+	params.height = 5;
+	ModelBuilding::Create(vertices, FModelParams(), createParams, params);
 }

@@ -34,6 +34,7 @@
 #include "Common/MathVector.h"
 #include "Layout/LayoutPolygon.h"
 #include "LayoutModel/OfficeRoom/LMConferenceRoom.h"
+#include "Modeling/Building/ModelBuilding.h"
 
 ALandProjectActor::ALandProjectActor()
 {
@@ -242,32 +243,34 @@ void ALandProjectActor::Test() {
 	// FModelCreateParams createParams;
 	// LMConferenceRoom::Create(FVector(10,12,4), modelParams, createParams);
 
-	TArray<FVector> vertices;
-	TArray<FString> meshNames = { "brackenFern" };
-	FPlaceParams placeParams;
-	placeParams.offsetAverage = 0.3;
+	// TArray<FVector> vertices;
+	// TArray<FString> meshNames = { "brackenFern" };
+	// FPlaceParams placeParams;
+	// placeParams.offsetAverage = 0.3;
 
-	placeParams.rotMinY = 265;
-	placeParams.rotMaxY = 275;
-	placeParams.plane = "yz";
-	vertices = {
-		FVector(-4.9750,-5.0000,0.5000),
-		FVector(-4.9750,-5.0000,3.5000),
-		FVector(-4.9750,5.0000,3.5000),
-		FVector(-4.9750,5.0000,0.5000)
-	};
-
-	// placeParams.rotMinX = 85;
-	// placeParams.rotMaxX = 95;
-	// placeParams.plane = "xz";
+	// placeParams.rotMinY = 265;
+	// placeParams.rotMaxY = 275;
+	// placeParams.plane = "yz";
 	// vertices = {
-	// 	FVector(-4.0000,-5.9750,0.5000),
-	// 	FVector(-4.0000,-5.9750,3.5000),
-	// 	FVector(4.0000,-5.9750,3.5000),
-	// 	FVector(4.0000,-5.9750,0.5000)
+	// 	FVector(-4.9750,-5.0000,0.5000),
+	// 	FVector(-4.9750,-5.0000,3.5000),
+	// 	FVector(-4.9750,5.0000,3.5000),
+	// 	FVector(-4.9750,5.0000,0.5000)
 	// };
 
-	LayoutPolygon::PlaceInPolygon(vertices, meshNames, placeParams);
+	// // placeParams.rotMinX = 85;
+	// // placeParams.rotMaxX = 95;
+	// // placeParams.plane = "xz";
+	// // vertices = {
+	// // 	FVector(-4.0000,-5.9750,0.5000),
+	// // 	FVector(-4.0000,-5.9750,3.5000),
+	// // 	FVector(4.0000,-5.9750,3.5000),
+	// // 	FVector(4.0000,-5.9750,0.5000)
+	// // };
+
+	// LayoutPolygon::PlaceInPolygon(vertices, meshNames, placeParams);
+
+	LisbonExteriors::CreateBuildings();
 }
 
 void ALandProjectActor::Clear() {
