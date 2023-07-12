@@ -19,6 +19,9 @@ public:
 	void Cables(UWorld* world, AStaticMeshActor* LineActorTemplate);
 	void ReScaleCables();
 	// void UI(UCanvasTextWidget* CanvasTextWidget, int step = 0);
+	TArray<FVector> SquigglePath(FVector start, FVector end, int numPieces = 10,
+		int piecesPerCurve = 10, float sizeFactor = 0.5, float angleMin = 30, float angleMax = 60,
+		float controlSizeMinFactor = 0.5, float controlSizeMaxFactor = 1);
 
 private:
 	static LisbonWorldIntro *pinstance_;

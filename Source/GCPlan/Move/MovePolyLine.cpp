@@ -189,14 +189,14 @@ void MovePolyLine::CreateActors(FString key, TArray<FVector> vertices, AActor* a
 		rotator = diff.Rotation();
 		actor = (AStaticMeshActor*)_world->SpawnActor<AStaticMeshActor>(
 			AStaticMeshActor::StaticClass(), vertices[ii] * unrealGlobal->GetScale(), rotator, spawnParams);
-		// Need to reset location after rotation, since rotation will change location..
-		actor->SetActorLocation(vertices[ii] * unrealGlobal->GetScale());
 		// Need to set movable too for location reseting when scale..
 		USceneComponent* component = actor->FindComponentByClass<USceneComponent>();
 		component->SetMobility(EComponentMobility::Movable);
 		_actors.Add(name, actor);
 		actor->SetActorLabel(name);
 		actor->SetActorScale3D(FVector(0,0,0));
+		// Need to reset location after rotation, since rotation (and scale?) will change location..
+		actor->SetActorLocation(vertices[ii] * unrealGlobal->GetScale());
 		if (material) {
 			meshComponent = actor->FindComponentByClass<UStaticMeshComponent>();
 			meshComponent->SetMaterial(0, material);
@@ -214,5 +214,24 @@ void MovePolyLine::Move(FString key, TArray<FVector> vertices, AActor* actorTemp
 		_movingLines[key] = moving;
 	} else {
 		_movingLines.Add(key, moving);
+	}
+}
+
+void MovePolyLine::DrawFull(FString key, TArray<FVector> vertices, AActor* actorTemplate,
+	FString materialKey) {
+	CreateActors(key, vertices, actorTemplate, materialKey, FVector(1,1,1));
+	AActor* actor;
+	FString actorName;
+	float maxScaleX;
+	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+	for (int ii = 0; ii < vertices.Num() - 1; ii++) {
+		maxScaleX = GetLineMaxXScale(vertices[ii], vertices[ii+1]);
+		actorName = FormName(key, ii);
+		if (_actors.Contains(actorName)) {
+			actor = _actors[actorName];
+			actor->SetActorScale3D(FVector(maxScaleX,1,1));
+			// Need to reset location?? Scale changes it??
+			actor->SetActorLocation(vertices[ii] * unrealGlobal->GetScale());
+		}
 	}
 }

@@ -173,3 +173,44 @@ void LisbonWorldIntro::ReScaleCables() {
 // 		}
 // 	}
 // }
+
+TArray<FVector> LisbonWorldIntro::SquigglePath(FVector start, FVector end, int numMainPieces,
+	int piecesPerCurve, float sizeFactor, float angleMin, float angleMax, float controlSizeMinFactor,
+	float controlSizeMaxFactor) {
+	FVector path = end - start;
+	float distance = path.Size();
+	float averagePieceSize = distance / (float)numMainPieces;
+	float pieceSizeMin = averagePieceSize * sizeFactor;
+	float pieceSizeMax = averagePieceSize * (1 + sizeFactor);
+	TArray<FVector> points = { start };
+	float pieceSize, angle, controlSize;
+	FVector nextMainPoint, control;
+	FVector prevMainPoint = start;
+	TArray<FVector> vertices;
+	float sign = 1;
+	bool lastOne = false;
+	for (int ii = 0; ii < numMainPieces; ii++) {
+		if ((end - prevMainPoint).Size() <= pieceSizeMax) {
+			pieceSize = (end - prevMainPoint).Size();
+			nextMainPoint = end;
+			lastOne = true;
+		} else {
+			pieceSize = Lodash::RandomRangeFloat(pieceSizeMin, pieceSizeMax);
+			nextMainPoint = prevMainPoint + path.GetClampedToMaxSize(pieceSize);
+		}
+		controlSize = Lodash::RandomRangeFloat(pieceSize * controlSizeMinFactor, pieceSize * controlSizeMaxFactor);
+		angle = sign * Lodash::RandomRangeFloat(angleMin, angleMax);
+		control = prevMainPoint + path.RotateAngleAxis(angle, FVector(0,0,1)).GetClampedToMaxSize(controlSize);
+		// UE_LOG(LogTemp, Display, TEXT("prev %s control %s next %s pieceSize %f angle %f controlSize %f"), *prevMainPoint.ToString(), *control.ToString(), *nextMainPoint.ToString(), pieceSize, angle, controlSize);
+		vertices = MathVector::BeizerCurvePoints(prevMainPoint, nextMainPoint, control, piecesPerCurve);
+		// This will be duplicated, so remove starting one.
+		vertices.RemoveAt(0);
+		points += vertices;
+		if (lastOne) {
+			break;
+		}
+		sign *= -1;
+		prevMainPoint = nextMainPoint;
+	}
+	return points;
+}

@@ -56,6 +56,8 @@ public:
 	void Move(FString key, TArray<FVector> vertices, AActor* actorTemplate,
 		FString materialKey = "white", float speed = 10, FVector scale = FVector(0,1,1),
 		int startTickDelay = 0);
+	void DrawFull(FString key, TArray<FVector> vertices, AActor* actorTemplate,
+		FString materialKey = "white");
 
 private:
 	static MovePolyLine *pinstance_;
