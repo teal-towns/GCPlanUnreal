@@ -12,6 +12,7 @@ struct FLayoutWall {
 	FVector offset = FVector(0,0,0);
 	FVector rotation = FVector(0,0,0);
 	FVector wallRotation = FVector(0,0,0);
+	FVector doorRotation = FVector(0,0,0);
 };
 
 class LMWall {

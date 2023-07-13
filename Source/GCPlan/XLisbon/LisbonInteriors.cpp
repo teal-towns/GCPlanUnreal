@@ -47,6 +47,7 @@ TMap<FString, FPolygon> LisbonInteriors::Rooms(float zOffset) {
 	FVector roomPos = FVector(0,0,0);
 	FLayoutWall wallParams;
 	wallParams.meshesByTags["door"] = { "doorWood1" };
+	wallParams.doorRotation = FVector(0,0,180);
 
 	FLayoutLights lightsParams;
 
@@ -95,9 +96,11 @@ TMap<FString, FPolygon> LisbonInteriors::Rooms(float zOffset) {
 	wallParams.offset = roomPos + FVector(0, roomSize.Y / -2, 0);
 	wallParams.wallRotation = FVector(0,90,-90);
 	wallParams.rotation = FVector(0,0,-90);
+	wallParams.doorRotation = FVector(0,0,90);
 	LMWall::Wall(FVector(roomSize.Z, roomSize.X, 0.01), modelParams, createParamsIn, wallParams);
 	lightsParams.offset = roomPos;
 	LMLights::Ceiling(roomSize, modelParams, createParamsIn, lightsParams);
+	wallParams.doorRotation = FVector(0,0,180);
 
 	createParams.offset = createParamsIn.offset + roomPos;
 	LMCafeteria::Create(roomSize, modelParams, createParams);
@@ -147,9 +150,11 @@ TMap<FString, FPolygon> LisbonInteriors::Rooms(float zOffset) {
 	wallParams.offset = roomPos + FVector(0, roomSize.Y / -2,0);
 	wallParams.wallRotation = FVector(0,90,-90);
 	wallParams.rotation = FVector(0,0,-90);
+	wallParams.doorRotation = FVector(0,0,90);
 	LMWall::Wall(FVector(roomSize.Z, roomSize.X, 0.01), modelParams, createParamsIn, wallParams);
 	lightsParams.offset = roomPos;
 	LMLights::Ceiling(roomSize, modelParams, createParamsIn, lightsParams);
+	wallParams.doorRotation = FVector(0,0,180);
 
 	createParams.offset = createParamsIn.offset + roomPos;
 	LMLobby::TwoTables(roomSize, modelParams, createParams);

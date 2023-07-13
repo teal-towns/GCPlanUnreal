@@ -49,12 +49,12 @@ TMap<FString, FPolygon> LMWall::Wall(FVector size, FModelParams modelParams,
 	// Door
 	uName = Lodash::GetInstanceId("LMWallDoor_");
 	location = FVector(0, size.Y / -2 + doorLeft + doorScaleY / 2, 0) + params.offset;
-	rotation = params.rotation;
+	rotation = params.doorRotation;
 	meshKey = params.meshesByTags["door"][Lodash::RandomRangeInt(0, params.meshesByTags["door"].Num() - 1)];
 	pairsString = "mesh=" + meshKey + ModelBase::AddRotationString(createParamsIn.rotation, rotation);
 	vertices = { location + createParamsIn.offset };
 	createParamsIn.rotateAround = params.offset + createParamsIn.offset;
-	vertices = ModelBase::Vertices(vertices, createParamsIn, rotation);
+	vertices = ModelBase::Vertices(vertices, createParamsIn, params.rotation);
 	createParamsIn.rotateAround = rotateAroundBase;
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "wallPart", "point", pairsString));
 
