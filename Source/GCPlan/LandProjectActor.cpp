@@ -276,17 +276,20 @@ void ALandProjectActor::Test() {
 
 	// LisbonExteriors::CreateBuildings();
 
-	LisbonWorldIntro* lisbonWorldIntro = LisbonWorldIntro::GetInstance();
-	// TArray<FVector> vertices = lisbonWorldIntro->SquigglePath(FVector(-50,-50,0), FVector(50,50,0));
-	// for (int ii = 0; ii < vertices.Num(); ii++) {
-	// 	UE_LOG(LogTemp, Display, TEXT("vertices ii %d %s"), ii, *vertices[ii].ToString());
-	// }
-	TArray<FVector> verticesMain = { FVector(-100,-100,0), FVector(-50,75,0), FVector(0, 80, 0), FVector(100,100,0) };
-	TArray<FVector> vertices = lisbonWorldIntro->PointsToSquigglePath(verticesMain);
-	MovePolyLine* movePolyLine = MovePolyLine::GetInstance();
-	movePolyLine->SetWorld(GetWorld());
-	movePolyLine->DrawFull(Lodash::GetInstanceId("test1"), vertices,
-		unrealGlobal->_globalActor->LineActorTemplate, "greenEmissive");
+	// LisbonWorldIntro* lisbonWorldIntro = LisbonWorldIntro::GetInstance();
+	// // TArray<FVector> vertices = lisbonWorldIntro->SquigglePath(FVector(-50,-50,0), FVector(50,50,0));
+	// // for (int ii = 0; ii < vertices.Num(); ii++) {
+	// // 	UE_LOG(LogTemp, Display, TEXT("vertices ii %d %s"), ii, *vertices[ii].ToString());
+	// // }
+	// TArray<FVector> verticesMain = { FVector(-100,-100,0), FVector(-50,75,0), FVector(0, 80, 0), FVector(100,100,0) };
+	// TArray<FVector> vertices = lisbonWorldIntro->PointsToSquigglePath(verticesMain);
+	// MovePolyLine* movePolyLine = MovePolyLine::GetInstance();
+	// movePolyLine->SetWorld(GetWorld());
+	// movePolyLine->DrawFull(Lodash::GetInstanceId("test1"), vertices,
+	// 	unrealGlobal->_globalActor->LineActorTemplate, "greenEmissive");
+
+	// ModelBase* modelBase = ModelBase::GetInstance();
+	// modelBase->UpdateMaterialSlots("buildingGridBlock", "white");
 }
 
 void ALandProjectActor::Clear() {

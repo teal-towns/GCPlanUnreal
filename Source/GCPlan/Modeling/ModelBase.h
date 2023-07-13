@@ -99,6 +99,7 @@ public:
 		FModelParams modelParams = FModelParams());
 	static void SetTransform(AActor* actor, FVector location = FVector(0,0,0),
 		FVector rotation = FVector(0,0,0), FVector scale = FVector(1,1,1));
+	void UpdateMaterialSlots(FString meshKey, FString materialKey);
 
 	void SetInputs(FModelingBase);
 	std::tuple<FModelingBase, FModelParams> GetInputs(FString defaultName, FVector defaultSize);

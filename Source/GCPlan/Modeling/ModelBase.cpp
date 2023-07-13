@@ -451,3 +451,21 @@ void ModelBase::SetTransform(AActor* actor, FVector location, FVector rotation, 
 		actor->SetActorLocation(location * unrealGlobal->GetScale());
 	}
 }
+
+void ModelBase::UpdateMaterialSlots(FString meshKey, FString materialKey) {
+	FActorSpawnParameters spawnParams;
+	FModelParams modelParams;
+	modelParams.meshKey = meshKey;
+	modelParams.materialKey = materialKey;
+	AStaticMeshActor* actor = CreateActor(Lodash::GetInstanceId("testActor"), FVector(0,0,0), FVector(0,0,0), FVector(1,1,1),
+		spawnParams, modelParams);
+
+	UMaterialInterface* material = GetMaterial(modelParams);
+	if (material) {
+		UStaticMeshComponent* meshComponent = actor->FindComponentByClass<UStaticMeshComponent>();
+		int numMaterials = meshComponent->GetNumMaterials();
+		for (int ii = 0; ii < numMaterials; ii++) {
+			meshComponent->SetMaterial(ii, material);
+		}
+	}
+}
