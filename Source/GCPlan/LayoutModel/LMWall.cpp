@@ -33,7 +33,7 @@ TMap<FString, FPolygon> LMWall::Wall(FVector size, FModelParams modelParams,
 
 	FVector rotateAroundBase = createParamsIn.rotateAround;
 
-	float doorScaleY = 1 + 0.2;
+	float doorScaleY = 1;
 	float doorTop = 2.3;
 	float doorLeft = params.doorLeft;
 	uName = Lodash::GetInstanceId("LMWall_");

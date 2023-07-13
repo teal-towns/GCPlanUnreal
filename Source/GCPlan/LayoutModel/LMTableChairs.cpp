@@ -135,7 +135,7 @@ TMap<FString, FPolygon> LMTableChairs::SmallTableChairs(FVector size, FModelPara
 	LoadContent* loadContent = LoadContent::GetInstance();
 	FString uNameBase = Lodash::GetInstanceId("SmallTableChairs");
 
-	auto [valid, meshesByTags] = loadContent->FillMeshesByTags(params.meshesByTags);
+	auto [valid, meshesByTags] = loadContent->FillMeshesByTags(params.meshesByTags, { "table", "chair" });
 	if (!valid) {
 		UE_LOG(LogTemp, Warning, TEXT("LMTableChairs.SmallTableChairs missing meshesByTags, skipping"));
 		return polygons;
