@@ -39,6 +39,7 @@ void LisbonWorldIntro::Cables(UWorld* world, AStaticMeshActor* LineActorTemplate
 	float zScale = 5000;
 	float speedMin = 200000;
 	float speedMax = 1000000;
+	float speedFactor = 0.6;
 	int startTickDelayMin = 0;
 	int startTickDelayMax = 300;
 	TArray<FString> colors = { "blueEmissive", "greenEmissive", "orangeEmissive", "purpleEmissive", "redEmissive", "yellowEmissive" };
@@ -67,33 +68,33 @@ void LisbonWorldIntro::Cables(UWorld* world, AStaticMeshActor* LineActorTemplate
 		// Canary Islands, Spain 28.0050668,-15.7003936 -> Carcavelos, Portugal
 
 		FMovePolyLine("newYork1", { locations["newYork"], locations["lisbon"] },
-			LineActorTemplate, 2000000, FVector(0,zScale,zScale), 0, "red"),
+			LineActorTemplate, 2000000 * speedFactor, FVector(0,zScale,zScale), 0, "red"),
 		FMovePolyLine("newYork2", { locations["newYork"] + FVector(-100000, 100000, 0), locations["bilbao"] },
-			LineActorTemplate, 2000000, FVector(0,zScale,zScale), 6, "blue"),
+			LineActorTemplate, 2000000 * speedFactor, FVector(0,zScale,zScale), 6, "blue"),
 		FMovePolyLine("brazil1", { locations["brazil"], locations["barcelona"] },
-			LineActorTemplate, 2000000, FVector(0,zScale,zScale), 2, "green"),
+			LineActorTemplate, 2000000 * speedFactor, FVector(0,zScale,zScale), 2, "green"),
 		FMovePolyLine("brazil2", { locations["brazil"], locations["lisbon"] },
-			LineActorTemplate, 2000000, FVector(0,zScale,zScale), 4, "orange"),
+			LineActorTemplate, 2000000 * speedFactor, FVector(0,zScale,zScale), 4, "orange"),
 		FMovePolyLine("lagos1", { locations["lagos"], locations["lisbon"] },
-			LineActorTemplate, 1000000, FVector(0,zScale,zScale), 10, "purple"),
+			LineActorTemplate, 1000000 * speedFactor, FVector(0,zScale,zScale), 10, "purple"),
 		FMovePolyLine("lagos2", { locations["lagos"], locations["bilbao"] },
-			LineActorTemplate, 1000000, FVector(0,zScale,zScale), 15, "yellow"),
+			LineActorTemplate, 1000000 * speedFactor, FVector(0,zScale,zScale), 15, "yellow"),
 		FMovePolyLine("canary1", { locations["canary"], locations["lisbon"] },
-			LineActorTemplate, 500000, FVector(0,zScale,zScale), 50, "red"),
+			LineActorTemplate, 500000 * speedFactor, FVector(0,zScale,zScale), 50, "red"),
 		FMovePolyLine("canary2", { locations["canary"], locations["bilbao"] },
-			LineActorTemplate, 500000, FVector(0,zScale,zScale), 60, "blue"),
+			LineActorTemplate, 500000 * speedFactor, FVector(0,zScale,zScale), 60, "blue"),
 		FMovePolyLine("italy1", { locations["italy"], locations["bilbao"] },
-			LineActorTemplate, 500000, FVector(0,zScale,zScale), 55, "green"),
+			LineActorTemplate, 500000 * speedFactor, FVector(0,zScale,zScale), 55, "green"),
 		FMovePolyLine("italy2", { locations["italy"], locations["lisbon"] },
-			LineActorTemplate, 500000, FVector(0,zScale,zScale), 65, "orange"),
+			LineActorTemplate, 500000 * speedFactor, FVector(0,zScale,zScale), 65, "orange"),
 		FMovePolyLine("cairo1", { locations["cairo"], locations["bilbao"] },
-			LineActorTemplate, 500000, FVector(0,zScale,zScale), 70, "purple"),
+			LineActorTemplate, 500000 * speedFactor, FVector(0,zScale,zScale), 70, "purple"),
 		FMovePolyLine("cairo2", { locations["cairo"], locations["barcelona"] },
-			LineActorTemplate, 500000, FVector(0,zScale,zScale), 80, "yellow"),
+			LineActorTemplate, 500000 * speedFactor, FVector(0,zScale,zScale), 80, "yellow"),
 		FMovePolyLine("london1", { locations["london"], locations["bilbao"] },
-			LineActorTemplate, 500000, FVector(0,zScale,zScale), 90, "red"),
+			LineActorTemplate, 500000 * speedFactor, FVector(0,zScale,zScale), 90, "red"),
 		FMovePolyLine("london2", { locations["london"], locations["lisbon"] },
-			LineActorTemplate, 500000, FVector(0,zScale,zScale), 100, "green"),
+			LineActorTemplate, 500000 * speedFactor, FVector(0,zScale,zScale), 100, "green"),
 
 		// FMovePolyLine("test1", { FVector(-1000000, 1000000, zGround), FVector(-100, 100, zGround) },
 		// 	LineActorTemplate, Lodash::RandomRangeFloat(speedMin,speedMax), FVector(0,zScale,zScale),
@@ -142,10 +143,10 @@ void LisbonWorldIntro::Cables(UWorld* world, AStaticMeshActor* LineActorTemplate
 	}
 }
 
-void LisbonWorldIntro::ReScaleCables() {
-	MovePolyLine* movePolyLine = MovePolyLine::GetInstance();
-	movePolyLine->ReScale(0, 450);
-}
+// void LisbonWorldIntro::ReScaleCables() {
+// 	MovePolyLine* movePolyLine = MovePolyLine::GetInstance();
+// 	movePolyLine->ReScale(0, 450);
+// }
 
 // void LisbonWorldIntro::UI(UCanvasTextWidget* CanvasTextWidget, int step) {
 // 	if (!_world) {
@@ -213,4 +214,13 @@ TArray<FVector> LisbonWorldIntro::SquigglePath(FVector start, FVector end, int n
 		prevMainPoint = nextMainPoint;
 	}
 	return points;
+}
+
+TArray<FVector> LisbonWorldIntro::PointsToSquigglePath(TArray<FVector> verticesMain) {
+	TArray<FVector> vertices = {};
+	for (int vv = 0; vv < verticesMain.Num() - 1; vv++) {
+		TArray<FVector> points = SquigglePath(verticesMain[vv], verticesMain[vv+1]);
+		vertices += points;
+	}
+	return vertices;
 }

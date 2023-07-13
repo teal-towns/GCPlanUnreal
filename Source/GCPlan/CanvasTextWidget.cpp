@@ -54,3 +54,26 @@ void UCanvasTextWidget::AnimateTextLetters() {
 		GetWorld()->GetTimerManager().SetTimer(_animateInTimer, _animateInDelegate, _timePerTextLetter, false);
 	}
 }
+
+void UCanvasTextWidget::SetImageAnimate(FString animateFunction) {
+	if (animateFunction == "BackgroundImageFadeIn") {
+		_animateImageDelegate.BindUFunction(this, "BackgroundImageFadeIn");
+	} else {
+		_animateImageDelegate.BindUFunction(this, "BackgroundImageFadeOut");
+	}
+	GetWorld()->GetTimerManager().SetTimer(_animateImageTimer, _animateImageDelegate, 0.01, false);
+}
+
+void UCanvasTextWidget::SetImage(float opacity) {
+	BackgroundImage->SetOpacity(opacity);
+}
+
+void UCanvasTextWidget::PlayMovie() {
+	MovieImage->SetVisibility(ESlateVisibility::Visible);
+	_animateMovieDelegate.BindUFunction(this, "MovieImagePlay");
+	GetWorld()->GetTimerManager().SetTimer(_animateMovieTimer, _animateMovieDelegate, 0.01, false);
+}
+
+void UCanvasTextWidget::HideMovie() {
+	MovieImage->SetVisibility(ESlateVisibility::Hidden);
+}

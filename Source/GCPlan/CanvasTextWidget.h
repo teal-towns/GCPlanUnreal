@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/Image.h"
 #include "Components/TextBlock.h"
 
 #include "CanvasTextWidget.generated.h"
@@ -14,6 +15,10 @@ class GCPLAN_API UCanvasTextWidget : public UUserWidget
 public:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	UTextBlock* BottomCenterText;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	UImage* BackgroundImage;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	UImage* MovieImage;
 
 	UFUNCTION(BlueprintCallable)
 	void SetText(FString text, FString animateInFunction = "",
@@ -33,6 +38,22 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void SlideInFadeIn();
 
+	void SetImageAnimate(FString animationFunction = "BackgroundImageFadeIn");
+	void SetImage(float opacity);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BackgroundImageFadeIn();
+	UFUNCTION(BlueprintImplementableEvent)
+	void BackgroundImageFadeOut();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void MovieImagePlay();
+	// UFUNCTION(BlueprintImplementableEvent)
+	// void MovieImageStop();
+
+	void PlayMovie();
+	void HideMovie();
+
 private:
 	FTimerHandle _animateOutTimer;
 	FTimerDelegate _animateOutDelegate;
@@ -45,4 +66,10 @@ private:
 	FString _fullText = "";
 	int _textIndex = 0;
 	FString _currentText = "";
+
+	FTimerHandle _animateImageTimer;
+	FTimerDelegate _animateImageDelegate;
+
+	FTimerHandle _animateMovieTimer;
+	FTimerDelegate _animateMovieDelegate;
 };

@@ -40,7 +40,7 @@ public:
 		FModelCreateParams createParamsIn, TMap<FString, FString> pairs, FHighlightText params,
 		FDrawHighlight drawParams = FDrawHighlight());
 	void UpdateOne(FString key, FDrawHighlight drawParams);
-	void UpdateTargetScale(FString key, FVector targetScale);
+	void UpdateTargetScale(FString key, FVector targetScale, float scaleSpeed = -1);
 	void DestroyOne(FString key);
 	void CleanUp();
 

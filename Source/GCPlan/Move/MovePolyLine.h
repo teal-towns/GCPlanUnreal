@@ -45,6 +45,7 @@ public:
 	static MovePolyLine *GetInstance();
 
 	void Tick(float DeltaTime);
+	void SetScale(FString key);
 	void CleanUp(bool destroy = true);
 	void Remove(FString name);
 	void SetWorld(UWorld* world);

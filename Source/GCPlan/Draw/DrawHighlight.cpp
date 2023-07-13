@@ -84,9 +84,12 @@ void DrawHighlight::UpdateOne(FString key, FDrawHighlight drawParams) {
 	}
 }
 
-void DrawHighlight::UpdateTargetScale(FString key, FVector targetScale) {
+void DrawHighlight::UpdateTargetScale(FString key, FVector targetScale, float scaleSpeed) {
 	if (_items.Contains(key)) {
 		_items[key].targetScale = targetScale;
+		if (scaleSpeed > 0) {
+			_items[key].scaleSpeed = scaleSpeed;
+		}
 	}
 }
 

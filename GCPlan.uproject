@@ -45,6 +45,10 @@
 		{
 			"Name": "DatasmithImporter",
 			"Enabled": true
+		},
+		{
+			"Name": "TextureMediaPlayer",
+			"Enabled": true
 		}
 	]
 }

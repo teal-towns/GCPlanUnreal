@@ -27,12 +27,13 @@ MovePolyLine *MovePolyLine::GetInstance() {
 void MovePolyLine::Tick(float DeltaTime) {
 	FString key;
 	// TArray<FString> removeKeys = {};
-	float speed;
-	int index;
+	float speed, newScaleXDiff, currentScaleXStart;
+	int index, segementsCounter;
 	FString actorName;
 	AActor* actor;
 	FVector scale, currentScale;
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+	float maxSegments = 10;
 	for (auto& Elem : _movingLines) {
 		if (Elem.Value.movingActive || Elem.Value.scalingActive) {
 			key = Elem.Key;
@@ -41,31 +42,38 @@ void MovePolyLine::Tick(float DeltaTime) {
 			} else {
 				if (Elem.Value.movingActive) {
 					speed = Elem.Value.speed;
-					_movingLines[key].currentScaleX += speed * DeltaTime;
-					// UE_LOG(LogTemp, Display, TEXT("currentIndex %d scale %f maxScale %f"), Elem.Value.currentIndex, _movingLines[key].currentScaleX, Elem.Value.currentMaxScaleX);
-					if (_movingLines[key].currentScaleX > Elem.Value.currentMaxScaleX) {
-						_movingLines[key].currentScaleX = Elem.Value.currentMaxScaleX;
-					}
-
-					actorName = FormName(key, Elem.Value.currentIndex);
-					if (_actors.Contains(actorName)) {
-						actor = _actors[actorName];
-						scale = FVector(_movingLines[key].currentScaleX, _movingLines[key].scale.Y, _movingLines[key].scale.Z);
-						actor->SetActorScale3D(scale);
-						// Need to reset location?? Scale changes it??
-						actor->SetActorLocation(Elem.Value.vertices[Elem.Value.currentIndex] * unrealGlobal->GetScale());
-					}
-
-					if (_movingLines[key].currentScaleX >= Elem.Value.currentMaxScaleX) {
-						_movingLines[key].currentIndex += 1;
-						_movingLines[key].currentScaleX = 0;
-						if (_movingLines[key].currentIndex >= (Elem.Value.vertices.Num() - 1)) {
-							// removeKeys.Add(key);
-							_movingLines[key].movingActive = false;
+					newScaleXDiff = speed * DeltaTime;
+					// In case want to do multiple segments at once.
+					segementsCounter = 0;
+					while (newScaleXDiff > 0) {
+						currentScaleXStart = _movingLines[key].currentScaleX;
+						_movingLines[key].currentScaleX += newScaleXDiff;
+						// UE_LOG(LogTemp, Display, TEXT("currentIndex %d scale %f maxScale %f"), Elem.Value.currentIndex, _movingLines[key].currentScaleX, Elem.Value.currentMaxScaleX);
+						if (_movingLines[key].currentScaleX > _movingLines[key].currentMaxScaleX) {
+							newScaleXDiff -= (_movingLines[key].currentMaxScaleX - currentScaleXStart);
+							_movingLines[key].currentScaleX = _movingLines[key].currentMaxScaleX;
 						} else {
-							index = _movingLines[key].currentIndex;
-							_movingLines[key].currentMaxScaleX = GetLineMaxXScale(Elem.Value.vertices[(index)],
-								Elem.Value.vertices[(index + 1)]);
+							newScaleXDiff = 0;
+						}
+
+						SetScale(key);
+
+						if (_movingLines[key].currentScaleX >= _movingLines[key].currentMaxScaleX) {
+							_movingLines[key].currentIndex += 1;
+							_movingLines[key].currentScaleX = 0;
+							if (_movingLines[key].currentIndex >= (Elem.Value.vertices.Num() - 1)) {
+								// removeKeys.Add(key);
+								_movingLines[key].movingActive = false;
+							} else {
+								index = _movingLines[key].currentIndex;
+								_movingLines[key].currentMaxScaleX = GetLineMaxXScale(Elem.Value.vertices[(index)],
+									Elem.Value.vertices[(index + 1)]);
+							}
+						}
+						segementsCounter += 1;
+						// UE_LOG(LogTemp, Display, TEXT("MPL.Tick segementsCounter %d key %s newScaleXDiff %f"), segementsCounter, *key, newScaleXDiff);
+						if (segementsCounter > maxSegments) {
+							break;
 						}
 					}
 				}
@@ -108,6 +116,18 @@ void MovePolyLine::Tick(float DeltaTime) {
 	// }
 }
 
+void MovePolyLine::SetScale(FString key) {
+	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+	FString actorName = FormName(key, _movingLines[key].currentIndex);
+	if (_actors.Contains(actorName)) {
+		AActor* actor = _actors[actorName];
+		FVector scale = FVector(_movingLines[key].currentScaleX, _movingLines[key].scale.Y, _movingLines[key].scale.Z);
+		actor->SetActorScale3D(scale);
+		// Need to reset location?? Scale changes it??
+		actor->SetActorLocation(_movingLines[key].vertices[_movingLines[key].currentIndex] * unrealGlobal->GetScale());
+	}
+}
+
 void MovePolyLine::CleanUp(bool destroy) {
 	if (destroy) {
 		UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
@@ -142,6 +162,7 @@ void MovePolyLine::ReScale(float maxScale, float scaleSpeed) {
 		_movingLines[Elem.Key].maxScale = maxScale;
 		_movingLines[Elem.Key].scaleSpeed = scaleSpeed;
 		_movingLines[Elem.Key].scalingActive = true;
+		// UE_LOG(LogTemp, Display, TEXT("ReScale key %s scale %f maxScale %f"), *Elem.Key, _movingLines[Elem.Key].scale.Y, _movingLines[Elem.Key].maxScale);
 	}
 }
 

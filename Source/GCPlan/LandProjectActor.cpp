@@ -281,12 +281,8 @@ void ALandProjectActor::Test() {
 	// for (int ii = 0; ii < vertices.Num(); ii++) {
 	// 	UE_LOG(LogTemp, Display, TEXT("vertices ii %d %s"), ii, *vertices[ii].ToString());
 	// }
-	TArray<FVector> vertices = {};
 	TArray<FVector> verticesMain = { FVector(-100,-100,0), FVector(-50,75,0), FVector(0, 80, 0), FVector(100,100,0) };
-	for (int vv = 0; vv < verticesMain.Num() - 1; vv++) {
-		TArray<FVector> points = lisbonWorldIntro->SquigglePath(verticesMain[vv], verticesMain[vv+1]);
-		vertices += points;
-	}
+	TArray<FVector> vertices = lisbonWorldIntro->PointsToSquigglePath(verticesMain);
 	MovePolyLine* movePolyLine = MovePolyLine::GetInstance();
 	movePolyLine->SetWorld(GetWorld());
 	movePolyLine->DrawFull(Lodash::GetInstanceId("test1"), vertices,

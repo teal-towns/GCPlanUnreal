@@ -24,8 +24,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void LisbonWorld();
-	UFUNCTION(BlueprintCallable)
-	void LisbonWorldReScale();
+	// UFUNCTION(BlueprintCallable)
+	// void LisbonWorldReScale();
 	UFUNCTION()
 	// void LisbonWorldUI(UCanvasTextWidget* CanvasTextWidget1, int step = 0);
 	void LisbonWorldUI(int step = 0);

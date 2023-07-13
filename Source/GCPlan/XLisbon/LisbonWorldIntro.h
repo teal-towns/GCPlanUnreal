@@ -17,11 +17,12 @@ public:
 	static LisbonWorldIntro *GetInstance();
 
 	void Cables(UWorld* world, AStaticMeshActor* LineActorTemplate);
-	void ReScaleCables();
+	// void ReScaleCables();
 	// void UI(UCanvasTextWidget* CanvasTextWidget, int step = 0);
-	TArray<FVector> SquigglePath(FVector start, FVector end, int numPieces = 10,
-		int piecesPerCurve = 10, float sizeFactor = 0.5, float angleMin = 30, float angleMax = 60,
+	TArray<FVector> SquigglePath(FVector start, FVector end, int numPieces = 2,
+		int piecesPerCurve = 100, float sizeFactor = 0.5, float angleMin = 30, float angleMax = 60,
 		float controlSizeMinFactor = 0.5, float controlSizeMaxFactor = 1);
+	TArray<FVector> PointsToSquigglePath(TArray<FVector> verticesMain);
 
 private:
 	static LisbonWorldIntro *pinstance_;
