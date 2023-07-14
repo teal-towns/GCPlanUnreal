@@ -174,7 +174,7 @@ void AGlobalActor::LisbonWorldUI(int step) {
 		FString animateOutFunction = "FadeOut";
 		if (step == 0) {
 			CanvasTextWidget->SetImage(0.8);
-			CanvasTextWidget->PlayMovie();
+			// CanvasTextWidget->PlayMovie();
 			_uiDelegate.BindUFunction(this, "LisbonWorldUI", (step + 1));
 			_world->GetTimerManager().SetTimer(_uiTimer, _uiDelegate, 3, false);
 		} else if (step == 1) {
@@ -186,7 +186,7 @@ void AGlobalActor::LisbonWorldUI(int step) {
 			_uiDelegate.BindUFunction(this, "LisbonWorldUI", (step + 1));
 			_world->GetTimerManager().SetTimer(_uiTimer, _uiDelegate, 1, false);
 		} else if (step == 2) {
-			CanvasTextWidget->HideMovie();
+			// CanvasTextWidget->HideMovie();
 			_uiDelegate.BindUFunction(this, "LisbonWorldUI", (step + 1));
 			_world->GetTimerManager().SetTimer(_uiTimer, _uiDelegate, 4, false);
 		} else if (step == 3) {
@@ -375,6 +375,10 @@ void AGlobalActor::LisbonWorldText3D(int step) {
 			drawHighlight->DestroyOne("sexial");
 			drawHighlight->DestroyOne("sesimbra");
 			drawHighlight->DestroyOne("carcavelos");
+			_text3DDelegate.BindUFunction(this, "LisbonWorldText3D", (step + 1));
+			_world->GetTimerManager().SetTimer(_text3DTimer, _text3DDelegate, 5, false);
+		} else if (step == 12) {
+			// CanvasTextWidget->SetImageAnimate("BackgroundImageFadeIn");
 		}
 	}
 }
@@ -481,7 +485,7 @@ void AGlobalActor::LisbonExteriorsTrain(int step) {
 	drawParams.scaleSpeed = 10;
 
 	if (step == 0) {
-		// First is to wait.
+		CanvasTextWidget->SetImageAnimate("BackgroundImageFadeOut");
 		_exteriorsTrainDelegate.BindUFunction(this, "LisbonExteriorsTrain", (step + 1));
 		_world->GetTimerManager().SetTimer(_exteriorsTrainTimer, _exteriorsTrainDelegate, 2, false);
 	} else if (step == 1) {
@@ -525,7 +529,9 @@ void AGlobalActor::LisbonExteriorsTrain(int step) {
 		CanvasTextWidget->SetFont(fontInfo);
 		CanvasTextWidget->SetText("");
 		_exteriorsTrainDelegate.BindUFunction(this, "LisbonExteriorsTrain", (step + 1));
-		_world->GetTimerManager().SetTimer(_exteriorsTrainTimer, _exteriorsTrainDelegate, 1, false);
+		_world->GetTimerManager().SetTimer(_exteriorsTrainTimer, _exteriorsTrainDelegate, 0.5, false);
+	} else if (step == 5) {
+		CanvasTextWidget->SetImageAnimate("BackgroundImageFadeIn");
 	}
 }
 
