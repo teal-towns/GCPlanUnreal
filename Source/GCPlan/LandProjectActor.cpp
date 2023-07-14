@@ -192,17 +192,45 @@ void ALandProjectActor::Test() {
 	// vertices = MathVector::RotateAround(vertices, rotation, FVector(0,0,0));
 	// UE_LOG(LogTemp, Display, TEXT("rotate around %s"), *vertices[0].ToString());
 
-	// FModelCreateParams createParams;
-	// createParams.offset = FVector(-400,-121,26);
-	// createParams.rotation = FVector(0,0,-45);
-	// FHighlightText paramsText;
-	// // paramsText.text = "testing1";
-	// // ModelHighlight::Create(FVector(5,5,5), FModelParams(), createParams, {}, paramsText);
 	// DrawHighlight* drawHighlight = DrawHighlight::GetInstance();
-	// // paramsText.text = Lodash::GetInstanceId("testing1");
-	// // drawHighlight->CreateOne("key1", FVector(5,5,5), FModelParams(), createParams, {}, paramsText);
-	// paramsText.text = "Train Station";
-	// drawHighlight->CreateOne("trainStation", FVector(5,5,5), FModelParams(), createParams, {}, paramsText);
+	// FModelCreateParams createParams;
+	// FHighlightText paramsText;
+	// FModelParams modelParams;
+	// FDrawHighlight drawParams;
+	// // createParams.offset = FVector(-400,-121,26);
+	// // createParams.rotation = FVector(0,0,-45);
+	// // // paramsText.text = "testing1";
+	// // // ModelHighlight::Create(FVector(5,5,5), FModelParams(), createParams, {}, paramsText);
+	// // // paramsText.text = Lodash::GetInstanceId("testing1");
+	// // // drawHighlight->CreateOne("key1", FVector(5,5,5), FModelParams(), createParams, {}, paramsText);
+	// // paramsText.text = "Train Station";
+	// // drawHighlight->CreateOne("trainStation", FVector(5,5,5), FModelParams(), createParams, {}, paramsText);
+
+	// paramsText.dotScale = FVector(1,1,1);
+	// FVector Text3DScale = FVector(3,3,3);
+	// FVector Text3DScaleSmall = FVector(0.1,0.1,0.1);
+	// createParams.offset = FVector(30, -766, 3.5);
+	// createParams.rotation = FVector(0,-15,110);
+	// paramsText.textOffset = FVector(0, -20, 2.5);
+	// paramsText.text = "GridBlock EV Charging";
+	// // drawParams.scale = Text3DScaleSmall;
+	// // drawParams.targetScale = Text3DScale;
+	// drawHighlight->CreateOne("gridBlock", Text3DScale, modelParams, createParams, {}, paramsText, drawParams);
+
+	// // drawParams.materialKey = "black";
+	// // modelParams.materialKey = "blackEmissive";
+	// Text3DScale = FVector(4,4,4);
+	// createParams.offset = FVector(-64, -555, 14);
+	// createParams.rotation = FVector(0,-15,110);
+	// paramsText.textOffset = FVector(0, -22, 2.5);
+	// paramsText.text = "200 MWh battery storage";
+	// drawHighlight->CreateOne("batteryStorage", Text3DScale, modelParams, createParams, {}, paramsText, drawParams);
+
+	// createParams.offset = FVector(-134, -441, 13);
+	// createParams.rotation = FVector(0,-15,110);
+	// paramsText.textOffset = FVector(0, -10, 2.5);
+	// paramsText.text = "Substation";
+	// drawHighlight->CreateOne("substation", Text3DScale, modelParams, createParams, {}, paramsText, drawParams);
 
 	// FVector size = FVector(5,10,1);
 	// FWall wallParams;

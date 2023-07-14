@@ -9,6 +9,7 @@ void UCanvasTextWidget::SetText(FString text, FString animateInFunction, int ani
 		if (animateInFunction == "ScaleInFadeIn") {
 			_animateInDelegate.BindUFunction(this, "ScaleInFadeIn");
 			resetTextProperties = false;
+			BottomCenterText->SetOpacity(0);
 		} else if (animateInFunction == "AnimateTextLetters") {
 			_fullText = text;
 			_currentText = "";
@@ -19,6 +20,7 @@ void UCanvasTextWidget::SetText(FString text, FString animateInFunction, int ani
 			_animateInDelegate.BindUFunction(this, "AnimateTextLetters");
 		} else {
 			resetTextProperties = false;
+			BottomCenterText->SetOpacity(0);
 			_animateInDelegate.BindUFunction(this, "SlideInFadeIn");
 		}
 		// _animateInDelegate();

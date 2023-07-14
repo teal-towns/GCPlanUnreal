@@ -25,7 +25,9 @@ AActor* ModelHighlight::Create(FVector size, FModelParams modelParams,
 	modelParams.parent = actor->FindComponentByClass<USceneComponent>();
 
 	FActorSpawnParameters spawnParams;
-	modelParams.materialKey = "whiteEmissive";
+	if (modelParams.materialKey == "") {
+		modelParams.materialKey = "whiteEmissive";
+	}
 
 	modelParams.meshKey = params.dotMeshKey;
 	scale = params.dotScale;
@@ -67,6 +69,9 @@ AActor* ModelHighlight::Create(FVector size, FModelParams modelParams,
 	material = ModelBase::GetMaterial(modelParams);
 	if (material) {
 		textComponent->SetFrontMaterial(material);
+		textComponent->SetBevelMaterial(material);
+		textComponent->SetExtrudeMaterial(material);
+		textComponent->SetBackMaterial(material);
 	}
 
 	// sub-text
@@ -90,6 +95,9 @@ AActor* ModelHighlight::Create(FVector size, FModelParams modelParams,
 		material = ModelBase::GetMaterial(modelParams);
 		if (material) {
 			textComponent->SetFrontMaterial(material);
+			textComponent->SetBevelMaterial(material);
+			textComponent->SetExtrudeMaterial(material);
+			textComponent->SetBackMaterial(material);
 		}
 	}
 

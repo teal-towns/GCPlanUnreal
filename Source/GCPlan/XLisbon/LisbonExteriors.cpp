@@ -125,6 +125,15 @@ TMap<FString, FPolygon> LisbonExteriors::ParkingLots(float zOffset) {
 
 	float z = zOffset;
 
+	// Grid block
+	uName = Lodash::GetInstanceId("GridBlock");
+	location = FVector(30,-767.5,z+0.3);
+	rotation = FVector(0,0,29);
+	pairsString = "mesh=buildingGridBlock" + ModelBase::AddRotationString(createParamsIn.rotation, rotation);
+	vertices = { MathVector::RotateVector(location, createParamsIn.rotation) + createParamsIn.offset };
+	vertices = ModelBase::Vertices(vertices, createParamsIn);
+	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0, 0, 0), "parkingLot", "point", pairsString));
+
 	// By batteries
 	createParams.offset = FVector(59, -756, z);
 	createParams.rotation = FVector(0, 0, 119);

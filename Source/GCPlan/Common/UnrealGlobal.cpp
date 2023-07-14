@@ -83,7 +83,8 @@ void UnrealGlobal::InitCommon(UWorld* World1) {
 void UnrealGlobal::InitWeb(UWorld* World1) {
 	SetWorld(World1);
 	GetSocket(World1);
-	SocketActor->InitSocket();
+	// TODO - fix SSL / add web endpoint then re-enable.
+	// SocketActor->InitSocket();
 }
 
 void UnrealGlobal::GetSocket(UWorld* World1) {
