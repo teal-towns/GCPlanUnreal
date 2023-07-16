@@ -570,12 +570,13 @@ void AGlobalActor::LisbonExteriorsTwo(int step) {
 		FSlateFontInfo fontInfo = CanvasTextWidget->GetFont();
 		fontInfo.Size = 80;
 		CanvasTextWidget->SetFont(fontInfo);
+		CanvasTextWidget->SetBottomTextPosition(FVector2D(0,-150));
 		CanvasTextWidget->SetText("High speed vehicle charging", animateInFunction, 3, animateOutFunction);
 		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
 		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 2, false);
 	} else if (step == 2) {
-		Text3DScale = FVector(3.5,3.5,3.5);
-		createParams.offset = FVector(30, -750, 3.5);
+		Text3DScale = FVector(3,3,3);
+		createParams.offset = FVector(30, -850, 3.5);
 		createParams.rotation = FVector(0,-15,110);
 		paramsText.textOffset = FVector(0, -20, 2.5);
 		paramsText.text = "GridBlock EV Charging";
@@ -624,7 +625,7 @@ void AGlobalActor::LisbonExteriorsTwo(int step) {
 		drawHighlight->CreateOne("substation", Text3DScale, modelParams, createParams, {}, paramsText, drawParams);
 
 		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
-		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 4, false);
+		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 3.75, false);
 	} else if (step == 7) {
 		drawParams.targetScale = Text3DScaleSmall;
 		drawHighlight->UpdateTargetScale("substation", Text3DScaleSmall);
@@ -636,6 +637,7 @@ void AGlobalActor::LisbonExteriorsTwo(int step) {
 		FSlateFontInfo fontInfo = CanvasTextWidget->GetFont();
 		fontInfo.Size = 80;
 		CanvasTextWidget->SetFont(fontInfo);
+		CanvasTextWidget->SetBottomTextPosition(FVector2D(0,-150));
 		CanvasTextWidget->SetText("Carbon neutral", animateInFunction, 4, animateOutFunction);
 		
 		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
@@ -648,6 +650,7 @@ void AGlobalActor::LisbonExteriorsTwo(int step) {
 		FSlateFontInfo fontInfo = CanvasTextWidget->GetFont();
 		fontInfo.Size = 80;
 		CanvasTextWidget->SetFont(fontInfo);
+		CanvasTextWidget->SetBottomTextPosition(FVector2D(0,-150));
 		CanvasTextWidget->SetText("16,000 square meters premium office space in a pedestrian oriented campus",
 			"AnimateTextLetters", 6, animateOutFunction, 0.01, 2);
 		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
@@ -665,6 +668,7 @@ void AGlobalActor::LisbonExteriorsTwo(int step) {
 		FSlateFontInfo fontInfo = CanvasTextWidget->GetFont();
 		fontInfo.Size = 40;
 		CanvasTextWidget->SetFont(fontInfo);
+		CanvasTextWidget->SetBottomTextPosition(FVector2D(0,-100));
 		CanvasTextWidget->SetText("For more info, visit www.edged.es/lisbon", "ScaleInFadeIn");
 		// _exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
 		// _world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 1, false);

@@ -28,6 +28,7 @@ public:
 	void SetFont(FSlateFontInfo fontInfo);
 	UFUNCTION(BlueprintCallable)
 	FSlateFontInfo GetFont();
+	void SetBottomTextPosition(FVector2D position);
 	UFUNCTION(BlueprintCallable)
 	void AnimateTextLetters();
 

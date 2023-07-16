@@ -1,5 +1,6 @@
 #include "CanvasTextWidget.h"
 
+#include "Components/CanvasPanelSlot.h"
 #include "Fonts/SlateFontInfo.h"
 
 void UCanvasTextWidget::SetText(FString text, FString animateInFunction, int animateOutSeconds,
@@ -42,6 +43,11 @@ void UCanvasTextWidget::SetFont(FSlateFontInfo fontInfo) {
 
 FSlateFontInfo UCanvasTextWidget::GetFont() {
 	return BottomCenterText->Font;
+}
+
+void UCanvasTextWidget::SetBottomTextPosition(FVector2D position) {
+	UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(BottomCenterText->Slot);
+	CanvasSlot->SetPosition(position);
 }
 
 void UCanvasTextWidget::AnimateTextLetters() {
