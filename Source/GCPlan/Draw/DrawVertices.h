@@ -5,5 +5,5 @@ public:
 	DrawVertices();
 	~DrawVertices();
 
-	static void LoadVertices();
+	static void LoadVertices(TArray<FString> skipTypes = {});
 };

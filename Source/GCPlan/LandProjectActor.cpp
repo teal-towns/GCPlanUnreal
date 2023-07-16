@@ -344,7 +344,15 @@ void ALandProjectActor::DrawVertices() {
 	// this->InitSocketOn();
 	// this->Login();
 
-	DrawVertices::LoadVertices();
+	TArray<FString> skipTypes = {};
+	if (EditorParams.Action == EditorActionsLP::SET_VERTICES_SKIP_INTERIORS) {
+		skipTypes += { "bush", "chair", "computerServer", "couch", "desk", "laptop", "light", "pcMonitor",
+			"person", "planterBox", "room", "table", "wall", "wallPart", "cord", "flowerPot", "kitchen" };
+	}
+	if (EditorParams.Action == EditorActionsLP::SET_VERTICES_SKIP_EXTERIORS) {
+		skipTypes += { "buildingPart", "parkingLot", "building", "treeLine", "landNature", "grass", "rail" };
+	}
+	DrawVertices::LoadVertices(skipTypes);
 }
 
 void ALandProjectActor::SetVertices() {
@@ -356,18 +364,22 @@ void ALandProjectActor::SetVertices() {
 
 	// float zOffset = 4;
 	float zOffset = 0;
-	LisbonInteriors::Rooms(zOffset + 4);
-	LisbonExteriors::Buildings(zOffset);
-	LisbonExteriors::ParkingLots(zOffset);
-	// LisbonExteriors::Trees(zOffset);
+	if (EditorParams.Action != EditorActionsLP::SET_VERTICES_SKIP_INTERIORS) {
+		LisbonInteriors::Rooms(zOffset + 4);
+	}
+	if (EditorParams.Action != EditorActionsLP::SET_VERTICES_SKIP_EXTERIORS) {
+		LisbonExteriors::Buildings(zOffset);
+		LisbonExteriors::ParkingLots(zOffset);
+		// LisbonExteriors::Trees(zOffset);
+	}
 
-	FModelParams modelParams;
-	FModelCreateParams createParams;
-	createParams.rotation = FVector(0,0,-60);
-	// createParams.offset = FVector(-401,-149,3);
-	// createParams.offset = FVector(135,-1124,3);
-	createParams.offset = FVector(-65.5,-777,zOffset);
-	LMTrain::Create(FVector(0,0,0), modelParams, createParams);
+	// FModelParams modelParams;
+	// FModelCreateParams createParams;
+	// createParams.rotation = FVector(0,0,-60);
+	// // createParams.offset = FVector(-401,-149,3);
+	// // createParams.offset = FVector(135,-1124,3);
+	// createParams.offset = FVector(-65.5,-777,zOffset);
+	// LMTrain::Create(FVector(0,0,0), modelParams, createParams);
 }
 
 void ALandProjectActor::CreateUI() {

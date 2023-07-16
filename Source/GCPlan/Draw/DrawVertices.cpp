@@ -28,7 +28,9 @@ DrawVertices::DrawVertices() {
 DrawVertices::~DrawVertices() {
 }
 
-void DrawVertices::LoadVertices() {
+void DrawVertices::LoadVertices(TArray<FString> skipTypes) {
+	skipTypes += { "train" };
+
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	SplineRoad* splineRoad = SplineRoad::GetInstance();
 	splineRoad->DestroyRoads();
@@ -45,7 +47,7 @@ void DrawVertices::LoadVertices() {
 	PlotBuild::DrawLands(lands);
 
 	// Place nature on land.
-	if (unrealGlobal->_settings->performanceQualityLevel >= 8) {
+	if (unrealGlobal->_settings->performanceQualityLevel >= 8 && !skipTypes.Contains("landNature")) {
 		LandNature::PlaceNature();
 	}
 
@@ -58,7 +60,6 @@ void DrawVertices::LoadVertices() {
 	// Buildings - assume all are points.
 	// types = { "couch", "chair", "desk", "planterBox", "room", "table" };
 	// polygons = verticesEdit->FilterByTypes(types);
-	TArray<FString> skipTypes = { "train" };
 	TArray<FString> onlyTypes = {};
 	// onlyTypes = { "building" };
 	polygons = verticesEdit->FilterByShapes({ "point" });
@@ -106,13 +107,15 @@ void DrawVertices::LoadVertices() {
 	// Polygons & paths
 	// Roads.
 	FString uName;
-	polygons = verticesEdit->FilterByTypes({ "road" });
-	if (polygons.Num() > 0) {
-		splineRoad->AddRoads(polygons);
+	if (!skipTypes.Contains("road")) {
+		polygons = verticesEdit->FilterByTypes({ "road" });
+		if (polygons.Num() > 0) {
+			splineRoad->AddRoads(polygons);
+		}
+		// MeshTerrain* meshTerrain = MeshTerrain::GetInstance();
+		// meshTerrain->DrawRoads();
+		splineRoad->DrawRoads();
 	}
-	// MeshTerrain* meshTerrain = MeshTerrain::GetInstance();
-	// meshTerrain->DrawRoads();
-	splineRoad->DrawRoads();
 
 	LoadContent* loadContent = LoadContent::GetInstance();
 	LayoutPolygon* layoutPolygon = LayoutPolygon::GetInstance();
@@ -126,7 +129,8 @@ void DrawVertices::LoadVertices() {
 	float spacingCrossAxisDefault = 3;
 	float spacing, spacingCrossAxis;
 	for (auto& Elem : polygons) {
-		if (Elem.Value.type != "road") {
+		if (!skipTypes.Contains(Elem.Value.type) && Elem.Value.skip <= 0 &&
+			Elem.Value.type != "road") {
 			pairs = Lodash::PairsStringToObject(Elem.Value.pairsString);
 			meshNames = {};
 			if (pairs.Contains("meshTypes")) {
