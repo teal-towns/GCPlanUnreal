@@ -55,17 +55,30 @@ TMap<FString, FPolygon> LMDesks::TwoDesksRow(FVector size, FModelParams modelPar
 	float rotationZ;
 	float xTemp;
 	FPlanterBox plantParams;
+	FWallPlanterBox plantParamsBox;
 	for (int xx = 0; xx < 2; xx++) {
 		// Desks face each other, so rotate second set.
 		rotationZ = xx == 0 ? 0 : 180;
 		while (currentYStart < size.Y / 2) {
-			if (currentYStart < desksYStart || currentYStart >= desksYEnd) {
+			if (currentYStart >= desksYEnd) {
+				// scale = FVector(0.3, 2, 0.5);
+				// plantParamsBox.offset = FVector(currentX - scale.X / 2, currentYStart, 0) + offsetBase;
+				// LMRoomPlants::MultiPlantsBox(scale, modelParams, createParamsIn, plantParamsBox);
+				xTemp = currentX + (rotationZ == 0 ? rowXSize / 4 : rowXSize / -4);
+				scale = FVector(params.plantWidth, params.plantWidth, size.Z);
+				plantParams.offset = FVector(xTemp, currentYStart + scale.Y / 2, 0) + offsetBase;
+				plantParams.meshRule = "planterBox";
+				plantParams.planterHeight = 0.3;
+				LMRoomPlants::PlanterBox(scale, modelParams, createParamsIn, plantParams);
+				currentYStart += params.plantWidth;
+			} else if (currentYStart < desksYStart) {
 				// Center at desks, so start more toward middle.
 				xTemp = currentX + (rotationZ == 0 ? rowXSize / 4 : rowXSize / -4);
 				for (int pp = 0; pp < params.plantsPerDeskRow; pp++) {
 					scale = FVector(params.plantWidth, params.plantWidth, size.Z);
 					plantParams.offset = FVector(xTemp, currentYStart + scale.Y / 2, 0) + offsetBase;
 					plantParams.meshRule = "planterBoxCylinderRaised";
+					plantParams.planterHeight = 1.3;
 					LMRoomPlants::PlanterBox(scale, modelParams, createParamsIn, plantParams);
 					// // plants
 					// scale = FVector(params.plantWidth, params.plantWidth, params.planterHeight);

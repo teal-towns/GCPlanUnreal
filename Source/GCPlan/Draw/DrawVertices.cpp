@@ -50,17 +50,6 @@ void DrawVertices::LoadVertices() {
 	}
 
 	ModelBase* modelBase = ModelBase::GetInstance();
-	// Paths
-	// Roads.
-	FString uName;
-	polygons = verticesEdit->FilterByShapes({ "path" });
-	if (polygons.Num() > 0) {
-		splineRoad->AddRoads(polygons);
-	}
-	// MeshTerrain* meshTerrain = MeshTerrain::GetInstance();
-	// meshTerrain->DrawRoads();
-	splineRoad->DrawRoads();
-
 	InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
 	TArray<FString> types;
 	TMap<FString, FString> pairs;
@@ -114,59 +103,94 @@ void DrawVertices::LoadVertices() {
 		}
 	}
 
-	// Plants
+	// Polygons & paths
+	// Roads.
+	FString uName;
+	polygons = verticesEdit->FilterByTypes({ "road" });
+	if (polygons.Num() > 0) {
+		splineRoad->AddRoads(polygons);
+	}
+	// MeshTerrain* meshTerrain = MeshTerrain::GetInstance();
+	// meshTerrain->DrawRoads();
+	splineRoad->DrawRoads();
+
 	LoadContent* loadContent = LoadContent::GetInstance();
 	LayoutPolygon* layoutPolygon = LayoutPolygon::GetInstance();
 	FPlaceParams placeParams;
-	TArray<FString> meshNames, meshTypes;
-	types = { "tree", "bush", "flower", "outdoorBush" };
-	polygons = verticesEdit->FilterByTypes(types);
+	TArray<FString> meshNames, meshTypes, meshTags;
+	// types = { "tree", "bush", "flower", "outdoorBush" };
+	types = { "bush", "flower" };
+	// polygons = verticesEdit->FilterByTypes(types);
+	polygons = verticesEdit->FilterByShapes({ "polygon", "path" });
+	float spacingDefault = 10;
+	float spacingCrossAxisDefault = 3;
+	float spacing, spacingCrossAxis;
 	for (auto& Elem : polygons) {
-		pairs = Lodash::PairsStringToObject(Elem.Value.pairsString);
-		meshNames = {};
-		if (pairs.Contains("meshTypes")) {
-			pairs["meshTypes"].ParseIntoArray(meshTypes, TEXT(","), true);
-			meshNames = loadContent->GetMeshNamesByTypes(meshTypes);
-		} else if (pairs.Contains("meshes")) {
-			pairs["meshes"].ParseIntoArray(meshNames, TEXT(","), true);
-		}
-		if (!pairs.Contains("mesh")) {
-			pairs.Add("mesh", "");
-		}
-		if (meshNames.Num() > 0) {
-			for (int ii = 0; ii < meshNames.Num(); ii++) {
-				pairs["mesh"] = meshNames[ii];
-				ModelBase::InstancedMeshFromPairs(pairs);
+		if (Elem.Value.type != "road") {
+			pairs = Lodash::PairsStringToObject(Elem.Value.pairsString);
+			meshNames = {};
+			if (pairs.Contains("meshTypes")) {
+				pairs["meshTypes"].ParseIntoArray(meshTypes, TEXT(","), true);
+				meshNames = loadContent->GetMeshNamesByTypes(meshTypes);
+			} else if (pairs.Contains("meshTags")) {
+				pairs["meshTags"].ParseIntoArray(meshTags, TEXT(","), true);
+				meshNames = loadContent->GetMeshNamesByTags(meshTags);
+			} else if (pairs.Contains("meshes")) {
+				pairs["meshes"].ParseIntoArray(meshNames, TEXT(","), true);
 			}
+			if (!pairs.Contains("mesh")) {
+				pairs.Add("mesh", "");
+			}
+			if (meshNames.Num() > 0) {
+				for (int ii = 0; ii < meshNames.Num(); ii++) {
+					pairs["mesh"] = meshNames[ii];
+					ModelBase::InstancedMeshFromPairs(pairs);
+				}
 
-			placeParams.offsetAverage = pairs.Contains("placeOffsetAverage") ?
-				DataConvert::Float(pairs["placeOffsetAverage"]) : 10;
-			placeParams.offsetX = pairs.Contains("placeOffsetX") ?
-				DataConvert::Float(pairs["placeOffsetX"]) : -1;
-			placeParams.offsetY = pairs.Contains("placeOffsetY") ?
-				DataConvert::Float(pairs["placeOffsetY"]) : -1;
-			placeParams.offsetMaxFactorX = pairs.Contains("placeOffsetMaxFactorX") ?
-				DataConvert::Float(pairs["placeOffsetMaxFactorX"]) : 0.5;
-			placeParams.offsetMaxFactorY = pairs.Contains("placeOffsetMaxFactorY") ?
-				DataConvert::Float(pairs["placeOffsetMaxFactorY"]) : 0.5;
-			placeParams.scaleMin = pairs.Contains("placeScaleMin") ?
-				DataConvert::Float(pairs["placeScaleMin"]) : 0.75;
-			placeParams.scaleMax = pairs.Contains("placeScaleMax") ?
-				DataConvert::Float(pairs["placeScaleMax"]) : 1.25;
-			placeParams.rotMinX = pairs.Contains("placeRotMinX") ?
-				DataConvert::Float(pairs["placeRotMinX"]) : 0;
-			placeParams.rotMaxX = pairs.Contains("placeRotMaxX") ?
-				DataConvert::Float(pairs["placeRotMaxX"]) : 0;
-			placeParams.rotMinY = pairs.Contains("placeRotMinY") ?
-				DataConvert::Float(pairs["placeRotMinY"]) : 0;
-			placeParams.rotMaxY = pairs.Contains("placeRotMaxY") ?
-				DataConvert::Float(pairs["placeRotMaxY"]) : 0;
-			placeParams.rotMinZ = pairs.Contains("placeRotMinZ") ?
-				DataConvert::Float(pairs["placeRotMinZ"]) : 0;
-			placeParams.rotMaxZ = pairs.Contains("placeRotMaxZ") ?
-				DataConvert::Float(pairs["placeRotMaxZ"]) : 360;
-			placeParams.plane = pairs.Contains("placePlane") ? pairs["placePlane"] : "xy";
-			LayoutPolygon::PlaceInPolygon(Elem.Value.vertices, meshNames, placeParams);
+				spacing = spacingDefault;
+				spacingCrossAxis = spacingCrossAxisDefault;
+				if (Elem.Value.type == "treeLine") {
+					spacing = 5;
+					spacingCrossAxis = 999;
+				}
+
+				placeParams.offsetAverage = pairs.Contains("placeOffsetAverage") ?
+					DataConvert::Float(pairs["placeOffsetAverage"]) : 10;
+				placeParams.offsetX = pairs.Contains("placeOffsetX") ?
+					DataConvert::Float(pairs["placeOffsetX"]) : -1;
+				placeParams.offsetY = pairs.Contains("placeOffsetY") ?
+					DataConvert::Float(pairs["placeOffsetY"]) : -1;
+				placeParams.offsetMaxFactorX = pairs.Contains("placeOffsetMaxFactorX") ?
+					DataConvert::Float(pairs["placeOffsetMaxFactorX"]) : 0.5;
+				placeParams.offsetMaxFactorY = pairs.Contains("placeOffsetMaxFactorY") ?
+					DataConvert::Float(pairs["placeOffsetMaxFactorY"]) : 0.5;
+				placeParams.scaleMin = pairs.Contains("placeScaleMin") ?
+					DataConvert::Float(pairs["placeScaleMin"]) : 0.75;
+				placeParams.scaleMax = pairs.Contains("placeScaleMax") ?
+					DataConvert::Float(pairs["placeScaleMax"]) : 1.25;
+				placeParams.rotMinX = pairs.Contains("placeRotMinX") ?
+					DataConvert::Float(pairs["placeRotMinX"]) : 0;
+				placeParams.rotMaxX = pairs.Contains("placeRotMaxX") ?
+					DataConvert::Float(pairs["placeRotMaxX"]) : 0;
+				placeParams.rotMinY = pairs.Contains("placeRotMinY") ?
+					DataConvert::Float(pairs["placeRotMinY"]) : 0;
+				placeParams.rotMaxY = pairs.Contains("placeRotMaxY") ?
+					DataConvert::Float(pairs["placeRotMaxY"]) : 0;
+				placeParams.rotMinZ = pairs.Contains("placeRotMinZ") ?
+					DataConvert::Float(pairs["placeRotMinZ"]) : 0;
+				placeParams.rotMaxZ = pairs.Contains("placeRotMaxZ") ?
+					DataConvert::Float(pairs["placeRotMaxZ"]) : 360;
+				placeParams.plane = pairs.Contains("placePlane") ? pairs["placePlane"] : "xy";
+				placeParams.spacing = pairs.Contains("placeSpacing") ?
+					DataConvert::Float(pairs["placeSpacing"]) : spacing;
+				placeParams.spacingCrossAxis = pairs.Contains("placeSpacingCrossAxis") ?
+					DataConvert::Float(pairs["placeSpacingCrossAxis"]) : spacingCrossAxis;
+				if (Elem.Value.shape == "polygon") {
+					LayoutPolygon::PlaceInPolygon(Elem.Value.vertices, meshNames, placeParams);
+				} else if (Elem.Value.shape == "path") {
+					LayoutPolyLine::PlaceOnLine(Elem.Value.vertices, meshNames, placeParams);
+				}
+			}
 		}
 	}
 }

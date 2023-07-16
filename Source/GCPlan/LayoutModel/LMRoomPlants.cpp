@@ -92,7 +92,7 @@ TMap<FString, FPolygon> LMRoomPlants::PlanterBox(FVector size, FModelParams mode
 	LoadContent* loadContent = LoadContent::GetInstance();
 	FString uNameBase = Lodash::GetInstanceId("planterBox");
 
-	auto [valid, meshesByTags] = loadContent->FillMeshesByTags(params.meshesByTags, { "indoorBush" });
+	auto [valid, meshesByTags] = loadContent->FillMeshesByTags(params.meshesByTags, { "indoorBushTall" });
 	if (!valid) {
 		UE_LOG(LogTemp, Warning, TEXT("LMRoomPlants.PlanterBox missing meshesByTags, skipping"));
 		return polygons;
@@ -110,7 +110,7 @@ TMap<FString, FPolygon> LMRoomPlants::PlanterBox(FVector size, FModelParams mode
 
 	uName = uNameBase + "_plant";
 	location.Z = params.planterHeight;
-	FString meshKey = params.meshesByTags["indoorBush"][Lodash::RandomRangeInt(0, params.meshesByTags["indoorBush"].Num() - 1)];
+	FString meshKey = params.meshesByTags["indoorBushTall"][Lodash::RandomRangeInt(0, params.meshesByTags["indoorBushTall"].Num() - 1)];
 	pairsString = "mesh=" + meshKey + ModelBase::AddRotationString(createParamsIn.rotation);
 	vertices = { MathVector::RotateVector(location + params.offset, createParamsIn.rotation) + createParamsIn.offset };
 	vertices = ModelBase::Vertices(vertices, createParamsIn, params.rotation);

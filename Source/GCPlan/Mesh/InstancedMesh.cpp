@@ -70,6 +70,10 @@ void InstancedMesh::InitMeshes() {
 		"/Script/Engine.MaterialInstanceConstant'/Game/Landscape/Spline_M_Inst_Asphalt.Spline_M_Inst_Asphalt'");
 	AddMesh("VertexWhite", "/Script/Engine.StaticMesh'/Game/Landscape/VerticesEdit/VertexWhite.VertexWhite'",
 		"");
+	AddMesh("VertexBlack", "/Script/Engine.StaticMesh'/Game/Landscape/VerticesEdit/VertexBlack.VertexBlack'",
+		"");
+	AddMesh("VertexGrey", "/Script/Engine.StaticMesh'/Game/Landscape/VerticesEdit/VertexGrey.VertexGrey'",
+		"");
 	AddMesh("EdgeBlack", "/Script/Engine.StaticMesh'/Game/Landscape/VerticesEdit/EdgeBlack.EdgeBlack'",
 		"");
 	AddMesh("EdgeBlue", "/Script/Engine.StaticMesh'/Game/Landscape/VerticesEdit/EdgeBlue.EdgeBlue'",

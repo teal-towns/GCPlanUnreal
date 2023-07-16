@@ -81,12 +81,12 @@ TMap<FString, FPolygon> LMCafeteria::Create(FVector size, FModelParams modelPara
 	FHangingPlants hangingParams;
 	scale = kitchenScale - FVector(1, 0, 0);
 	hangingParams.offset = FVector(currentX - scale.X / 2 - 1, 0, 0);
-	hangingParams.placeOffset = 1.25;
+	hangingParams.placeOffset = 1.5;
 	LMRoomPlants::HangingPlants(scale, modelParams, createParamsIn, hangingParams);
 
 	// planter box in front of kitchen bar
 	currentX -= kitchenScale.X;
-	scale = FVector(planterBoxXScale, kitchenScale.Y, 1);
+	scale = FVector(planterBoxXScale, kitchenScale.Y, 0.5);
 	plantParams.offset = FVector(currentX - scale.X / 2, 0, 0);
 	plantParams.height = scale.Z;
 	LMRoomPlants::MultiPlantsBox(scale, modelParams, createParamsIn, plantParams);

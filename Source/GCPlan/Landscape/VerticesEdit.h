@@ -30,8 +30,13 @@ private:
 	double _timeMouseDown = -1;
 	double _timeDragDelay = 0.25;
 
-	FVector _displayScale = FVector(20,20,30);
+	FString _meshVertex = "VertexWhite";
+	FString _meshCenter = "VertexBlack";
+	FString _meshPoint = "VertexGrey";
+	FVector _displayScale = FVector(20,20,25);
 	FVector _displayScaleEdge = FVector(10,10,15);
+	// FVector _displayScale = FVector(1,1,1.5);
+	// FVector _displayScaleEdge = FVector(0.5,0.5,1);
 
 	TMap<FString, std::function<void(FString, FPolygon)>> _listenersSavePolygon = {};
 	TMap<FString, std::function<void(FString, FString)>> _listenersDeletePolygon = {};

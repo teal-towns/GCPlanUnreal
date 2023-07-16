@@ -70,7 +70,7 @@ AActor* ModelPlanterBox::Create(FVector size, FModelParams modelParams,
 AActor* ModelPlanterBox::CylinderRaised(FVector size, FModelParams modelParams,
 	FModelCreateParams createParamsIn, TMap<FString, FString> pairs) {
 	if (size == FVector(0,0,0)) {
-		size = FVector(0.5,0.5,1.3);
+		size = FVector(0.5,0.5,1);
 	}
 	FString name = Lodash::GetInstanceId("PlanterCylinder_");
 	ModelBase* modelBase = ModelBase::GetInstance();

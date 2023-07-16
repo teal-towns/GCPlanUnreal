@@ -13,6 +13,7 @@ struct FLayoutWall {
 	FVector rotation = FVector(0,0,0);
 	FVector wallRotation = FVector(0,0,0);
 	FVector doorRotation = FVector(0,0,0);
+	FString materialKey = "white";
 };
 
 class LMWall {

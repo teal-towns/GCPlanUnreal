@@ -14,8 +14,8 @@
 void AFlyingDefaultPawn::BeginPlay() {
 	Super::BeginPlay();
 	// TESTING
-	// CreateUI();
-	// SetupMouse();
+	CreateUI();
+	SetupMouse();
 	// SetupRotation();
 }
 
@@ -174,7 +174,8 @@ void AFlyingDefaultPawn::SetMiniMapZoom() {
 		float orthoWidth = Lodash::RangeValue(loc.Z, 1000, 50000, 2500, 250000); 
 		captureComponent->OrthoWidth = orthoWidth;
 		VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
-		float scaleX = Lodash::RangeValue(loc.Z, 1000, 50000, 1, 20);
-		verticesEdit->SetDisplayScale(FVector(scaleX, scaleX, 30), FVector(scaleX / 2, scaleX / 2, 15));
+		// TODO - this breaks editing..
+		// float scaleX = Lodash::RangeValue(loc.Z, 1000, 50000, 1, 20);
+		// verticesEdit->SetDisplayScale(FVector(scaleX, scaleX, scaleX * 1.5), FVector(scaleX / 2, scaleX / 2, scaleX * 1.5 / 2));
 	}
 }

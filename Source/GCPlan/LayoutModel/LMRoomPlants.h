@@ -26,10 +26,11 @@ struct FPlanterBox {
 	FVector offset = FVector(0,0,0);
 	FVector rotation = FVector(0,0,0);
 	TMap<FString, TArray<FString>> meshesByTags = {
-		{ "indoorBush", {} }
+		{ "indoorBush", {} },
+		{ "indoorBushTall", {} }
 	};
 	// float plantWidth = 0.6;
-	float planterHeight = 1.3;
+	float planterHeight = 1;
 	FString meshRule = "planterBox";
 };
 
@@ -43,7 +44,7 @@ struct FHangingPlants {
 	float placeOffset = 1;
 	float placeOffsetMaxXFactor = 0;
 	float placeOffsetMaxYFactor = 0;
-	FVector cordScale = FVector(0.01, 0.01, 1.5);
+	FVector cordScale = FVector(0.03, 0.03, 1.5);
 	FVector potScale = FVector(0.3, 0.3, 0.25);
 };
 

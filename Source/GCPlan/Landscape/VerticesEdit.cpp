@@ -43,6 +43,7 @@ void VerticesEdit::SetPairsString(FString pairsString) {
 
 void VerticesEdit::SetFilterTypes(TArray<FString> filterTypes) {
 	_currentFilterTypes = filterTypes;
+	UE_LOG(LogTemp, Display, TEXT("SetFilterTypes %d"), filterTypes.Num());
 	Hide();
 	if (filterTypes.Num() < 1) {
 		DrawAll();
@@ -101,7 +102,7 @@ void VerticesEdit::CleanUp() {
 void VerticesEdit::Hide() {
 	_itemsActors.Empty();
 	InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
-	instancedMesh->ClearInstancesBulk({"VertexWhite", "EdgeBlack", "EdgeBlue", "EdgeRed"});
+	instancedMesh->ClearInstancesBulk({ _meshVertex, _meshCenter, _meshPoint, "EdgeBlack", "EdgeBlue", "EdgeRed"});
 }
 
 void VerticesEdit::SetMode(FString mode) {
@@ -141,6 +142,7 @@ void VerticesEdit::OnMouseDown(FVector worldLocation) {
 
 void VerticesEdit::OnMouseUp(FVector worldLocation) {
 	if (_selectedObject && _mode != "add") {
+		UE_LOG(LogTemp, Display, TEXT("OnMouseUp selected %s %s"), *_selectedObject->uName, *_selectedObject->objectType);
 		if (_selectedObject->objectType == "edge") {
 			AddVertexOnEdge(_selectedObject->uName, worldLocation);
 		}
@@ -271,7 +273,7 @@ void VerticesEdit::CheckComputeCenter(FString uName) {
 		HeightMap* heightMap = HeightMap::GetInstance();
 		center.Z = heightMap->GetTerrainHeightAtPoint(FVector(center.X, center.Y, 0));
 		_items[uName].posCenter = center;
-		_itemsActors[uName].centerInstanceIndex = instancedMesh->SaveInstance("VertexWhite",
+		_itemsActors[uName].centerInstanceIndex = instancedMesh->SaveInstance(_meshCenter,
 			_itemsActors[uName].centerInstanceIndex, _items[uName].posCenter,
 			FRotator(0,0,0), _displayScale);
 	}
@@ -305,7 +307,7 @@ void VerticesEdit::AddVertex(FVector posAdd) {
 		_items[uName].vertices.Add(posAdd);
 
 		InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
-		int index = instancedMesh->CreateInstance("VertexWhite", posAdd, FRotator(0,0,0), _displayScale);
+		int index = instancedMesh->CreateInstance(_meshVertex, posAdd, FRotator(0,0,0), _displayScale);
 		_itemsActors[uName].verticesInstanceIndices.Add(index);
 		if (_items[uName].vertices.Num() > 1) {
 			int vertexIndex = _items[uName].vertices.Num() - 1;
@@ -324,7 +326,7 @@ void VerticesEdit::AddVertexOnEdge(FString uName, FVector worldLocation) {
 		_items[uName].vertices.Insert(insertPos, insertIndex);
 
 		InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
-		int index = instancedMesh->CreateInstance("VertexWhite", insertPos, FRotator(0,0,0), _displayScale);
+		int index = instancedMesh->CreateInstance(_meshVertex, insertPos, FRotator(0,0,0), _displayScale);
 		_itemsActors[uName].verticesInstanceIndices.Insert(index, insertIndex);
 
 		DrawAllEdges(uName);
@@ -335,7 +337,9 @@ void VerticesEdit::DeleteVertex(FString uName, int index) {
 	_items[uName].vertices.RemoveAt(index);
 	InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
 	TArray<int> removeIndices = { _itemsActors[uName].verticesInstanceIndices[index] };
-	instancedMesh->RemoveInstances("VertexWhite", removeIndices);
+	instancedMesh->RemoveInstances(_meshVertex, removeIndices);
+	instancedMesh->RemoveInstances(_meshCenter, removeIndices);
+	instancedMesh->RemoveInstances(_meshPoint, removeIndices);
 	_itemsActors[uName].verticesInstanceIndices.RemoveAt(index);
 	DrawAllEdges(uName);
 	CheckComputeCenter(uName);
@@ -349,7 +353,8 @@ void VerticesEdit::MoveVertex(FString uName, int index, FVector newLocation) {
 
 		InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
 
-		_itemsActors[uName].verticesInstanceIndices[index] = instancedMesh->SaveInstance("VertexWhite",
+		FString meshKey = _items[uName].shape == "point" ? _meshPoint : _meshVertex;
+		_itemsActors[uName].verticesInstanceIndices[index] = instancedMesh->SaveInstance(meshKey,
 			_itemsActors[uName].verticesInstanceIndices[index], newLocation,
 			FRotator(0,0,0), _displayScale);
 
@@ -364,7 +369,9 @@ void VerticesEdit::HidePolygon(FString uName) {
 		// vertices (including center)
 		TArray<int> removeIndices = _itemsActors[uName].verticesInstanceIndices;
 		removeIndices.Add(_itemsActors[uName].centerInstanceIndex);
-		instancedMesh->RemoveInstances("VertexWhite", removeIndices);
+		instancedMesh->RemoveInstances(_meshVertex, removeIndices);
+		instancedMesh->RemoveInstances(_meshCenter, removeIndices);
+		instancedMesh->RemoveInstances(_meshPoint, removeIndices);
 		// edges
 		removeIndices = _itemsActors[uName].edgesInstanceIndices;
 		instancedMesh->RemoveInstances(GetEdgeMesh(_items[uName].type), removeIndices);
@@ -417,7 +424,7 @@ void VerticesEdit::MovePolygon(FString uName, FVector moveOffset, bool saveAsFin
 			_items[uName].vertices[ii] = newPoint;
 		}
 
-		_itemsActors[uName].verticesInstanceIndices[ii] = instancedMesh->SaveInstance("VertexWhite",
+		_itemsActors[uName].verticesInstanceIndices[ii] = instancedMesh->SaveInstance(_meshVertex,
 			_itemsActors[uName].verticesInstanceIndices[ii], newPoint,
 			FRotator(0,0,0), _displayScale);
 	}
@@ -427,7 +434,7 @@ void VerticesEdit::MovePolygon(FString uName, FVector moveOffset, bool saveAsFin
 		_items[uName].posCenter = newPoint;
 	}
 
-	_itemsActors[uName].centerInstanceIndex = instancedMesh->SaveInstance("VertexWhite",
+	_itemsActors[uName].centerInstanceIndex = instancedMesh->SaveInstance(_meshCenter,
 		_itemsActors[uName].centerInstanceIndex, newPoint,
 		FRotator(0,0,0), _displayScale);
 
@@ -511,17 +518,22 @@ void VerticesEdit::DrawItem(FString uName) {
 	FPolygon item = _items[uName];
 	InstancedMesh* instancedMesh = InstancedMesh::GetInstance();
 	TArray<int> verticesInstanceIndices;
-	int centerInstanceIndex, index;
+	int centerInstanceIndex = -1;
+	int index;
 	FVector point;
-	centerInstanceIndex = instancedMesh->CreateInstance("VertexWhite", item.posCenter,
-		FRotator(0,0,0), _displayScale);
+	if (item.shape != "point") {
+		centerInstanceIndex = instancedMesh->CreateInstance(_meshCenter, item.posCenter,
+			FRotator(0,0,0), _displayScale);
+	}
 
 	verticesInstanceIndices.Empty();
 	for (int ii = 0; ii < item.vertices.Num(); ii++) {
 		point = item.vertices[ii];
-		index = instancedMesh->CreateInstance("VertexWhite", point, FRotator(0,0,0), _displayScale);
+		FString meshKey = item.shape == "point" ? _meshPoint : _meshVertex;
+		index = instancedMesh->CreateInstance(meshKey, point, FRotator(0,0,0), _displayScale);
 		verticesInstanceIndices.Add(index);
 	}
+	UE_LOG(LogTemp, Display, TEXT("DrawItem %s"), *uName);
 
 	_itemsActors.Add(uName, FVerticesEditActor(uName, verticesInstanceIndices, {}, centerInstanceIndex));
 
@@ -555,17 +567,23 @@ TMap<FString, FPolygon> VerticesEdit::ExportPolygonsByType(FString type) {
 }
 
 void VerticesEdit::LoadFromFiles() {
+	DestroyItems();
 	FString pathPrefix = "VerticesEdit";
 	DataConvert* dataConvert = DataConvert::GetInstance();
 	DataFileProject* dataFileProject = DataFileProject::GetInstance();
 	TArray<FString> fileNames = dataConvert->GetDirectoryFiles(pathPrefix);
 	FString uName;
+	FVector center;
 	for (int ii = 0; ii < fileNames.Num(); ii++) {
 		auto [data, valid] = dataFileProject->LoadProject(pathPrefix + "/" + fileNames[ii]);
 		if (valid) {
 			for (auto& Elem : data.polygons) {
 				uName = Elem.Key;
-				_items.Add(uName, FPolygon(uName, uName, Elem.Value.vertices, Elem.Value.posCenter, Elem.Value.type,
+				center = Elem.Value.posCenter;
+				if (Elem.Value.shape != "point" && center == FVector(0,0,0)) {
+					center = MathPolygon::GetPolygonCenter(Elem.Value.vertices);
+				}
+				_items.Add(uName, FPolygon(uName, uName, Elem.Value.vertices, center, Elem.Value.type,
 					Elem.Value.shape, Elem.Value.pairsString, Elem.Value.jsonDataString, Elem.Value.squareMeters,
 					Elem.Value.parentUName, Elem.Value.childUNames, Elem.Value.verticesBuffer,
 					Elem.Value.averageChildDiameter, Elem.Value.skip));

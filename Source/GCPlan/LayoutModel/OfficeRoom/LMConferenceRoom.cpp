@@ -43,6 +43,15 @@ TMap<FString, FPolygon> LMConferenceRoom::Create(FVector size, FModelParams mode
 	plantParams.walls = { "left", "back", "front" };
 	LMRoomPlants::WallPlants(size, modelParams, createParamsIn, plantParams);
 
+	uName = Lodash::GetInstanceId("tv");
+	location = FVector(0, size.Y / -2 + 1, 1.5);
+	scale = FVector(2.5,2.5,2.5);
+	pairsString = "mesh=wallTV&scale=" + DataConvert::VectorToString(scale) +
+		ModelBase::AddRotationString(createParamsIn.rotation, FVector(0,0,90));
+	vertices = { location + createParamsIn.offset };
+	vertices = ModelBase::Vertices(vertices, createParamsIn);
+	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
+
 	// scale = FVector(size.X / 2, size.Y / 2, -1);
 	scale = FVector(2.5 + 1 * 2, 5.5 + 1 * 2, 1);
 	FTableChairs tableParams;

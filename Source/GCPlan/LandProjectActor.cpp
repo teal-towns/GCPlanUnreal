@@ -102,11 +102,13 @@ void ALandProjectActor::Login() {
 }
 
 void ALandProjectActor::Init() {
-	if (false) {
+	if (true) {
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	TArray<FString> Keys = {"socket"};
 	unrealGlobal->InitAll(GetWorld());
-	if (unrealGlobal->IsIniteds(Keys) && unrealGlobal->SocketActor->IsConnected()) {
+	// TODO - fix socket (SSL cert) then can re-enable.
+	// if (unrealGlobal->IsIniteds(Keys) && unrealGlobal->SocketActor->IsConnected()) {
+	if (true) {
 		Inited = true;
 		// this->InitSocketOn();
 		// this->Login();
@@ -357,7 +359,7 @@ void ALandProjectActor::SetVertices() {
 	LisbonInteriors::Rooms(zOffset + 4);
 	LisbonExteriors::Buildings(zOffset);
 	LisbonExteriors::ParkingLots(zOffset);
-	LisbonExteriors::Trees(zOffset);
+	// LisbonExteriors::Trees(zOffset);
 
 	FModelParams modelParams;
 	FModelCreateParams createParams;

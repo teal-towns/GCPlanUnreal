@@ -40,7 +40,7 @@ TMap<FString, FPolygon> LMWall::Wall(FVector size, FModelParams modelParams,
 	scale = size;
 	location = params.offset;
 	rotation = params.wallRotation;
-	pairsString = "meshRule=roomWall&mat=white&scale=" + DataConvert::VectorToString(scale) +
+	pairsString = "meshRule=roomWall&mat=" + params.materialKey + "&scale=" + DataConvert::VectorToString(scale) +
 		ModelBase::AddRotationString(createParamsIn.rotation, rotation);
 	pairsString += "&door1=1&door1YMin=" + Lodash::ToFixed(doorLeft) + "&door1XMax=" + Lodash::ToFixed(doorTop);
 	vertices = { location + createParamsIn.offset };

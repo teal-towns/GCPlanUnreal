@@ -77,14 +77,14 @@ TMap<FString, FPolygon> LMLobby::TwoTables(FVector size, FModelParams modelParam
 	plantParams.pairsStringPlants = "meshes=brackenFern,solidFern,cinnamonFern&placeOffsetAverage=0.3";
 	plantParams.walls = { "front", "right" };
 	plantParams.zOffset = 0;
-	plantParams.sideOffset = 0;
+	plantParams.sideOffset = 0.67;
 	LMRoomPlants::WallPlants(size, modelParams, createParamsIn, plantParams);
 
 	scale = FVector(1.5 + 1 * 2, 1.5 + 1 * 2, 1);
 	FTableChairs tableParams;
 	tableParams.meshesByTags["table"] = { "shortRoundTableWood" };
 	tableParams.meshesByTags["chair"] = { "chairTeal" };
-	tableParams.offset = FVector(-2.5,-3,0);
+	tableParams.offset = FVector(0.5,3,0);
 	// FModelCreateParams createParamsTemp;
 	// createParamsTemp.rotation = createParamsIn.rotation;
 	// createParamsTemp.offset = createParamsIn.offset + FVector(-3.5,-5,0);
@@ -93,9 +93,16 @@ TMap<FString, FPolygon> LMLobby::TwoTables(FVector size, FModelParams modelParam
 	scale = FVector(4.5 + 1 * 1.5, 3 + 1 * 2, 1);
 	tableParams.meshesByTags["table"] = { "tableGlassLine" };
 	tableParams.meshesByTags["chair"] = { "chair" };
-	tableParams.offset = FVector(1,2.5,0);
+	tableParams.offset = FVector(-1.5,-3,0);
 	// createParamsTemp.offset = createParamsIn.offset + FVector(1,4,0);
 	LMTableChairs::TableWithChairs(scale, modelParams, createParamsIn, tableParams);
+
+	uName = Lodash::GetInstanceId("couch");
+	location = FVector(size.X / 2 - 1.33, -1, 0);
+	pairsString = "mesh=couch2CushionsBrown" + ModelBase::AddRotationString(createParamsIn.rotation, FVector(0,0,180));
+	vertices = { location + createParamsIn.offset };
+	vertices = ModelBase::Vertices(vertices, createParamsIn);
+	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "couch", "point", pairsString));
 
 	VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
 	verticesEdit->AddAndSave(polygons);

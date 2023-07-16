@@ -10,6 +10,7 @@
 #include "../Layout/LayoutPolygon.h"
 #include "../Layout/LayoutPolyLine.h"
 #include "../Mesh/LoadContent.h"
+#include "../ProceduralModel/PMPlanePolygon.h"
 
 LandNature::LandNature() {
 }
@@ -27,7 +28,6 @@ void LandNature::PlaceNature() {
 	TMap<FString, FPolygon> polygonsPlots = verticesEdit->FilterByTypes({ "plot" });
 
 	FVector center;
-	TArray<FString> meshNames = loadContent->GetMeshNamesByTypes({ "tree" });
 	FPlaceParams placeParams = FPlaceParams();
 	placeParams.snapToGround = true;
 	// Skip plots.
@@ -42,14 +42,58 @@ void LandNature::PlaceNature() {
 		// }
 	}
 
-	placeParams.offsetAverage = 30;
-	for (auto& Elem : polygonsNature) {
-		LayoutPolygon::PlaceInPolygon(Elem.Value.vertices, meshNames, placeParams);
-	}
-	meshNames = loadContent->GetMeshNamesByTypes({ "bush" });
+	TArray<FString> meshNamesTree = loadContent->GetMeshNamesByTags({ "tree" });
+	TArray<FString> meshNamesBush = loadContent->GetMeshNamesByTags({ "outdoorBush" });
+	TArray<FString> meshNamesGrass = loadContent->GetMeshNamesByTags({ "grass" });
+	// TArray<FString> meshNamesGrassPlane = loadContent->GetMeshNamesByTags({ "grassPlane" });
 	// placeParams.snapToGround = true;
-	placeParams.offsetAverage = 10;
+
+	// FPlaceParams placeParamsPlane = FPlaceParams();
+	// placeParamsPlane.snapToGround = true;
+	// float scale = 5;
+	// placeParamsPlane.scaleMin = scale;
+	// placeParamsPlane.scaleMax = scale;
+	// placeParamsPlane.offsetX = scale;
+	// placeParamsPlane.offsetY = scale;
+	// placeParamsPlane.offsetMaxFactorX = 0;
+	// placeParamsPlane.offsetMaxFactorY = 0;
+	// placeParamsPlane.offsetMaxFactorZ = 0;
+	// placeParamsPlane.rotMaxZ = 0;
+	FModelParams modelParams;
+	FModelCreateParams createParams;
+	FPlanePolygon planeParams;
+
+	TMap<FString, FString> pairs;
 	for (auto& Elem : polygonsNature) {
-		LayoutPolygon::PlaceInPolygon(Elem.Value.vertices, meshNames, placeParams);
+		pairs = Lodash::PairsStringToObject(Elem.Value.pairsString);
+		placeParams.offsetAverage = 15;
+		placeParams.scaleMin = 0.33;
+		placeParams.scaleMax = 0.75;
+		LayoutPolygon::PlaceInPolygon(Elem.Value.vertices, meshNamesTree, placeParams);
+		if (pairs.Contains("bush")) {
+			placeParams.offsetAverage = 5;
+			placeParams.scaleMin = 0.75;
+			placeParams.scaleMax = 1.25;
+			LayoutPolygon::PlaceInPolygon(Elem.Value.vertices, meshNamesBush, placeParams);
+		}
+		if (pairs.Contains("grass")) {
+			placeParams.offsetAverage = 5;
+			LayoutPolygon::PlaceInPolygon(Elem.Value.vertices, meshNamesGrass, placeParams);
+		} else if (pairs.Contains("grassPlaneMaterialKey")) {
+			// LayoutPolygon::PlaceInPolygon(Elem.Value.vertices, meshNamesGrassPlane, placeParamsPlane);
+			createParams.offset = FVector(0,0,0);
+			modelParams.materialKey = pairs["grassPlaneMaterialKey"];
+			PMPlanePolygon::Create(Elem.Value.vertices, createParams, modelParams, planeParams);
+		}
+	}
+
+	TMap<FString, FPolygon> polygons = verticesEdit->FilterByTypes({ "grass" });
+	planeParams.triangleDirection = "counterClockwise";
+	for (auto& Elem : polygons) {
+		pairs = Lodash::PairsStringToObject(Elem.Value.pairsString);
+		createParams.offset = FVector(0,0,0);
+		modelParams.materialKey = pairs.Contains("grassPlaneMaterialKey") ? pairs["grassPlaneMaterialKey"] : "grass";
+		// UE_LOG(LogTemp, Display, TEXT("grass %s"), *Elem.Key);
+		PMPlanePolygon::Create(Elem.Value.vertices, createParams, modelParams, planeParams);
 	}
 }
