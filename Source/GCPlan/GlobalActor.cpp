@@ -520,7 +520,7 @@ void AGlobalActor::LisbonExteriorsTrain(int step) {
 		textPosition = 50;
 		CanvasTextWidget->SetBottomCenterImage(0, 200 - textPosition);
 		FSlateFontInfo fontInfo = CanvasTextWidget->GetFont();
-		fontInfo.Size = 80;
+		fontInfo.Size = 60;
 		CanvasTextWidget->SetFont(fontInfo);
 		CanvasTextWidget->SetBottomTextPosition(FVector2D(0,textPosition));
 		CanvasTextWidget->SetText("Advanced zero water cooling system", animateInFunction, 3, animateOutFunction,
@@ -639,7 +639,7 @@ void AGlobalActor::LisbonExteriorsTwo(int step) {
 		Text3DScale = FVector(3.5,3.5,3.5);
 		createParams.offset = FVector(-64, -555, 20);
 		createParams.rotation = FVector(0,-15,110);
-		paramsText.textOffset = FVector(0, -22, 2.5);
+		paramsText.textOffset = FVector(0, -15, 3.5);
 		paramsText.text = "200 MWh battery storage";
 		drawParams.scale = Text3DScaleSmall;
 		drawParams.targetScale = Text3DScale;
@@ -689,7 +689,7 @@ void AGlobalActor::LisbonExteriorsTwo(int step) {
 		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 1.5, false);
 	} else if (step == 10) {
 		FSlateFontInfo fontInfo = CanvasTextWidget->GetFont();
-		fontInfo.Size = 80;
+		fontInfo.Size = 60;
 		CanvasTextWidget->SetFont(fontInfo);
 		CanvasTextWidget->SetBottomTextPosition(FVector2D(0,-150+textPositionOffset));
 		CanvasTextWidget->SetText("16,000 square meters premium office space in a pedestrian oriented campus",

@@ -347,7 +347,8 @@ void ALandProjectActor::DrawVertices() {
 	TArray<FString> skipTypes = {};
 	if (EditorParams.Action == EditorActionsLP::SET_VERTICES_SKIP_INTERIORS) {
 		skipTypes += { "bush", "chair", "computerServer", "couch", "desk", "laptop", "light", "pcMonitor",
-			"person", "planterBox", "room", "table", "wall", "wallPart", "cord", "flowerPot", "kitchen" };
+			"person", "planterBox", "room", "table", "wall", "wallPart", "cord", "flowerPot", "kitchen",
+			"roomPart" };
 	}
 	if (EditorParams.Action == EditorActionsLP::SET_VERTICES_SKIP_EXTERIORS) {
 		skipTypes += { "buildingPart", "parkingLot", "building", "treeLine", "landNature", "grass", "rail" };

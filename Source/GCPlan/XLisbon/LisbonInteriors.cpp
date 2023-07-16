@@ -87,7 +87,7 @@ TMap<FString, FPolygon> LisbonInteriors::Rooms(float zOffset) {
 		DataConvert::VectorToString(scale) + ModelBase::AddRotationString(createParamsIn.rotation + FVector(0,0,-90));
 	vertices = { location + createParamsIn.offset };
 	vertices = ModelBase::Vertices(vertices, createParamsIn);
-	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "buildingPart", "point", pairsString));
+	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "roomPart", "point", pairsString));
 	FWallPlanterBox plantParams;
 	plantParams.walls = { "left", "back" };
 	plantParams.pairsStringPlants = "meshes=brackenFern,solidFern,cinnamonFern&placeOffsetAverage=0.3";
