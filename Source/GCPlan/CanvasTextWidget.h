@@ -16,6 +16,8 @@ public:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	UTextBlock* BottomCenterText;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	UImage* BottomCenterImage;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	UImage* BackgroundImage;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	UImage* MovieImage;
@@ -23,7 +25,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetText(FString text, FString animateInFunction = "",
 		int animateOutSeconds = -1, FString animateOutFunction = "",
-		float timePerTextLetter = 0.01, int lettersPerGroup = 1);
+		float timePerTextLetter = 0.01, int lettersPerGroup = 1,
+		bool useBackgroundImage = false);
 	UFUNCTION(BlueprintCallable)
 	void SetFont(FSlateFontInfo fontInfo);
 	UFUNCTION(BlueprintCallable)
@@ -31,6 +34,12 @@ public:
 	void SetBottomTextPosition(FVector2D position);
 	UFUNCTION(BlueprintCallable)
 	void AnimateTextLetters();
+
+	void SetBottomCenterImage(float opacity, float sizeY = 250);
+	UFUNCTION(BlueprintImplementableEvent)
+	void BottomCenterImageFadeIn();
+	UFUNCTION(BlueprintImplementableEvent)
+	void BottomCenterImageFadeOut();
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void FadeOut();
@@ -73,4 +82,9 @@ private:
 
 	FTimerHandle _animateMovieTimer;
 	FTimerDelegate _animateMovieDelegate;
+
+	FTimerHandle _animateBottomCenterImageTimer;
+	FTimerDelegate _animateBottomCenterImageDelegate;
+	FTimerHandle _animateOutBottomCenterImageTimer;
+	FTimerDelegate _animateOutBottomCenterImageDelegate;
 };

@@ -4,7 +4,7 @@
 #include "Fonts/SlateFontInfo.h"
 
 void UCanvasTextWidget::SetText(FString text, FString animateInFunction, int animateOutSeconds,
-	FString animateOutFunction, float timePerTextLetter, int lettersPerGroup) {
+	FString animateOutFunction, float timePerTextLetter, int lettersPerGroup, bool useBackgroundImage) {
 	bool resetTextProperties = true;
 	if (animateInFunction.Len() > 0) {
 		if (animateInFunction == "ScaleInFadeIn") {
@@ -26,14 +26,26 @@ void UCanvasTextWidget::SetText(FString text, FString animateInFunction, int ani
 		}
 		// _animateInDelegate();
 		GetWorld()->GetTimerManager().SetTimer(_animateInTimer, _animateInDelegate, 0.01, false);
+		if (useBackgroundImage) {
+			SetBottomCenterImage(0);
+			_animateBottomCenterImageDelegate.BindUFunction(this, "BottomCenterImageFadeIn");
+			GetWorld()->GetTimerManager().SetTimer(_animateBottomCenterImageTimer, _animateBottomCenterImageDelegate, 0.01, false);
+		}
 	}
 	if (resetTextProperties) {
 		BottomCenterText->SetOpacity(1);
+	}
+	if (text.Len() < 1) {
+		SetBottomCenterImage(0);
 	}
 	BottomCenterText->SetText(FText::FromString(text));
 	if (animateOutSeconds > 0) {
 		_animateOutDelegate.BindUFunction(this, "FadeOut");
 		GetWorld()->GetTimerManager().SetTimer(_animateOutTimer, _animateOutDelegate, animateOutSeconds, false);
+		if (useBackgroundImage) {
+			_animateOutBottomCenterImageDelegate.BindUFunction(this, "BottomCenterImageFadeOut");
+			GetWorld()->GetTimerManager().SetTimer(_animateOutBottomCenterImageTimer, _animateOutBottomCenterImageDelegate, animateOutSeconds, false);
+		}
 	}
 }
 
@@ -61,6 +73,13 @@ void UCanvasTextWidget::AnimateTextLetters() {
 		_animateInDelegate.BindUFunction(this, "AnimateTextLetters");
 		GetWorld()->GetTimerManager().SetTimer(_animateInTimer, _animateInDelegate, _timePerTextLetter, false);
 	}
+}
+
+void UCanvasTextWidget::SetBottomCenterImage(float opacity, float sizeY) {
+	BottomCenterImage->SetOpacity(opacity);
+	UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(BottomCenterText->Slot);
+	FVector2D size = CanvasSlot->GetSize();
+	CanvasSlot->SetSize(FVector2D(size.X, sizeY));
 }
 
 void UCanvasTextWidget::SetImageAnimate(FString animateFunction) {
