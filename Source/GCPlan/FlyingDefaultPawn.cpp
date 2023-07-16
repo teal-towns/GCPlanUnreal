@@ -14,8 +14,8 @@
 void AFlyingDefaultPawn::BeginPlay() {
 	Super::BeginPlay();
 	// TESTING
-	CreateUI();
-	SetupMouse();
+	// CreateUI();
+	// SetupMouse();
 	// SetupRotation();
 }
 

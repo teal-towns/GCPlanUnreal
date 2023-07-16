@@ -102,7 +102,7 @@ void ALandProjectActor::Login() {
 }
 
 void ALandProjectActor::Init() {
-	if (true) {
+	if (false) {
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	TArray<FString> Keys = {"socket"};
 	unrealGlobal->InitAll(GetWorld());

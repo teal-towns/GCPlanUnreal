@@ -567,11 +567,15 @@ void AGlobalActor::LisbonExteriorsTwo(int step) {
 		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
 		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 1, false);
 	} else if (step == 1) {
+		FSlateFontInfo fontInfo = CanvasTextWidget->GetFont();
+		fontInfo.Size = 80;
+		CanvasTextWidget->SetFont(fontInfo);
 		CanvasTextWidget->SetText("High speed vehicle charging", animateInFunction, 3, animateOutFunction);
 		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
 		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 2, false);
 	} else if (step == 2) {
-		createParams.offset = FVector(30, -766, 3.5);
+		Text3DScale = FVector(3.5,3.5,3.5);
+		createParams.offset = FVector(30, -750, 3.5);
 		createParams.rotation = FVector(0,-15,110);
 		paramsText.textOffset = FVector(0, -20, 2.5);
 		paramsText.text = "GridBlock EV Charging";
@@ -590,8 +594,8 @@ void AGlobalActor::LisbonExteriorsTwo(int step) {
 	} else if (step == 4) {
 		drawHighlight->DestroyOne("gridBlock");
 
-		Text3DScale = FVector(4,4,4);
-		createParams.offset = FVector(-64, -555, 14);
+		Text3DScale = FVector(3.5,3.5,3.5);
+		createParams.offset = FVector(-64, -555, 20);
 		createParams.rotation = FVector(0,-15,110);
 		paramsText.textOffset = FVector(0, -22, 2.5);
 		paramsText.text = "200 MWh battery storage";
@@ -629,6 +633,9 @@ void AGlobalActor::LisbonExteriorsTwo(int step) {
 		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 1, false);
 	} else if (step == 8) {
 		drawHighlight->DestroyOne("substation");
+		FSlateFontInfo fontInfo = CanvasTextWidget->GetFont();
+		fontInfo.Size = 80;
+		CanvasTextWidget->SetFont(fontInfo);
 		CanvasTextWidget->SetText("Carbon neutral", animateInFunction, 4, animateOutFunction);
 		
 		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
@@ -638,17 +645,27 @@ void AGlobalActor::LisbonExteriorsTwo(int step) {
 		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
 		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 1.5, false);
 	} else if (step == 10) {
+		FSlateFontInfo fontInfo = CanvasTextWidget->GetFont();
+		fontInfo.Size = 80;
+		CanvasTextWidget->SetFont(fontInfo);
 		CanvasTextWidget->SetText("16,000 square meters premium office space in a pedestrian oriented campus",
-			"AnimateTextLetters", 4, animateOutFunction, 0.01, 3);
+			"AnimateTextLetters", 6, animateOutFunction, 0.01, 2);
 		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
-		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 5, false);
+		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 7, false);
 	} else if (step == 11) {
 		CanvasTextWidget->SetText("");
 		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
-		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 2, false);
+		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 3, false);
 	} else if (step == 12) {
+		CanvasTextWidget->SetImageAnimate("BackgroundImageFadeIn");
+		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
+		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 1, false);
+	} else if (step == 13) {
 		CanvasTextWidget->SetImage(0.5);
-		CanvasTextWidget->SetText("For more information, visit www.edged.es/lisbon", "ScaleInFadeIn");
+		FSlateFontInfo fontInfo = CanvasTextWidget->GetFont();
+		fontInfo.Size = 40;
+		CanvasTextWidget->SetFont(fontInfo);
+		CanvasTextWidget->SetText("For more info, visit www.edged.es/lisbon", "ScaleInFadeIn");
 		// _exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
 		// _world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 1, false);
 	}
