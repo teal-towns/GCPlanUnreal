@@ -59,6 +59,10 @@ FSlateFontInfo UCanvasTextWidget::GetFont() {
 
 void UCanvasTextWidget::SetBottomTextPosition(FVector2D position) {
 	UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(BottomCenterText->Slot);
+	// // position seems to be a relative change, so need to make it absolute.
+	// FVector2D pos = CanvasSlot->GetPosition();
+	// position = (FVector2D(0, 0) - pos) + position;
+	// UE_LOG(LogTemp, Display, TEXT("posY %f positionY %f"), pos.Y, position.Y);
 	CanvasSlot->SetPosition(position);
 }
 

@@ -533,7 +533,7 @@ void VerticesEdit::DrawItem(FString uName) {
 		index = instancedMesh->CreateInstance(meshKey, point, FRotator(0,0,0), _displayScale);
 		verticesInstanceIndices.Add(index);
 	}
-	UE_LOG(LogTemp, Display, TEXT("DrawItem %s"), *uName);
+	// UE_LOG(LogTemp, Display, TEXT("DrawItem %s"), *uName);
 
 	_itemsActors.Add(uName, FVerticesEditActor(uName, verticesInstanceIndices, {}, centerInstanceIndex));
 
