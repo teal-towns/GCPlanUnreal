@@ -701,11 +701,11 @@ void AGlobalActor::LisbonExteriorsTwo(int step) {
 		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
 		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 3, false);
 	} else if (step == 12) {
-		CanvasTextWidget->SetImageAnimate("BackgroundImageFadeIn");
+		// CanvasTextWidget->SetImageAnimate("BackgroundImageFadeIn");
 		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
 		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 1, false);
 	} else if (step == 13) {
-		CanvasTextWidget->SetImage(0.5);
+		CanvasTextWidget->SetImage(0.4);
 		FSlateFontInfo fontInfo = CanvasTextWidget->GetFont();
 		fontInfo.Size = 40;
 		CanvasTextWidget->SetFont(fontInfo);

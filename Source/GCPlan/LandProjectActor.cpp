@@ -351,7 +351,7 @@ void ALandProjectActor::DrawVertices() {
 			"roomPart" };
 	}
 	if (EditorParams.Action == EditorActionsLP::SET_VERTICES_SKIP_EXTERIORS) {
-		skipTypes += { "buildingPart", "parkingLot", "building", "treeLine", "landNature", "grass", "rail" };
+		skipTypes += { "buildingPart", "parkingLot", "building", "treeLine", "landNature", "grass", "rail", "road" };
 	}
 	DrawVertices::LoadVertices(skipTypes);
 }

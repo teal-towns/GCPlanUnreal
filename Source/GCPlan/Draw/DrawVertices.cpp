@@ -108,7 +108,7 @@ void DrawVertices::LoadVertices(TArray<FString> skipTypes) {
 	// Roads.
 	FString uName;
 	if (!skipTypes.Contains("road")) {
-		polygons = verticesEdit->FilterByTypes({ "road" });
+		polygons = verticesEdit->FilterByTypes({ "road", "rail" });
 		if (polygons.Num() > 0) {
 			splineRoad->AddRoads(polygons);
 		}
