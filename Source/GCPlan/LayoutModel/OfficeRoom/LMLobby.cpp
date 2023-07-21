@@ -99,7 +99,7 @@ TMap<FString, FPolygon> LMLobby::TwoTables(FVector size, FModelParams modelParam
 
 	uName = Lodash::GetInstanceId("couch");
 	location = FVector(size.X / 2 - 1.33, -1, 0);
-	pairsString = "mesh=couch2CushionsBrown" + ModelBase::AddRotationString(createParamsIn.rotation, FVector(0,0,180));
+	pairsString = "mesh=couch2CushionsBrown&mat=green" + ModelBase::AddRotationString(createParamsIn.rotation, FVector(0,0,180));
 	vertices = { location + createParamsIn.offset };
 	vertices = ModelBase::Vertices(vertices, createParamsIn);
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "couch", "point", pairsString));
