@@ -6,10 +6,10 @@
 struct FLayoutLights {
 	FVector offset = FVector(0,0,0);
 	FVector rotation = FVector(0,0,0);
-	float placeOffset = 3;
+	float placeOffset = 2.5;
 	float placeOffsetMaxXFactor = 0;
 	float placeOffsetMaxYFactor = 0;
-	FVector sizeBuffer = FVector(-3,-3,0);
+	FVector sizeBuffer = FVector(-1,-1,0);
 	FVector lightScale = FVector(0.1, 0.1, 0.1);
 };
 

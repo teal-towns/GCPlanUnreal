@@ -12,6 +12,7 @@
 #include "../LayoutModel/OfficeRoom/LMLobby.h"
 #include "../LayoutModel/OfficeRoom/LMOfficeDesks.h"
 #include "../LayoutModel/OfficeRoom/LMServerRoom.h"
+#include "../Mesh/LoadContent.h"
 #include "../Modeling/ModelBase.h"
 
 LisbonInteriors* LisbonInteriors::pinstance_{nullptr};
@@ -37,6 +38,9 @@ TMap<FString, FPolygon> LisbonInteriors::Rooms(float zOffset) {
 	FString uName, type, pairsString, scaleString;
 	TArray<FVector> vertices;
 	TMap<FString, FPolygon> polygons = {};
+	LoadContent* loadContent = LoadContent::GetInstance();
+
+	bool addLights = false;
 
 	// Hardcoded - varies by project (usually these are manually drawn / set via UI).
 	FModelParams modelParams;
@@ -55,7 +59,7 @@ TMap<FString, FPolygon> LisbonInteriors::Rooms(float zOffset) {
 	// Lobby
 	// Walls
 	uName = Lodash::GetInstanceId("Room");
-	pairsString = "meshRule=roomCube&mat=darkWood&bottomMat=marbleTile&skipBack=1&skipFront=1&scale=" +
+	pairsString = "meshRule=roomCube&mat=concretePanel&bottomMat=greyWood&skipBack=1&skipFront=1&scale=" +
 		DataConvert::VectorToString(roomSize) + ModelBase::AddRotationString(createParamsIn.rotation);
 	vertices = { location + createParamsIn.offset };
 	vertices = ModelBase::Vertices(vertices, createParamsIn);
@@ -65,18 +69,20 @@ TMap<FString, FPolygon> LisbonInteriors::Rooms(float zOffset) {
 	wallParams.offset = roomPos + FVector(roomSize.X / -2,0,0);
 	wallParams.wallRotation = FVector(0,90,0);
 	wallParams.rotation = FVector(0,0,0);
-	wallParams.materialKey = "darkWood";
+	wallParams.materialKey = "concretePanel";
 	LMWall::Wall(FVector(roomSize.Z, roomSize.Y, 0.01), modelParams, createParamsIn, wallParams);
 	// Front wall & door
 	wallParams.doorLeft = roomSize.Y - 1.5;
 	wallParams.offset = roomPos + FVector(roomSize.X / 2,0,0);
 	wallParams.wallRotation = FVector(0,90,0);
 	wallParams.rotation = FVector(0,0,0);
-	wallParams.materialKey = "darkWood";
+	wallParams.materialKey = "concretePanel";
 	LMWall::Wall(FVector(roomSize.Z, roomSize.Y, 0.01), modelParams, createParamsIn, wallParams);
 	lightsParams.offset = roomPos;
-	LMLights::Ceiling(roomSize, modelParams, createParamsIn, lightsParams);
-	wallParams.materialKey = "white";
+	if (addLights) {
+		LMLights::Ceiling(roomSize, modelParams, createParamsIn, lightsParams);
+	}
+	wallParams.materialKey = "concretePanel";
 
 	createParams.offset = createParamsIn.offset + roomPos;
 	// LMLobby::Create(roomSize, modelParams, createParams);
@@ -90,7 +96,8 @@ TMap<FString, FPolygon> LisbonInteriors::Rooms(float zOffset) {
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "roomPart", "point", pairsString));
 	FWallPlanterBox plantParams;
 	plantParams.walls = { "left", "back" };
-	plantParams.pairsStringPlants = "meshes=brackenFern,solidFern,cinnamonFern&placeOffsetAverage=0.3";
+	FString meshes = Lodash::Join(loadContent->GetMeshNamesByTags({"indoorBush"}), ",");
+	plantParams.pairsStringPlants = "meshes=" + meshes + "&placeOffsetAverage=0.3";
 	LMRoomPlants::WallPlanterBox(roomSize, modelParams, createParamsIn, plantParams);
 
 	roomSizePrev = roomSize;
@@ -102,7 +109,7 @@ TMap<FString, FPolygon> LisbonInteriors::Rooms(float zOffset) {
 	// Walls
 	uName = Lodash::GetInstanceId("Room");
 	location = roomPos;
-	pairsString = "meshRule=roomCube&mat=white&bottomMat=marbleTile&skipBack=1&skipLeft=1&scale=" +
+	pairsString = "meshRule=roomCube&mat=concretePanel&bottomMat=concreteFloor&skipBack=1&skipLeft=1&scale=" +
 		DataConvert::VectorToString(roomSize) + ModelBase::AddRotationString(createParamsIn.rotation);
 	vertices = { location + createParamsIn.offset };
 	vertices = ModelBase::Vertices(vertices, createParamsIn);
@@ -116,8 +123,19 @@ TMap<FString, FPolygon> LisbonInteriors::Rooms(float zOffset) {
 	wallParams.doorRotation = FVector(0,0,90);
 	LMWall::Wall(FVector(roomSize.Z, roomSize.X, 0.01), modelParams, createParamsIn, wallParams);
 	lightsParams.offset = roomPos;
-	LMLights::Ceiling(roomSize, modelParams, createParamsIn, lightsParams);
+	if (addLights) {
+		LMLights::Ceiling(roomSize, modelParams, createParamsIn, lightsParams);
+	}
 	wallParams.doorRotation = FVector(0,0,180);
+	// Wallpaper
+	uName = Lodash::GetInstanceId("Wallpaper");
+	scale = FVector(5.5, 0.01, roomSize.Z);
+	location = roomPos + FVector(0,roomSize.Y / -2 + 0.01,0);
+	pairsString = "mesh=cube&mat=wallpaperTropical1&scale=" +
+		DataConvert::VectorToString(scale) + ModelBase::AddRotationString(createParamsIn.rotation);
+	vertices = { location + createParamsIn.offset };
+	vertices = ModelBase::Vertices(vertices, createParamsIn);
+	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "roomPart", "point", pairsString));
 
 	createParams.offset = createParamsIn.offset + roomPos;
 	LMCafeteria::Create(roomSize, modelParams, createParams);
@@ -130,22 +148,33 @@ TMap<FString, FPolygon> LisbonInteriors::Rooms(float zOffset) {
 	// Walls
 	uName = Lodash::GetInstanceId("Room");
 	location = roomPos;
-	pairsString = "meshRule=roomCube&mat=white&bottomMat=carpetBlue&skipRight=1&skipFront=1&scale=" +
+	pairsString = "meshRule=roomCube&mat=concretePanel&bottomMat=concreteFloorBlack&skipRight=1&skipFront=1&scale=" +
 		DataConvert::VectorToString(roomSize) + ModelBase::AddRotationString(createParamsIn.rotation);
 	vertices = { location + createParamsIn.offset };
 	vertices = ModelBase::Vertices(vertices, createParamsIn);
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
 	// Shared right wall, so already have it.
 	// Front wall & door
-	wallParams.materialKey = "darkWood";
+	wallParams.materialKey = "concretePanel";
 	wallParams.doorLeft = roomSize.Y - 1.5;
 	wallParams.offset = roomPos + FVector(roomSize.X / 2,0,0);
 	wallParams.wallRotation = FVector(0,90,0);
 	wallParams.rotation = FVector(0,0,0);
 	LMWall::Wall(FVector(roomSize.Z, roomSize.Y, 0.01), modelParams, createParamsIn, wallParams);
 	lightsParams.offset = roomPos;
-	LMLights::Ceiling(roomSize, modelParams, createParamsIn, lightsParams);
-	wallParams.materialKey = "white";
+	if (addLights) {
+		LMLights::Ceiling(roomSize, modelParams, createParamsIn, lightsParams);
+	}
+	wallParams.materialKey = "concretePanel";
+	// Wallpaper
+	uName = Lodash::GetInstanceId("Wallpaper");
+	scale = FVector(0.01, 6, roomSize.Z);
+	location = roomPos + FVector(roomSize.X / 2 - 0.01, 0,0);
+	pairsString = "mesh=cube&mat=greenWall1&scale=" +
+		DataConvert::VectorToString(scale) + ModelBase::AddRotationString(createParamsIn.rotation);
+	vertices = { location + createParamsIn.offset };
+	vertices = ModelBase::Vertices(vertices, createParamsIn);
+	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "roomPart", "point", pairsString));
 
 	createParams.offset = createParamsIn.offset + roomPos;
 	LMOfficeDesks::Desks(roomSize, modelParams, createParams);
@@ -158,13 +187,13 @@ TMap<FString, FPolygon> LisbonInteriors::Rooms(float zOffset) {
 	// Walls
 	uName = Lodash::GetInstanceId("Room");
 	location = roomPos;
-	pairsString = "meshRule=roomCube&mat=darkWood&bottomMat=marbleTile&skipBack=1&skipLeft=1&scale=" +
+	pairsString = "meshRule=roomCube&mat=concretePanel&bottomMat=greyWood&skipBack=1&skipLeft=1&scale=" +
 		DataConvert::VectorToString(roomSize) + ModelBase::AddRotationString(createParamsIn.rotation);
 	vertices = { location + createParamsIn.offset };
 	vertices = ModelBase::Vertices(vertices, createParamsIn);
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
 	// Shared back wall, so already have it.
-	wallParams.materialKey = "darkWood";
+	wallParams.materialKey = "concretePanel";
 	// Left wall & door
 	wallParams.doorLeft = roomSize.X - 2;
 	wallParams.offset = roomPos + FVector(0, roomSize.Y / -2,0);
@@ -173,9 +202,38 @@ TMap<FString, FPolygon> LisbonInteriors::Rooms(float zOffset) {
 	wallParams.doorRotation = FVector(0,0,90);
 	LMWall::Wall(FVector(roomSize.Z, roomSize.X, 0.01), modelParams, createParamsIn, wallParams);
 	lightsParams.offset = roomPos;
-	LMLights::Ceiling(roomSize, modelParams, createParamsIn, lightsParams);
+	if (addLights) {
+		LMLights::Ceiling(roomSize, modelParams, createParamsIn, lightsParams);
+	}
 	wallParams.doorRotation = FVector(0,0,180);
-	wallParams.materialKey = "white";
+	wallParams.materialKey = "concretePanel";
+	// Wallpaper
+	uName = Lodash::GetInstanceId("Wallpaper");
+	scale = FVector(0.01, 6, roomSize.Z);
+	location = roomPos + FVector(roomSize.X / 2 - 0.01, 0,0);
+	pairsString = "mesh=cube&mat=greenWall2&scale=" +
+		DataConvert::VectorToString(scale) + ModelBase::AddRotationString(createParamsIn.rotation);
+	vertices = { location + createParamsIn.offset };
+	vertices = ModelBase::Vertices(vertices, createParamsIn);
+	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "roomPart", "point", pairsString));
+	// Wallpaper
+	uName = Lodash::GetInstanceId("Wallpaper");
+	scale = FVector(6, 0.01, roomSize.Z);
+	location = roomPos + FVector(roomSize.X / -2 + scale.X / 2, roomSize.Y / -2 + 0.01,0);
+	pairsString = "mesh=cube&mat=wallpaperTropical2&scale=" +
+		DataConvert::VectorToString(scale) + ModelBase::AddRotationString(createParamsIn.rotation);
+	vertices = { location + createParamsIn.offset };
+	vertices = ModelBase::Vertices(vertices, createParamsIn);
+	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "roomPart", "point", pairsString));
+	// Wallpaper
+	uName = Lodash::GetInstanceId("Wallpaper");
+	scale = FVector(4, 0.01, roomSize.Z);
+	location = roomPos + FVector(roomSize.X / 2 - scale.X / 2, roomSize.Y / 2 - 0.01,0);
+	pairsString = "mesh=cube&mat=greenWall3&scale=" +
+		DataConvert::VectorToString(scale) + ModelBase::AddRotationString(createParamsIn.rotation);
+	vertices = { location + createParamsIn.offset };
+	vertices = ModelBase::Vertices(vertices, createParamsIn);
+	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "roomPart", "point", pairsString));
 
 	createParams.offset = createParamsIn.offset + roomPos;
 	LMLobby::TwoTables(roomSize, modelParams, createParams);
@@ -188,14 +246,16 @@ TMap<FString, FPolygon> LisbonInteriors::Rooms(float zOffset) {
 	// Walls
 	uName = Lodash::GetInstanceId("Room");
 	location = roomPos;
-	pairsString = "meshRule=roomCube&mat=white&bottomMat=carpetBlue&skipRight=1&scale=" +
+	pairsString = "meshRule=roomCube&mat=concretePanel&bottomMat=concreteFloorBlack&skipRight=1&scale=" +
 		DataConvert::VectorToString(roomSize) + ModelBase::AddRotationString(createParamsIn.rotation);
 	vertices = { location + createParamsIn.offset };
 	vertices = ModelBase::Vertices(vertices, createParamsIn);
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
 	// Shared right wall, so already have it.
 	lightsParams.offset = roomPos;
-	LMLights::Ceiling(roomSize, modelParams, createParamsIn, lightsParams);
+	if (addLights) {
+		LMLights::Ceiling(roomSize, modelParams, createParamsIn, lightsParams);
+	}
 
 	createParams.offset = createParamsIn.offset + roomPos;
 	LMConferenceRoom::Create(roomSize, modelParams, createParams);
@@ -214,7 +274,9 @@ TMap<FString, FPolygon> LisbonInteriors::Rooms(float zOffset) {
 	vertices = ModelBase::Vertices(vertices, createParamsIn);
 	polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
 	lightsParams.offset = roomPos;
-	LMLights::Ceiling(roomSize, modelParams, createParamsIn, lightsParams);
+	if (addLights) {
+		LMLights::Ceiling(roomSize, modelParams, createParamsIn, lightsParams);
+	}
 
 	createParams.offset = createParamsIn.offset + roomPos;
 	LMServerRoom::Create(roomSize, modelParams, createParams);

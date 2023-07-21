@@ -37,6 +37,7 @@ TMap<FString, FPolygon> LMLobby::Create(FVector size, FModelParams modelParams,
 	FString uName, type, pairsString, scaleString;
 	TArray<FVector> vertices;
 	TMap<FString, FPolygon> polygons = {};
+	LoadContent* loadContent = LoadContent::GetInstance();
 	// uName = Lodash::GetInstanceId("Room");
 	// pairsString = "meshRule=roomCube&mat=white&bottomMat=marbleTile&scale=" + DataConvert::VectorToString(size) +
 	// 	ModelBase::AddRotationString(createParamsIn.rotation);
@@ -46,7 +47,9 @@ TMap<FString, FPolygon> LMLobby::Create(FVector size, FModelParams modelParams,
 
 	FWallPlanterBox plantParams;
 	plantParams.walls = { "front", "back", "left" };
-	plantParams.pairsStringPlants = "meshes=brackenFern,solidFern,cinnamonFern&placeOffsetAverage=0.3";
+	// plantParams.pairsStringPlants = "meshes=brackenFern,solidFern,cinnamonFern&placeOffsetAverage=0.3";
+	FString meshes = Lodash::Join(loadContent->GetMeshNamesByTags({"indoorBush"}), ",");
+	plantParams.pairsStringPlants = "meshes=" + meshes + "&placeOffsetAverage=0.3";
 	LMRoomPlants::WallPlanterBox(size, modelParams, createParamsIn, plantParams);
 
 	// Lights
@@ -73,12 +76,12 @@ TMap<FString, FPolygon> LMLobby::TwoTables(FVector size, FModelParams modelParam
 	// vertices = ModelBase::Vertices(vertices, createParamsIn);
 	// polygons.Add(uName, FPolygon(uName, uName, vertices, FVector(0,0,0), "room", "point", pairsString));
 
-	FWallPlants plantParams;
-	plantParams.pairsStringPlants = "meshes=brackenFern,solidFern,cinnamonFern&placeOffsetAverage=0.3";
-	plantParams.walls = { "front", "right" };
-	plantParams.zOffset = 0;
-	plantParams.sideOffset = 0.67;
-	LMRoomPlants::WallPlants(size, modelParams, createParamsIn, plantParams);
+	// FWallPlants plantParams;
+	// plantParams.pairsStringPlants = "meshes=brackenFern,solidFern,cinnamonFern&placeOffsetAverage=0.3";
+	// plantParams.walls = { "front", "right" };
+	// plantParams.zOffset = 0;
+	// plantParams.sideOffset = 0.67;
+	// LMRoomPlants::WallPlants(size, modelParams, createParamsIn, plantParams);
 
 	scale = FVector(1.5 + 1 * 2, 1.5 + 1 * 2, 1);
 	FTableChairs tableParams;
