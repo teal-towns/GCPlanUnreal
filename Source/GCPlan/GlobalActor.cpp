@@ -178,7 +178,7 @@ void AGlobalActor::LisbonWorldUI(int step) {
 		} else if (step == 1) {
 			CanvasTextWidget->SetImageAnimate("BackgroundImageFadeOut");
 			FSlateFontInfo fontInfo = CanvasTextWidget->GetFont();
-			fontInfo.Size = 80;
+			fontInfo.Size = 60;
 			CanvasTextWidget->SetFont(fontInfo);
 			CanvasTextWidget->SetText("Lisbon", "ScaleInFadeIn", 4, animateOutFunction);
 			_uiDelegate.BindUFunction(this, "LisbonWorldUI", (step + 1));
@@ -193,7 +193,7 @@ void AGlobalActor::LisbonWorldUI(int step) {
 			_world->GetTimerManager().SetTimer(_uiTimer, _uiDelegate, 5, false);
 		} else if (step == 4) {
 			_uiDelegate.BindUFunction(this, "LisbonWorldUI", (step + 1));
-			_world->GetTimerManager().SetTimer(_uiTimer, _uiDelegate, 5, false);
+			_world->GetTimerManager().SetTimer(_uiTimer, _uiDelegate, 7, false);
 		} else if (step == 5) {
 			// _step = step + 1;
 			FSlateFontInfo fontInfo = CanvasTextWidget->GetFont();
@@ -201,13 +201,13 @@ void AGlobalActor::LisbonWorldUI(int step) {
 			CanvasTextWidget->SetFont(fontInfo);
 			CanvasTextWidget->SetBottomTextPosition(FVector2D(0,75));
 			CanvasTextWidget->SetText("Europe's highest capacity fiber crossroads is now the site for Portugal's greenest data center.",
-				"AnimateTextLetters", 4, animateOutFunction, 0.01, 3);
+				"AnimateTextLetters", 9, animateOutFunction, 0.01, 1);
 			_uiDelegate.BindUFunction(this, "LisbonWorldUI", (step + 1));
-			_world->GetTimerManager().SetTimer(_uiTimer, _uiDelegate, 5, false);
+			_world->GetTimerManager().SetTimer(_uiTimer, _uiDelegate, 10, false);
 		} else if (step == 6) {
 			CanvasTextWidget->SetText("");
 			_uiDelegate.BindUFunction(this, "LisbonWorldUI", (step + 1));
-			_world->GetTimerManager().SetTimer(_uiTimer, _uiDelegate, 5, false);
+			_world->GetTimerManager().SetTimer(_uiTimer, _uiDelegate, 3, false);
 		}
 	}
 }
@@ -262,7 +262,7 @@ void AGlobalActor::LisbonWorldText3D(int step) {
 			_text3DDelegate.BindUFunction(this, "LisbonWorldText3D", (step + 1));
 			_world->GetTimerManager().SetTimer(_text3DTimer, _text3DDelegate, 5, false);
 		} else if (step == 2) {
-			createParams.offset = FVector(840600, -301600, zOffset);
+			createParams.offset = FVector(855000, -311000, zOffset);
 			paramsText.text = "Barcelona";
 			paramsText.subText = "Up to 16 MW";
 			paramsText.textAlignment = "right";
@@ -272,7 +272,7 @@ void AGlobalActor::LisbonWorldText3D(int step) {
 			_text3DDelegate.BindUFunction(this, "LisbonWorldText3D", (step + 1));
 			_world->GetTimerManager().SetTimer(_text3DTimer, _text3DDelegate, 1, false);
 		} else if (step == 3) {
-			createParams.offset = FVector(473600, -464300, zOffset);
+			createParams.offset = FVector(488000, -485000, zOffset);
 			paramsText.text = "Bilbao Arasur";
 			paramsText.subText = "Up to 100 MW";
 			paramsText.textAlignment = "right";
@@ -291,16 +291,16 @@ void AGlobalActor::LisbonWorldText3D(int step) {
 			_text3DDelegate.BindUFunction(this, "LisbonWorldText3D", (step + 1));
 			_world->GetTimerManager().SetTimer(_text3DTimer, _text3DDelegate, 1, false);
 		} else if (step == 5) {
-			createParams.offset = FVector(4000, -4000, zOffset);
+			createParams.offset = FVector(6000, -8000, zOffset);
 			paramsText.text = "Lisbon";
 			paramsText.subText = "Up to 100 MW";
 			drawHighlight->CreateOne("lisbon", scaleLarge, modelParams, createParams, {}, paramsText);
 			_text3DDelegate.BindUFunction(this, "LisbonWorldText3D", (step + 1));
 			_world->GetTimerManager().SetTimer(_text3DTimer, _text3DDelegate, 3, false);
 		} else if (step == 6) {
-			movePolyLine->ReScale(500, 1000);
+			movePolyLine->ReScale(0, 1000);
 			_text3DDelegate.BindUFunction(this, "LisbonWorldText3D", (step + 1));
-			_world->GetTimerManager().SetTimer(_text3DTimer, _text3DDelegate, 3, false);
+			_world->GetTimerManager().SetTimer(_text3DTimer, _text3DDelegate, 1, false);
 		} else if (step == 7) {
 			// drawHighlight->UpdateTargetScale("barcelona", Text3DScaleSmall, scaleSpeedFade);
 			// drawHighlight->UpdateTargetScale("bilbao", Text3DScaleSmall, scaleSpeedFade);
@@ -315,7 +315,7 @@ void AGlobalActor::LisbonWorldText3D(int step) {
 			drawHighlight->DestroyOne("lisbon");
 
 			_text3DDelegate.BindUFunction(this, "LisbonWorldText3D", (step + 1));
-			_world->GetTimerManager().SetTimer(_text3DTimer, _text3DDelegate, 1, false);
+			_world->GetTimerManager().SetTimer(_text3DTimer, _text3DDelegate, 3, false);
 		} else if (step == 9) {
 			createParams.offset = FVector(-10523, 38913, zGround + zGroundTextBuffer);
 			paramsText.text = "Sexial";
@@ -404,9 +404,9 @@ void AGlobalActor::LisbonInteriors(int step) {
 
 	float textPosition = 50;
 	// TODO - figure out why 1st offset is different.
-	float textPositionOffset = 0;
+	float textPositionOffset = -50;
 	if (step == 0) {
-		textPositionOffset = -100;
+		textPositionOffset = -50;
 	}
 	CanvasTextWidget->SetBottomTextPosition(FVector2D(0,textPosition + textPositionOffset));
 	if (step == 0) {
@@ -503,13 +503,12 @@ void AGlobalActor::LisbonExteriorsTrain(int step) {
 		_world->GetTimerManager().SetTimer(_exteriorsTrainTimer, _exteriorsTrainDelegate, 1, false);
 	} else if (step == 1) {
 		textPosition = 50;
-		CanvasTextWidget->SetBottomCenterImage(0, 200 - textPosition);
+		// CanvasTextWidget->SetBottomCenterImage(0, 200 - textPosition);
 		FSlateFontInfo fontInfo = CanvasTextWidget->GetFont();
-		fontInfo.Size = 80;
+		fontInfo.Size = 60;
 		CanvasTextWidget->SetFont(fontInfo);
-		CanvasTextWidget->SetBottomTextPosition(FVector2D(0,textPosition));
-		CanvasTextWidget->SetText("Accessible by rail", animateInFunction, 4, animateOutFunction,
-			-1, -1, true);
+		CanvasTextWidget->SetBottomTextPosition(FVector2D(0,-100+textPosition));
+		CanvasTextWidget->SetText("Accessible by rail", animateInFunction, 4, animateOutFunction);
 		_exteriorsTrainDelegate.BindUFunction(this, "LisbonExteriorsTrain", (step + 1));
 		_world->GetTimerManager().SetTimer(_exteriorsTrainTimer, _exteriorsTrainDelegate, 5, false);
 	} else if (step == 2) {
@@ -518,13 +517,12 @@ void AGlobalActor::LisbonExteriorsTrain(int step) {
 		_world->GetTimerManager().SetTimer(_exteriorsTrainTimer, _exteriorsTrainDelegate, 1, false);
 	} else if (step == 3) {
 		textPosition = 50;
-		CanvasTextWidget->SetBottomCenterImage(0, 200 - textPosition);
+		// CanvasTextWidget->SetBottomCenterImage(0, 200 - textPosition);
 		FSlateFontInfo fontInfo = CanvasTextWidget->GetFont();
 		fontInfo.Size = 60;
 		CanvasTextWidget->SetFont(fontInfo);
-		CanvasTextWidget->SetBottomTextPosition(FVector2D(0,textPosition));
-		CanvasTextWidget->SetText("Advanced zero water cooling system", animateInFunction, 3, animateOutFunction,
-			-1, -1, true);
+		CanvasTextWidget->SetBottomTextPosition(FVector2D(0,-100+textPosition));
+		CanvasTextWidget->SetText("Advanced zero water cooling system", animateInFunction, 3, animateOutFunction);
 
 		_exteriorsTrainDelegate.BindUFunction(this, "LisbonExteriorsTrain", (step + 1));
 		_world->GetTimerManager().SetTimer(_exteriorsTrainTimer, _exteriorsTrainDelegate, 4, false);
@@ -551,7 +549,7 @@ void AGlobalActor::LisbonExteriorsTrain(int step) {
 	} else if (step == 6) {
 		drawHighlight->DestroyOne("rail");
 		FSlateFontInfo fontInfo = CanvasTextWidget->GetFont();
-		fontInfo.Size = 120;
+		fontInfo.Size = 60;
 		CanvasTextWidget->SetFont(fontInfo);
 		CanvasTextWidget->SetText("1.15 PUE", animateInFunction, 3, animateOutFunction);
 		_exteriorsTrainDelegate.BindUFunction(this, "LisbonExteriorsTrain", (step + 1));
@@ -609,10 +607,10 @@ void AGlobalActor::LisbonExteriorsTwo(int step) {
 		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 1, false);
 	} else if (step == 1) {
 		FSlateFontInfo fontInfo = CanvasTextWidget->GetFont();
-		fontInfo.Size = 80;
+		fontInfo.Size = 60;
 		CanvasTextWidget->SetFont(fontInfo);
 		CanvasTextWidget->SetBottomTextPosition(FVector2D(0,-50+textPositionOffsetFirst));
-		CanvasTextWidget->SetText("High speed vehicle charging", animateInFunction, 3, animateOutFunction);
+		CanvasTextWidget->SetText("High speed vehicle charging", animateInFunction, 4, animateOutFunction);
 		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
 		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 1, false);
 	} else if (step == 2) {
@@ -630,14 +628,14 @@ void AGlobalActor::LisbonExteriorsTwo(int step) {
 	} else if (step == 3) {
 		drawParams.targetScale = Text3DScaleSmall;
 		drawHighlight->UpdateTargetScale("gridBlock", Text3DScaleSmall);
-		CanvasTextWidget->SetText("");
 		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
 		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 0.5, false);
 	} else if (step == 4) {
+		CanvasTextWidget->SetText("");
 		drawHighlight->DestroyOne("gridBlock");
 
 		Text3DScale = FVector(3.5,3.5,3.5);
-		createParams.offset = FVector(-64, -555, 20);
+		createParams.offset = FVector(-64, -555, 15);
 		createParams.rotation = FVector(0,-15,110);
 		paramsText.textOffset = FVector(0, -15, 3.5);
 		paramsText.text = "200 MWh battery storage";
@@ -676,22 +674,22 @@ void AGlobalActor::LisbonExteriorsTwo(int step) {
 	} else if (step == 8) {
 		drawHighlight->DestroyOne("substation");
 		FSlateFontInfo fontInfo = CanvasTextWidget->GetFont();
-		fontInfo.Size = 80;
+		fontInfo.Size = 60;
 		CanvasTextWidget->SetFont(fontInfo);
-		CanvasTextWidget->SetBottomTextPosition(FVector2D(0,-50+textPositionOffset));
-		CanvasTextWidget->SetText("Carbon neutral", animateInFunction, 4, animateOutFunction);
+		CanvasTextWidget->SetBottomTextPosition(FVector2D(0,-100+textPositionOffset));
+		CanvasTextWidget->SetText("Carbon neutral", animateInFunction, 4.5, animateOutFunction);
 		
 		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
-		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 4, false);
+		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 5.5, false);
 	} else if (step == 9) {
 		CanvasTextWidget->SetText("");
 		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
-		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 1.5, false);
+		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 1, false);
 	} else if (step == 10) {
 		FSlateFontInfo fontInfo = CanvasTextWidget->GetFont();
 		fontInfo.Size = 60;
 		CanvasTextWidget->SetFont(fontInfo);
-		CanvasTextWidget->SetBottomTextPosition(FVector2D(0,-150+textPositionOffset));
+		CanvasTextWidget->SetBottomTextPosition(FVector2D(0,-100+textPositionOffset));
 		CanvasTextWidget->SetText("16,000 square meters premium office space in a pedestrian oriented campus",
 			"AnimateTextLetters", 6, animateOutFunction, 0.01, 2);
 		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
@@ -699,9 +697,10 @@ void AGlobalActor::LisbonExteriorsTwo(int step) {
 	} else if (step == 11) {
 		CanvasTextWidget->SetText("");
 		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
-		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 3, false);
+		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 2, false);
 	} else if (step == 12) {
-		// CanvasTextWidget->SetImageAnimate("BackgroundImageFadeIn");
+		CanvasTextWidget->SetImage(0);
+		CanvasTextWidget->SetImageAnimate("BackgroundImageFadeIn");
 		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
 		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 1, false);
 	} else if (step == 13) {

@@ -63,6 +63,10 @@ void UCanvasTextWidget::SetBottomTextPosition(FVector2D position) {
 	// FVector2D pos = CanvasSlot->GetPosition();
 	// position = (FVector2D(0, 0) - pos) + position;
 	// UE_LOG(LogTemp, Display, TEXT("posY %f positionY %f"), pos.Y, position.Y);
+	// TODO figure out why 0 is not centered..
+	if (position.X == 0) {
+		position.X = 200;
+	}
 	CanvasSlot->SetPosition(position);
 }
 
