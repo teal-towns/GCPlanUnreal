@@ -11,6 +11,7 @@ struct FLayoutLights {
 	float placeOffsetMaxYFactor = 0;
 	FVector sizeBuffer = FVector(-1,-1,0);
 	FVector lightScale = FVector(0.1, 0.1, 0.1);
+	float lightIntensity = 5000;
 };
 
 class LMLights {

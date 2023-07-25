@@ -43,7 +43,7 @@ TMap<FString, FPolygon> LMLights::Ceiling(FVector size, FModelParams modelParams
 		uName = uNameBase + "_" + FString::FromInt(counter) + "_light";
 		scale = params.lightScale;
 		location = FVector(locationBase.X, locationBase.Y, currentZ - scale.Z);
-		pairsString = "meshRule=light&scale=" + DataConvert::VectorToString(scale) +
+		pairsString = "meshRule=light&lightIntensity=" + FString::SanitizeFloat(params.lightIntensity) + "&scale=" + DataConvert::VectorToString(scale) +
 			ModelBase::AddRotationString(createParamsIn.rotation);
 		vertices = { MathVector::RotateVector(location + params.offset, createParamsIn.rotation) + createParamsIn.offset };
 		vertices = ModelBase::Vertices(vertices, createParamsIn, params.rotation);

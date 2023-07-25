@@ -3,6 +3,7 @@
 #include "Components/PointLightComponent.h"
 
 #include "../ModelBase.h"
+#include "../../Common/DataConvert.h"
 #include "../../Common/Lodash.h"
 #include "../../Mesh/DynamicMaterial.h"
 #include "../../ModelingStructsActor.h"
@@ -76,6 +77,8 @@ AActor* ModelLight::Create(FVector size, FModelParams modelParams,
 	light->RegisterComponent();
 	light->AttachToComponent(parent, FAttachmentTransformRules::KeepRelativeTransform);
 	light->SetSourceRadius(lightHeight);
+	float intensity = pairs.Contains("lightIntensity") ? DataConvert::Float(pairs["lightIntensity"]) : 5000;
+	light->SetIntensity(intensity);
 
 	ModelBase::SetTransformFromParams(actor, createParamsIn);
 	return actor;
