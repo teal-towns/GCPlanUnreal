@@ -677,7 +677,7 @@ void AGlobalActor::LisbonExteriorsTwo(int step) {
 		fontInfo.Size = 60;
 		CanvasTextWidget->SetFont(fontInfo);
 		CanvasTextWidget->SetBottomTextPosition(FVector2D(0,-100+textPositionOffset));
-		CanvasTextWidget->SetText("Carbon neutral", animateInFunction, 4.5, animateOutFunction);
+		CanvasTextWidget->SetText("Carbon neutral", animateInFunction, 4, animateOutFunction);
 		
 		_exteriorsTwoDelegate.BindUFunction(this, "LisbonExteriorsTwo", (step + 1));
 		_world->GetTimerManager().SetTimer(_exteriorsTwoTimer, _exteriorsTwoDelegate, 5.5, false);
