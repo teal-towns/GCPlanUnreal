@@ -15,12 +15,6 @@ class GCPLAN_API AModelingActor : public AActor
 public:	
 	AModelingActor();
 
-protected:
-	virtual void BeginPlay() override;
-
-public:	
-	// virtual void Tick(float DeltaTime) override;
-
 	UFUNCTION(CallInEditor)
 	void GenerateModel();
 	UFUNCTION(CallInEditor)

@@ -45,22 +45,27 @@ void UnrealGlobal::InitAll(UWorld* World1, TArray<FString> skipKeys) {
 	pmBase->SetWorld(World1);
 
 	if (_settings == nullptr) {
-		// Init some first where order matters (latter ones depend on these).
-		auto [dataSettings, valid] = LoadSettings();
+		// Init some first where order matters (later ones depend on these).
+		bool valid = InitSettings();
 		if (valid) {
-			_settings = dataSettings;
-
 		    if (!skipKeys.Contains("meshes")) {
 				InitMeshes(World1);
 			}
-
 			InitCommon(World1);
-
-			if (!skipKeys.Contains("web")) {
-				InitWeb(World1);
-			}
 		}
 	}
+
+	if (!skipKeys.Contains("web")) {
+		InitWeb(World1);
+	}
+}
+
+bool UnrealGlobal::InitSettings() {
+	auto [dataSettings, valid] = LoadSettings();
+	if (valid) {
+		_settings = dataSettings;
+	}
+	return valid;
 }
 
 void UnrealGlobal::InitCommon(UWorld* World1) {
@@ -83,8 +88,11 @@ void UnrealGlobal::InitCommon(UWorld* World1) {
 void UnrealGlobal::InitWeb(UWorld* World1) {
 	SetWorld(World1);
 	GetSocket(World1);
-	// TODO - fix SSL / add web endpoint then re-enable.
-	// SocketActor->InitSocket();
+	bool closeSocket = (SocketActor != nullptr && SocketActor->IsConnected()) ? true : false;
+	// Do not re-init if already have connected socket.
+	if (!closeSocket) {
+		SocketActor->InitSocket(closeSocket);
+	}
 }
 
 void UnrealGlobal::GetSocket(UWorld* World1) {
@@ -93,6 +101,14 @@ void UnrealGlobal::GetSocket(UWorld* World1) {
 	for (AActor* a : OutActors) {
 		SocketActor = Cast<ASocketActor>(a);
 		break;
+	}
+}
+
+void UnrealGlobal::SocketOffRoutes(TArray<FString> socketKeys) {
+	if (SocketActor != nullptr) {
+		for (int ii = 0; ii < socketKeys.Num(); ii++) {
+			SocketActor->Off(socketKeys[ii]);
+		}
 	}
 }
 

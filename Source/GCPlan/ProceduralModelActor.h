@@ -15,12 +15,7 @@ class GCPLAN_API AProceduralModelActor : public AActor
 public:	
 	AProceduralModelActor();
 
-protected:
-	virtual void BeginPlay() override;
-
-public:	
-	// virtual void Tick(float DeltaTime) override;
-
+public:
 	UFUNCTION(CallInEditor)
 	void GenerateModel();
 	UFUNCTION(CallInEditor)

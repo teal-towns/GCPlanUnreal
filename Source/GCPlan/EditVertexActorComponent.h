@@ -11,9 +11,6 @@ class GCPLAN_API UEditVertexActorComponent : public UActorComponent
 public:	
 	UEditVertexActorComponent();
 
-protected:
-	virtual void BeginPlay() override;
-
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;	
 };

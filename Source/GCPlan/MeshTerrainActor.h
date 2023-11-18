@@ -13,12 +13,6 @@ class GCPLAN_API AMeshTerrainActor : public AActor
 public:	
 	AMeshTerrainActor();
 
-protected:
-	virtual void BeginPlay() override;
-
-public:	
-	virtual void Tick(float DeltaTime) override;
-
 	UFUNCTION(CallInEditor)
 	void EditorInitMesh();
 	UFUNCTION(CallInEditor)

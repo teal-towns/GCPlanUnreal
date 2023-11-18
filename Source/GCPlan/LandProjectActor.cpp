@@ -19,6 +19,8 @@
 #include "Mesh/InstancedMesh.h"
 #include "Plot/PlotBuild.h"
 
+#include "Landscape/VectorTiles.h"
+
 #include "CanvasTextWidget.h"
 #include "Draw/DrawHighlight.h"
 #include "LayoutModel/TrainStation/LMTrain.h"
@@ -59,7 +61,9 @@ void ALandProjectActor::Tick(float DeltaTime)
 void ALandProjectActor::InitSocketOn() {
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 
-	unrealGlobal->SocketActor->On("login", [this, unrealGlobal](FString DataString) {
+	this->DestroySocket();
+	FString prefix = "LandProject";
+	SocketKeys.Add(unrealGlobal->SocketActor->On(prefix, "login", [this, unrealGlobal](FString DataString) {
 		FDataLogin* Data = new FDataLogin();
 		if (!FJsonObjectConverter::JsonObjectStringToUStruct(DataString, Data, 0, 0)) {
 			UE_LOG(LogTemp, Error, TEXT("LandProjectActor.On login json parse error"));
@@ -70,11 +74,13 @@ void ALandProjectActor::InitSocketOn() {
 				if (ProjectUName.Len() > 0) {
 					this->GetProject(ProjectUName);
 				}
+			} else {
+				UE_LOG(LogTemp, Display, TEXT("LandProjectActor.On login not valid %s"), *Data->msg);
 			}
 		}
-	});
+	}));
 
-	unrealGlobal->SocketActor->On("projectGetByUName", [this](FString DataString) {
+	SocketKeys.Add(unrealGlobal->SocketActor->On(prefix, "projectGetByUName", [this](FString DataString) {
 		FDataProject* Data = new FDataProject();
 		if (!FJsonObjectConverter::JsonObjectStringToUStruct(DataString, Data, 0, 0)) {
 			UE_LOG(LogTemp, Error, TEXT("LandProjectActor.On projectGetByUName json parse error"));
@@ -84,7 +90,7 @@ void ALandProjectActor::InitSocketOn() {
 				PlotBuild::DrawLands(Data->lands);
 			}
 		}
-	});
+	}));
 }
 
 void ALandProjectActor::Login() {
@@ -102,21 +108,20 @@ void ALandProjectActor::Login() {
 }
 
 void ALandProjectActor::Init() {
-	if (false) {
+	if (true) {
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	TArray<FString> Keys = {"socket"};
 	unrealGlobal->InitAll(GetWorld());
-	// TODO - fix socket (SSL cert) then can re-enable.
-	// if (unrealGlobal->IsIniteds(Keys) && unrealGlobal->SocketActor->IsConnected()) {
-	if (true) {
+	if (unrealGlobal->IsIniteds(Keys) && unrealGlobal->SocketActor->IsConnected()) {
+	// if (true) {
 		Inited = true;
-		// this->InitSocketOn();
+		this->InitSocketOn();
 		// this->Login();
 
-		VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
-		verticesEdit->LoadFromFiles();
-		verticesEdit->CheckSubdividePolygons("plot");
-		// verticesEdit->Hide();
+		// VerticesEdit* verticesEdit = VerticesEdit::GetInstance();
+		// verticesEdit->LoadFromFiles();
+		// verticesEdit->CheckSubdividePolygons("plot");
+		// // verticesEdit->Hide();
 
 		// CreateUI();
 
@@ -138,6 +143,27 @@ void ALandProjectActor::Init() {
 	// } else {
 	// 	UE_LOG(LogTemp, Warning, TEXT("Missing LisbonSequence, skipping"));
 	// }
+}
+
+void ALandProjectActor::CloseSocket() {
+	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+	if (unrealGlobal->SocketActor != nullptr) {
+		unrealGlobal->SocketActor->Destroy();
+	}
+}
+
+void ALandProjectActor::Destroy() {
+	this->DestroySocket();
+}
+
+void ALandProjectActor::DestroySocket() {
+	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+	if (unrealGlobal->SocketActor != nullptr) {
+		for (int ii = 0; ii < SocketKeys.Num(); ii++) {
+			unrealGlobal->SocketActor->Off(SocketKeys[ii]);
+		}
+	}
+	SocketKeys.Empty();
 }
 
 void ALandProjectActor::GetProject(FString UName) {
@@ -354,6 +380,23 @@ void ALandProjectActor::DrawVertices() {
 		skipTypes += { "buildingPart", "parkingLot", "building", "treeLine", "landNature", "grass", "rail", "road" };
 	}
 	DrawVertices::LoadVertices(skipTypes);
+}
+
+void ALandProjectActor::LoadProject() {
+	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
+	unrealGlobal->InitAll(GetWorld());
+	TArray<FString> Keys = {"socket"};
+	// if (unrealGlobal->IsIniteds(Keys) && unrealGlobal->SocketActor->IsConnected()) {
+	if (unrealGlobal->SocketActor != nullptr && unrealGlobal->SocketActor->IsConnected()) {
+		this->InitSocketOn();
+		// this->Login();
+		VectorTiles* vectorTiles = VectorTiles::GetInstance();
+		float lng = -122.033802;
+		float lat = 37.977362;
+		vectorTiles->GetTiles(lng, lat, 125, 125);
+	} else {
+		UE_LOG(LogTemp, Warning, TEXT("LandProjectActor.LoadProject socket not connected"));
+	}
 }
 
 void ALandProjectActor::SetVertices() {

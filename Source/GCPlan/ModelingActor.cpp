@@ -9,16 +9,6 @@ AModelingActor::AModelingActor()
 	PrimaryActorTick.bCanEverTick = false;
 }
 
-void AModelingActor::BeginPlay()
-{
-	Super::BeginPlay();	
-}
-
-// void AModelingActor::Tick(float DeltaTime)
-// {
-// 	Super::Tick(DeltaTime);
-// }
-
 void AModelingActor::Init() {
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	unrealGlobal->InitAll(GetWorld(), { "web" });

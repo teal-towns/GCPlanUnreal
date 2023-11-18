@@ -9,16 +9,6 @@ ALayoutModelActor::ALayoutModelActor()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void ALayoutModelActor::BeginPlay()
-{
-	Super::BeginPlay();	
-}
-
-// void ALayoutModelActor::Tick(float DeltaTime)
-// {
-// 	Super::Tick(DeltaTime);
-// }
-
 void ALayoutModelActor::Init() {
 	UnrealGlobal* unrealGlobal = UnrealGlobal::GetInstance();
 	unrealGlobal->InitAll(GetWorld(), { "web" });

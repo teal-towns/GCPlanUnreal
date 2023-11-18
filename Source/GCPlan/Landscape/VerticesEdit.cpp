@@ -55,7 +55,7 @@ void VerticesEdit::SetFilterTypes(TArray<FString> filterTypes) {
 TMap<FString, FPolygon> VerticesEdit::FilterByTypes(TArray<FString> types) {
 	TMap<FString, FPolygon> items = {};
 	for (auto& Elem : _items) {
-		if (types.Contains(Elem.Value.type)) {
+		if (types.Num() == 0 || types.Contains(Elem.Value.type)) {
 			items.Add(Elem.Key, Elem.Value);
 		}
 	}
@@ -65,7 +65,7 @@ TMap<FString, FPolygon> VerticesEdit::FilterByTypes(TArray<FString> types) {
 TMap<FString, FPolygon> VerticesEdit::FilterByShapes(TArray<FString> shapes) {
 	TMap<FString, FPolygon> items = {};
 	for (auto& Elem : _items) {
-		if (shapes.Contains(Elem.Value.shape)) {
+		if (shapes.Num() == 0 ||shapes.Contains(Elem.Value.shape)) {
 			items.Add(Elem.Key, Elem.Value);
 		}
 	}
@@ -648,6 +648,10 @@ int VerticesEdit::CheckSubdividePolygons(FString type, bool save) {
 		SaveToFile(type);
 	}
 	return countNew;
+}
+
+void VerticesEdit::AddPolygon(FPolygon polygon) {
+	_items.Add(polygon.uName, polygon);
 }
 
 void VerticesEdit::AddAndSave(TMap<FString, FPolygon> polygons) {

@@ -9,16 +9,6 @@ AMeshTerrainActor::AMeshTerrainActor()
 	PrimaryActorTick.bCanEverTick = false;
 }
 
-void AMeshTerrainActor::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-void AMeshTerrainActor::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
 void AMeshTerrainActor::InitMesh() {
 	// https://forums.unrealengine.com/t/when-is-valid-time-to-create-subobjects-components/367184/4
     // ProceduralMesh = CreateDefaultSubobject<UProceduralMeshComponent>("ProceduralMesh");

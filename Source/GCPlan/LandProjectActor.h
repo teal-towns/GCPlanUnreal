@@ -55,6 +55,8 @@ public:
 	void SetVertices();
 	UFUNCTION(CallInEditor)
 	void Test();
+	UFUNCTION(CallInEditor)
+	void LoadProject();
 	// UFUNCTION(CallInEditor)
 	// void InitSequencer();
 
@@ -65,10 +67,15 @@ public:
 
 	void Init();
 	void InitSocketOn();
+	UFUNCTION(CallInEditor)
+	void CloseSocket();
+	void Destroy();
+	void DestroySocket();
 	void Login();
 
 	void CreateUI();
 
 private:
 	bool Inited = false;
+	TArray<FString> SocketKeys = {};
 };

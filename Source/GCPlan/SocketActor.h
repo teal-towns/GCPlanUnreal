@@ -19,14 +19,12 @@ public:
 	void Close();
 	bool IsConnected();
 	void Emit(FString, TMap<FString, FString>);
-	void On(FString, std::function<void(FString)>);
+	FString On(FString, FString, std::function<void(FString)>);
 	void Off(FString);
-	void InitSocket();
+	void InitSocket(bool closeSocket = false);
 	void Destroy();
 
 protected:
-	virtual void BeginPlay() override;
-
 	bool Inited = false;
 	// TMap<FString, [](FString)> ListenersOn;
 	TMap<FString, std::function<void(FString)>> ListenersOn;

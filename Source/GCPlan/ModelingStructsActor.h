@@ -11,13 +11,6 @@ class GCPLAN_API AModelingStructsActor : public AActor
 	
 public:	
 	AModelingStructsActor();
-
-protected:
-	virtual void BeginPlay() override;
-
-public:	
-	// virtual void Tick(float DeltaTime) override;
-
 };
 
 UENUM()

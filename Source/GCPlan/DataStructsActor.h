@@ -15,9 +15,6 @@ class GCPLAN_API ADataStructsActor : public AActor
 public:	
 	ADataStructsActor();
 
-protected:
-	virtual void BeginPlay() override;
-
 public:	
 	// virtual void Tick(float DeltaTime) override;
 
@@ -88,6 +85,18 @@ struct FDataProject {
 	FString msg;
 	UPROPERTY()
 	TArray<FLand> lands;
+};
+
+USTRUCT()
+struct FDataGetVectorTiles {
+	GENERATED_BODY()
+
+	UPROPERTY()
+	int valid;
+	UPROPERTY()
+	FString msg;
+	UPROPERTY()
+	TArray<FPolygonSimplified> polygons;
 };
 
 USTRUCT()

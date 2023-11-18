@@ -14,11 +14,6 @@ ASocketActor::ASocketActor()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void ASocketActor::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
 void ASocketActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -39,11 +34,12 @@ void ASocketActor::Init() {
 	}
 }
 
-void ASocketActor::InitSocket() {
+void ASocketActor::InitSocket(bool closeSocket) {
 	if (!FModuleManager::Get().IsModuleLoaded("WebSockets")) {
 		FModuleManager::Get().LoadModule("WebSockets");
 	}
-	if (IsValid(this)) {
+
+	if (closeSocket && IsValid(this)) {
 		this->Destroy();
 	}
 
@@ -72,6 +68,7 @@ void ASocketActor::InitSocket() {
 				ValidString += char(line[ii]);
 			}
 		}
+		// UE_LOG(LogTemp, Display, TEXT("Websocket OnRawMessage %s %d"), *ValidString, BytesRemaining);
 		// TODO - this assumes messages are all from the same source.. What if another message comes in between frames??
 		if (BytesRemaining > 0) {
 			RawMessageJoiner += ValidString;
@@ -129,17 +126,20 @@ void ASocketActor::Emit(FString Route, TMap<FString, FString> Data) {
 	}
 }
 
-void ASocketActor::On(FString Route, std::function<void(FString)> Callback) {
-	if (!ListenersOn.Contains(Route)) {
+FString ASocketActor::On(FString RouteKeyPrefix, FString Route, std::function<void(FString)> Callback) {
+	FString RouteKey = RouteKeyPrefix + Route;
+	this->Off(RouteKey);
+	if (!ListenersOn.Contains(RouteKey)) {
 		ListenersOn.Add(Route, Callback);
 	} else {
 		UE_LOG(LogTemp, Error, TEXT("SocketActor.On route already exists - need to update to TArray to support multiple listeners per route!"));
 	}
+	return RouteKey;
 }
 
-void ASocketActor::Off(FString Route) {
-	if (ListenersOn.Contains(Route)) {
-		ListenersOn.Remove(Route);
+void ASocketActor::Off(FString RouteKey) {
+	if (ListenersOn.Contains(RouteKey)) {
+		ListenersOn.Remove(RouteKey);
 	}
 }
 

@@ -33,12 +33,14 @@ public:
 	static UnrealGlobal *GetInstance();
 	void SetWidgets(UCanvasTextWidget* canvasTextWidget);
 	void InitAll(UWorld*, TArray<FString> skipKeys = {});
+	bool InitSettings();
 	void InitCommon(UWorld*);
 	void InitWeb(UWorld*);
 	void InitMeshes(UWorld*);
 	void SetInited(FString key);
 	bool IsIniteds(TArray<FString>);
 	void GetSocket(UWorld*);
+	void SocketOffRoutes(TArray<FString> socketKeys);
 	FDataSettings* Settings();
 	void CleanUp(TArray<FString> skipKeys = {});
 	void SetWorld(UWorld*);

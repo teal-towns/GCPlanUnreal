@@ -12,9 +12,6 @@ class GCPLAN_API ABuildingStructsActor : public AActor
 public:	
 	ABuildingStructsActor();
 
-protected:
-	virtual void BeginPlay() override;
-
 public:	
 	// virtual void Tick(float DeltaTime) override;
 

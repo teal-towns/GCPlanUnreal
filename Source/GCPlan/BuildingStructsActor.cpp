@@ -8,11 +8,6 @@ ABuildingStructsActor::ABuildingStructsActor()
 	PrimaryActorTick.bCanEverTick = false;
 }
 
-void ABuildingStructsActor::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
 
 // FPlot ABuildingStructsActor::PolygonToPlot(FPolygon obj) {
 // 	TArray<FVector2D> vertices2D = MathPolygon::PointsTo2D(obj.vertices);

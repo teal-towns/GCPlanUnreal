@@ -15,9 +15,6 @@ class GCPLAN_API ALayoutModelActor : public AActor
 public:	
 	ALayoutModelActor();
 
-protected:
-	virtual void BeginPlay() override;
-
 public:	
 	// virtual void Tick(float DeltaTime) override;
 
